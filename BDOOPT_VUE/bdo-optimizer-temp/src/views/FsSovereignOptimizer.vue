@@ -160,10 +160,8 @@
       :average-attempts = "AverageAtmps"
       :durability-loss = "durabilityLoss"
       :softcap = "softcap"
-      >
-        
-      </LeftPanel>
-      <div class="card">
+      ></LeftPanel>
+      <div class="card mb-0">
         <div class="card-content">
           <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
           <div class="top-row">
@@ -201,7 +199,7 @@
 
             </div>          
             <div class="select" id="select-content">
-              <select id="tier-select" @change="tierChange($event)">
+              <select id="tier-select" v-model="selectTier" @change="tierChange($event)">
                 <option value="IX">ENE (IX)</option>  
                 <option value="VIII">OCT (VIII)</option>  
                 <option value="VII">SEP (VII)</option>  
@@ -319,9 +317,10 @@
 
         </div>
       </div>
+      <EnhancingCalculator :base-success-rate="leftPanelChance"></EnhancingCalculator>
+      <EnhancingSimulator :base-success-rate="leftPanelChance"></EnhancingSimulator>              
     </div>
-
-
+    
   </div>
 </template>
 
@@ -332,36 +331,40 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import sovereignIcon from '../assets/Base.jpg';
 import kharazadIcon from '../assets/khazard_necklace.png';
 import labreskaIcon from '../assets/labreska_helmet.png';
-import blackstoneIcon from '../assets/primordial_blackstone.png';
 import { useRegionStore } from '@/stores/regionStore';
 import allItemsData from '../data/enhancingItems'
+import EnhancingCalculator from '@/components/EnhancingCalculator.vue';
+import EnhancingSimulator from '@/components/EnhancingSimulator.vue';
 
 
 export default {
     name: 'fsSovereignOptimizerView',
     components:{
-      LeftPanel
+      LeftPanel,
+      EnhancingCalculator,
+      EnhancingSimulator
     },
     data(){
       return {
         currentItem: '',
         softcap: 0,
+        leftPanelChance: 0,
         AverageAtmps: 0,
-        selectTier: 'III',
+        selectTier: 'I',
         permaChance: 0,
         currentChance: 0,
         permaEnhActive: null,
         valksCry: 0,
-        selectTierNumber: 3,
+        selectTierNumber: 1,
         optimizeStackbase: 100,
         showResult: false,
         isError: false,
         errorMessage: null,
-        currentIconUrl: sovereignIcon,
+        currentIconUrl: null,
         currentColor: '#8a63d2',
-        currentItemId: 0,
+        currentItemId: null,
         successRate: 0,
-        blackstoneIcon: blackstoneIcon,
+        blackstoneIcon: null,
         crons: 0,
         essence: 0,
         showModal: false,
@@ -382,8 +385,7 @@ export default {
       }
     },
     methods: {
-      tierChange(event){
-        this.selectTier = event.target.value;
+      tierChange(){
         this.showResult = false;
         const tierMap = {'I':1,'II': 2,"III":3, "IV":4, "V":5, "VI":6, "VII":7, "VIII":8, "IX":9};
         this.selectTierNumber = tierMap[this.selectTier] || this.selectTier;
@@ -478,6 +480,7 @@ export default {
           this.durabilityLoss = response.data.result.durabilityLoss;
           this.softcap = response.data.result.softcap;
           this.AverageAtmps = (100/(chance)).toFixed(2);
+          this.leftPanelChance = chance;
           
         }catch(error){
           console.error("Error fetching success rate:", error);
@@ -572,6 +575,8 @@ export default {
       }
     },
     mounted() {
+      const firstItem = allItemsData[0];
+      this.selectCurrentIcon(firstItem.icon, firstItem.colorClass, firstItem.id, firstItem.blackstoneIcon, firstItem.text);
     this.getSuccessRateAndData();
     },
     watch: {
@@ -639,46 +644,45 @@ export default {
   display: flex;  
   justify-content: space-between;  
   align-items: center;  
-    
-  margin-bottom: 1.5rem;   
+  padding: 1rem;
+  margin-bottom: 0.75rem;   
 }
 
   .optimizer-page {
     background-color: #0e0f11;
     color: #e2e8f0;
     min-height: 100vh;
-    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .title.is-4 {
     color: #fff
   }
   .main-content {
-    flex: 1.5;
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    gap: 1.5rem;
-    width: 60%;
-    max-width: 1600px;
-    margin: 2rem auto 0;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    width: 50%;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 1rem auto 0;
+    margin-top: 0;
   }
   .card {
-    flex: 5;
+    display: flex;
     width: 100%;
     max-width: none;
-    margin: 0;
     border-radius: 12px;
-    box-shadow: none;
-    min-height: 600px;
+    box-shadow: none !important;
+    min-height: auto;
     color: #e2e8f0;
   }
-  .main-content > *:first-child {
-    flex: 1.5;
-  }
   .card .card-content {
-    padding: 2rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
   }
   .top-row {
     display: flex;
@@ -720,7 +724,7 @@ export default {
   }
   #enchant_diagram {
     position:relative;
-    margin: 2rem 0;
+    margin: 1rem 0;
     width: 95%;
     max-width: 750px;
     max-height: 400px;
@@ -774,10 +778,10 @@ export default {
   }
 
   #enchant-stats {
-    margin: 2.5rem 0 0 0;
+    margin: 1rem 0 0 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
     padding: 0 1rem;
   }
 

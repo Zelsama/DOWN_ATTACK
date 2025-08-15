@@ -47,7 +47,7 @@ export default {
     flex-direction: column;  
     gap: 1.5rem;  
     color: #e2e8f0;  
-    min-height: 100%;
+    height: 100%;
 }  
   
 .stat-card {  
@@ -56,7 +56,7 @@ export default {
     display: flex;  
     flex-direction: column;  
     align-items: flex-start;  
-    width: 100%;  
+    width: 100%;;  
 }  
   
 .stat-label {  
