@@ -1,4 +1,5 @@
 import axios from "axios";
+import db from "./database/connection.js";
 
 const api = axios.create({
     baseURL: 'https://api.arsha.io/v2'
@@ -8,79 +9,183 @@ const api = axios.create({
 
 
 class CalculaStackSoberana{
-    constructor(region){
+    constructor(region = 'sa', item = 'Sovereign'){
+        this.item = item;
         this.region = region;
         this.cron = 3000000;
         this.valksCry = 0;
         this.permanentChance = 0;
         this.darkHunger = null;
         this.faintDarkHunger = null;
+        this.essenceOfDawn = null;
         this.tierData = {
-        3: {   // TRI
-            baseChance: 0.910,   // Chance base (9.1%)
-            fsMultiplier: 0.091, // Incremento por failstack (0.091% por FS)
-            crons: 780           // Crons por tentativa
+        "Sovereign":{   
+            3: {   // TRI
+                baseChance: 0.910,   // Chance base (9.1%)
+                fsMultiplier: 0.091, // Incremento por failstack (0.091% por FS)
+                crons: 780           // Crons por tentativa
+            },
+            4: {   // TET
+                baseChance: 0.469,   // 4.69%
+                fsMultiplier: 0.0469, // 0.0469% por FS
+                crons: 970
+            },
+            5: {   // PEN
+                baseChance: 0.273,   // 2.73%
+                fsMultiplier: 0.0273, // 0.027% por FS
+                crons: 1350
+            },
+            6: {   // HEX
+                baseChance: 0.160,   // 1.60%
+                fsMultiplier: 0.016, // 0.016% por FS
+                crons: 1550
+            },
+            7: {   // HEP
+                baseChance: 0.1075,   // 1.075%
+                fsMultiplier: 0.01075, // 0.01075% por FS
+                crons: 2250
+            },
+            8: {   // OCT
+                baseChance: 0.0485,   // 0.485%
+                fsMultiplier: 0.00485, // 0.004% por FS
+                crons: 2760
+            },
+            9: {   // ENE
+                baseChance: 0.0242,   // 0.242%
+                fsMultiplier: 0.00242, // 0.00242% por FS
+                crons: 3920
+            }
         },
-        4: {   // TET
-            baseChance: 0.469,   // 4.69%
-            fsMultiplier: 0.0469, // 0.0469% por FS
-            crons: 970
+        "Armors":{
+            2: {
+                baseChance: 0.5, //0.5%
+                fsMultiplier: 0.05, //0,02% per stack
+                crons: 2100,
+            },
+            3: {
+                baseChance: 0.2, //0.2%
+                fsMultiplier: 0.02, //0.02% por stack
+                crons: 2700,
+            },
+            4: {
+                baseChance: 0.003, //0.2%
+                fsMultiplier: 0.00025, //0,0002 por stack
+                crons: 4000,
+            }
         },
-        5: {   // PEN
-            baseChance: 0.273,   // 2.73%
-            fsMultiplier: 0.0273, // 0.027% por FS
-            crons: 1350
-        },
-        6: {   // HEX
-            baseChance: 0.160,   // 1.60%
-            fsMultiplier: 0.016, // 0.016% por FS
-            crons: 1550
-        },
-        7: {   // HEP
-            baseChance: 0.1075,   // 1.075%
-            fsMultiplier: 0.01075, // 0.01075% por FS
-            crons: 2250
-        },
-        8: {   // OCT
-            baseChance: 0.0485,   // 0.485%
-            fsMultiplier: 0.00485, // 0.004% por FS
-            crons: 2760
-        },
-        9: {   // ENE
-            baseChance: 0.0242,   // 0.242%
-            fsMultiplier: 0.00242, // 0.00242% por FS
-            crons: 3920
+        "Kharazad": {
+            3: {
+                baseChance: 2.89, //2.89%
+                fsMultiplier: 0.289, //0.289% por stack
+                crons: 540,
+                essence: 4
+            },
+            4: {
+                baseChance: 1.91, //1.91%
+                fsMultiplier: 0.191,//0.191% por stack
+                crons: 840,
+                essence: 6
+            },
+            5: {
+                baseChance: 1.29, //1.29%
+                fsMultiplier: 0.129, //0.129% por stack
+                crons: 1090,
+                essence: 8
+            },
+            6: {
+                baseChance: 0.88, //0.88%
+                fsMultiplier: 0.088, //0.088% por stack
+                crons: 1480,
+                essence: 10
+            },
+            7: {
+                baseChance: 0.57, //0.57%
+                fsMultiplier: 0.057, //0,057% por stack
+                crons: 1880,
+                essence: 12
+            },
+            8: {
+                baseChance: 0.32, //0.32%
+                fsMultiplier: 0.032, //0.032% por stack
+                crons: 2850,
+                essence: 15
+            },
+            9: {
+                baseChance: 0.172, //0,172%
+                fsMultiplier: 0.0172, //0,172% por stack
+                crons: 3650,
+                essence: 0
+            },
         }
+
         };
     }
     async initialize() {
         try {
-            const [darkHungerData, faintDarkhunterData] = await Promise.all([
-                this.GetItemPrice(65319),
-                this.GetItemPrice(767102)
+            const [darkHungerData, faintDarkhunterData, essenceOfDawnData] = await Promise.all([
+                this.findItemInDb(65319),
+                this.findItemInDb(767102),
+                this.findItemInDb(820979)
             ]);
-            this.darkHunger = darkHungerData.lastSoldPrice;
-            this.faintDarkHunger = faintDarkhunterData.lastSoldPrice;
+            this.darkHunger = darkHungerData?.price || 0;
+            this.faintDarkHunger = faintDarkhunterData?.price || 0;
+            this.essenceOfDawn = essenceOfDawnData?.price || 0;
         } catch (error) {
-            console.error("Erro ao carregar preço do Dark Hunger:", error);
+            console.error("Erro ao carregar preços no banco de:", error);
             throw new Error("Não foi possível inicializar os preços");
         }
     }
 
-    static async create(region) {
-        const instance = new CalculaStackSoberana(region);
+    async findItemInDb(id){
+        const findItem = db('item_prices').where({
+            item_id: id,
+            region: this.region
+        }).first();
+        return findItem;
+    }
+
+    async findItemCrons(tier){
+        const itemKey = this.item;
+        if (!this.tierData || !this.tierData[itemKey]) {
+            throw new Error(`Item ${itemKey} não encontrado na base de dados.`);
+        }
+        if (!this.tierData[itemKey][tier]) {
+            throw new Error(`Tier ${tier} não encontrado para o item ${itemKey}.`);
+        }
+        const tierInfo = this.tierData[itemKey][tier];
+        const result = {Crons: 0, Essence: 0}
+        if(itemKey === 'Kharazad' && tierInfo.essence){
+            result.Essence = tierInfo.essence;
+        }
+
+        if (tierInfo.crons) {
+            result.Crons = tierInfo.crons;
+        }else {
+            throw new Error(`Valor de crons não encontrado para o tier '${tier}`)
+        }
+        return result;
+    }
+
+    static async create(region, item) {
+        const instance = new CalculaStackSoberana(region, item);
         await instance.initialize();
         return instance;
     }
     validateInitialStack(fs){
         const failstack = Number(fs);
-        return Number.isInteger(failstack) && failstack >=100 && failstack <= 299;
+        return Number.isInteger(failstack) && failstack >=100 && failstack <= 300;
     }
 
     validateTier(tier) {
         const number = Number(tier);
-        return Number.isInteger(number) && number >= 3 && number <= 9;
+        if(this.item === 'Sovereign' || this.item === 'Kharazad'){
+            return Number.isInteger(number) && number >= 3 && number <= 9;            
+        }else{
+            return Number.isInteger(number) && number >= 2 && number <= 9;             
+        }
+
     }
+
     setFailstackComponents(base, valks = 0, diary = 0) {
         if (valks < 0 || valks > 13) throw new Error("Gritos de Valk devem ser entre 0-13");
         if (diary < 0 || diary > 5) throw new Error("Bônus do diário deve ser entre 0-5");
@@ -95,8 +200,8 @@ class CalculaStackSoberana{
         return this.currentBase + this.valksScream + this.diaryBonus;
     }
 
-    getSucessRate(tier, failstack){
-        const {baseChance: chanceBase, fsMultiplier: multiplierFs} = this.tierData[tier] || {};
+    getSuccessRate(tier, failstack){
+        const {baseChance: chanceBase, fsMultiplier: multiplierFs} = this.tierData[this.item][tier] || {};
         if (!chanceBase || !multiplierFs) throw new Error("Tier Inválido");
 
         const chance = (failstack * multiplierFs) + chanceBase;
@@ -158,71 +263,140 @@ class CalculaStackSoberana{
         if (failstack >= 100) return failstack + 26;
         return failstack;
     }
-    findOptimalStack(tier, initialBaseFs, initialValks = 0, permanentChance = 0){
-        if(!this.validateTier(tier)){
-            throw new Error("Nível inválido. O nível tem que ser de III a IX");
-        }
-        if(!this.validateInitialStack(initialBaseFs)){
-            throw new Error("Failstack inválido. Deve ser um número inteiro de 100 até 299");
-        }
+    /** 
+     * auxiliar function for the findOptimalStack();
+        @private
+    */
+    _calculateStack(tier, initialBaseFs, initialValks, permanentChance){
         let currentBase = initialBaseFs;
+        let KharazadCost = 0;
         let darkHungersUseds = 0;   
         let faintDarkHungerUseds = 0;
         const MAX_ITERATIONS = 1000;
         let iterations = 0;
+        let log = [];
+        let totalSaveCost = 0;
+        log.push({  
+                event: 'Initialization',  
+                costs: {  
+                    darkHunger: this.darkHunger,  
+                    faintDarkHunger: this.faintDarkHunger,  
+                    ...(this.item === 'Kharazad' && { essenceOfDawn: this.essenceOfDawn }) 
+                }  
+            });
+        if(this.item === 'Kharazad'){log.push(this.essenceOfDawn)};
 
         while (iterations < MAX_ITERATIONS){
             iterations ++;
+
             let currentTotalFs = currentBase + initialValks + permanentChance;  
-            let currenteChance = this.getSucessRate(tier, currentTotalFs);
+            let currenteChance = this.getSuccessRate(tier, currentTotalFs);
             let baseWithDarkHunger = this.DarkHungerSheet(currentBase);
             let totalWithDarkHunger = baseWithDarkHunger + initialValks + permanentChance;
+            let netProfitDark = -Infinity;
 
             if (baseWithDarkHunger === currentBase){
                 break;
             }
             
-            let chanceMoreDarkHunger = this.getSucessRate(tier, totalWithDarkHunger);
+            let chanceMoreDarkHunger = this.getSuccessRate(tier, totalWithDarkHunger);
             let CurrentAverageAttempts = (100/currenteChance).toFixed(4);
-            //console.log("[DEBUG] Chance atual do stack \n", CurrentAverageAttempts);
             let DarkHungerAverageAttempts = (100/chanceMoreDarkHunger).toFixed(4);
-            //console.log("[DEBUG] Chance após uso da devoração \n" + DarkHungerAverageAttempts);
             let subtractAverages =CurrentAverageAttempts - DarkHungerAverageAttempts;
-            //console.log("[DEBUG] Chance apos a subtração das chances \n" + subtractAverages)
-            let costWithCrons = subtractAverages * this.cron * this.tierData[tier].crons;
-            //console.log("[DEBUG] Custo da multplicação do preço \n" + costWithCrons.toFixed(1));
-            if (costWithCrons > this.darkHunger){
-                darkHungersUseds += 1;
-                currentBase = baseWithDarkHunger;
-            }else{
-                const baseWithFaint = this.FaintDarkHunterSheet(currentBase);
-                if (baseWithFaint != currentBase){
-                    const totalWithFaint = baseWithFaint + initialValks + permanentChance;
-                    const faintChance = this.getSucessRate(tier, totalWithFaint);
-                    const faintAvgAttemps = (100/faintChance);
-                    const faintAttempsSaved = CurrentAverageAttempts - faintAvgAttemps;
-                    const faintCostWithCrons = faintAttempsSaved * this.cron * this.tierData[tier].crons;
-                    if (faintCostWithCrons > this.faintDarkHunger){
-                        faintDarkHungerUseds += 1;
-                        currentBase = baseWithFaint;
-                    }else{
-                        break
-                    }
-                }
+            if(this.item === 'Kharazad'){KharazadCost = this.essenceOfDawn * (this.tierData[this.item][tier].essence)};
+            let costWithCrons = (subtractAverages * this.cron * this.tierData[this.item][tier].crons) + (subtractAverages * KharazadCost);
+            netProfitDark = costWithCrons - this.darkHunger;
+            
+            const baseWithFaint = this.FaintDarkHunterSheet(currentBase);
+            let netProfitFaint = -Infinity;
 
+            if (baseWithFaint === currentBase){break};
+            const totalWithFaint = baseWithFaint + initialValks + permanentChance;
+            const faintChance = this.getSuccessRate(tier, totalWithFaint);
+            const faintAvgAttemps = (100/faintChance);
+            const faintAttempsSaved = CurrentAverageAttempts - faintAvgAttemps;            
+            const faintCostWithCrons = (faintAttempsSaved * this.cron * this.tierData[this.item][tier].crons) + (faintAttempsSaved * KharazadCost);
+            netProfitFaint = faintCostWithCrons - this.faintDarkHunger;
+            
+            if(netProfitDark > netProfitFaint && netProfitDark > 0){
+                log.push({
+                    event: 'Analysis',
+                    type: 'Dark Hunger',
+                    from: { fs: currentTotalFs, avgAttemps: Number(CurrentAverageAttempts).toFixed(3)},
+                    to: { fs: totalWithDarkHunger, avgAttemps: Number(DarkHungerAverageAttempts).toFixed(3)},
+                    savedAttempts: subtractAverages.toFixed(3),
+                    saveCost: ((costWithCrons - this.darkHunger)).toFixed(1)
+                });
+                totalSaveCost += ((costWithCrons - this.darkHunger))
+                log.push({
+                    event: "Decision",
+                    outcome: 'UsedDarkHunger',
+                    reason: `Saved value {${costWithCrons.toFixed(3)}} > Cost (${this.darkHunger})`,
+                });
+                currentBase = baseWithDarkHunger;
+                darkHungersUseds += 1;
+            }else if(netProfitFaint > 0){
+                log.push({
+                    event: 'Analysis',
+                    type: 'Faint Dark Hunger',
+                    from: { fs: currentTotalFs, avgAttemps: Number(CurrentAverageAttempts).toFixed(3) },
+                    to: { fs: totalWithFaint, avgAttemps: faintAvgAttemps.toFixed(3) },
+                    savedAttempts: faintAttempsSaved.toFixed(3),
+                    saveCost: ((faintCostWithCrons - this.faintDarkHunger)).toFixed(1)
+                });       
+                log.push({
+                    event: "Decision",
+                    outcome: 'UsedFaintDarkHunger',
+                    reason: `Saved value {${faintCostWithCrons.toFixed(3)}} > Cost (${this.faintDarkHunger})`,
+                });                
+                totalSaveCost += ((faintCostWithCrons - this.faintDarkHunger)) 
+                faintDarkHungerUseds += 1;
+                currentBase = baseWithFaint;
+            }else{
+                log.push({
+                    event: "Decision",
+                    outcome: 'Stop',
+                    reason: `No profitable option found. Dark Profit: ${netProfitDark.toFixed(0)}, Faint Profit: ${netProfitFaint.toFixed(0)}`,
+                });
                 break;
-            }           
-        }
-        if (currentBase == 300){
-            darkHungersUseds = 21;
-            faintDarkHungerUseds = 1;
+            }  
+            if (currentBase >= 300){break};         
         }
         return {
             optimalBaseFailstack: currentBase,
             optimalTotalFailstack: currentBase + initialValks + permanentChance,
             darkHungersUsed: darkHungersUseds, 
-            faintDarkHungerUseds: faintDarkHungerUseds
+            faintDarkHungerUseds: faintDarkHungerUseds,
+            log: log,
+            totalSaveCost: totalSaveCost
         };
+    }
+
+    findOptimalStack(tier, initialBaseFs, initialValks = 0, permanentChance = 0){
+        if(!this.validateTier(tier)){
+            throw new Error("Invalid Tier.");
+        }
+        if(!this.validateInitialStack(initialBaseFs)){
+            throw new Error("Invalid Failstack. Starting failstack must be at least 100 and Starting failstack cannot exceed 300.");
+        }
+        
+        const mainResult = this._calculateStack(tier, initialBaseFs, initialValks, permanentChance);
+        let overstackWarning = null;
+
+        if (mainResult.optimalBaseFailstack !== initialBaseFs){
+            return mainResult;
+        }else{
+            const baseLineResult = this._calculateStack(tier, 100, initialValks, permanentChance);
+            const difference = initialBaseFs - baseLineResult.optimalBaseFailstack;
+            if(difference > 10){
+                overstackWarning = `Warning: Your starting failstack (${initialBaseFs}) is considered an overstack for this item. The recommended optimal stack starts around ${baseLineResult.optimalBaseFailstack}. You are using approximately ${difference} FS more than necessary.`
+            }
+        }
+
+        return {
+            ...mainResult,
+            overstackWarning: overstackWarning
+        }
     }
 }   
   
