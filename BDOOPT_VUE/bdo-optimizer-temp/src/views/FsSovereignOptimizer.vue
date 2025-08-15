@@ -152,166 +152,175 @@
           </section>
         </div>
       </div>      
-
-
     </div>
-    <LeftPanel></LeftPanel>
-    <div class="card">
-      <div class="card-content">
-        <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
-        <div class="top-row">
-          <div class="weapon-container">
-            <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style="{ border: '2px solid ' + currentColor }">
-            <span v-if="selectTier && selectTier !== '0' && selectTier !== '+0'" class="Tier">{{ selectTier }}</span>
-          </div>
-          <div class="dropdown" :class="{'is-active': isEditing}" ref="dropdownRef">
-            <div class="dropdown-trigger">
-              <button v-if="!isEditing" class="button" @click.stop="isEditing = true">
-                <span class="button-label-group">
-                  <span> {{ selectedItem.text }} </span>            
-                </span>
-                <span class="icon is-small">
-                  <i class="css-arrow" aria-hidden="true"></i>
-                </span>
-              </button>    
-              <div v-else class="control has-icon-right">
-                <input class="input" type="text" v-model="searchTerm" :placeholder="selectedItem.text" @click.stop>
-                <span class="input-arrow-icon">
-                  <i class="css-arrow" aria-hidden="true"></i>
-                </span>
-              </div>    
-              
+
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+      <LeftPanel
+      :average-attempts = "AverageAtmps"
+      :durability-loss = "durabilityLoss"
+      :softcap = "softcap"
+      >
+        
+      </LeftPanel>
+      <div class="card">
+        <div class="card-content">
+          <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
+          <div class="top-row">
+            <div class="weapon-container">
+              <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style="{ border: '2px solid ' + currentColor }">
+              <span v-if="selectTier && selectTier !== '0' && selectTier !== '+0'" class="Tier">{{ selectTier }}</span>
             </div>
-            <div class="dropdown-menu">
-              <div class="dropdown-content">
-                <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id, item.blackstoneIcon, item.text), getSuccessRateAndData()">
-                  <img :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
-                  <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
-                </a>
+            <div class="dropdown" :class="{'is-active': isEditing}" ref="dropdownRef">
+              <div class="dropdown-trigger">
+                <button v-if="!isEditing" class="button" @click.stop="isEditing = true">
+                  <span class="button-label-group">
+                    <span> {{ selectedItem.text }} </span>            
+                  </span>
+                  <span class="icon is-small">
+                    <i class="css-arrow" aria-hidden="true"></i>
+                  </span>
+                </button>    
+                <div v-else class="control has-icon-right">
+                  <input class="input" type="text" v-model="searchTerm" :placeholder="selectedItem.text" @click.stop>
+                  <span class="input-arrow-icon">
+                    <i class="css-arrow" aria-hidden="true"></i>
+                  </span>
+                </div>    
+                
+              </div>
+              <div class="dropdown-menu">
+                <div class="dropdown-content">
+                  <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id, item.blackstoneIcon, item.text), getSuccessRateAndData()">
+                    <img :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
+                    <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
+                  </a>
+                </div>
+
               </div>
 
+            </div>          
+            <div class="select" id="select-content">
+              <select id="tier-select" @change="tierChange($event)">
+                <option value="IX">ENE (IX)</option>  
+                <option value="VIII">OCT (VIII)</option>  
+                <option value="VII">SEP (VII)</option>  
+                <option value="VI">HEX (VI)</option>  
+                <option value="V">PEN (V)</option>  
+                <option value="IV">TET (IV)</option>  
+                <option value="III">TRI (III)</option>  
+                <option value="II">DUO (II)</option>  
+                <option value="I">PRI (I)</option>
+                <option v-if='profileKeys.includes(profileKey)' value="0"></option>
+                <template v-if="!profileKeys.includes(profileKey)">
+                  <option v-for="level in reversedLevels" :key="level" :value="'+'+ level">{{ '+'+level }}</option>
+                  <option value="+0">+0</option>
+                </template>
+                
+              </select>
+            </div>
+          </div>
+          <div id="enchant_diagram">
+            <img id="diagram-background-img" src="../assets/enchant_diagram.png" alt="enchant_diagram">
+            <div class="diagram-overlay diagram-icon-container" id="cron-overlay">
+              <img src="../assets/cron_icon.png" alt="Cron Stone" class="diagram-icon-img">
+              <span class="cron-amount-text"> {{ crons }}</span>
+            </div>
+            <div class="diagram-overlay diagram-icon-container" id="blackstone-overlay">
+              <img v-if="currentItem === 'Kharazad Accessories' && selectTier === 'IX'" src="../assets/dawn_blackstone.png" alt="Blackstone" class="diagram-icon-img">
+              <img v-else :src="blackstoneIcon" alt="Blackstone" class="diagram-icon-img">
+              <span v-if="essence > 0" class="essence-amount-text"> {{ essence }}</span>
+            </div>
+            <div class="diagram-overlay" id="chance-overlay">
+                <span> {{ successRate }}% </span>
+            </div>      
+            <div class="weapon-container" id="result-item-overlay">
+                <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
+                <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
+              </div>              
+          </div>
+
+          <!-- BLOCO DE STATS CORRIGIDO -->
+          <div id="enchant-stats">
+
+            <!-- Linha 1: Additional Enhancement Chance -->
+            <div class="stat-row">
+              <div class="stat-label-group">
+                <figure class="image is-24x24 stat-icon">
+                  <img src="../assets/adicional-enhanment-chance.png" alt="Additional Chance Icon">
+                </figure>
+                <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
+              </div>
+              <div class="stat-controls field has-addons">
+
+                <p class="control">
+                  <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
+                </p>
+                <p class="control">
+                  <button class="button is-small" @click="currentChancePlus">+</button>
+                </p>
+                <p class="control">
+                  <button class="button is-small" @click="currentChanceMinus">-</button>
+                </p>              
+              </div>
             </div>
 
-          </div>          
-          <div class="select" id="select-content">
-            <select id="tier-select" @change="tierChange($event)">
-              <option value="IX">ENE (IX)</option>  
-              <option value="VIII">OCT (VIII)</option>  
-              <option value="VII">SEP (VII)</option>  
-              <option value="VI">HEX (VI)</option>  
-              <option value="V">PEN (V)</option>  
-              <option value="IV">TET (IV)</option>  
-              <option value="III">TRI (III)</option>  
-              <option value="II">DUO (II)</option>  
-              <option value="I">PRI (I)</option>
-              <option v-if='profileKeys.includes(profileKey)' value="0"></option>
-              <template v-if="!profileKeys.includes(profileKey)">
-                <option v-for="level in reversedLevels" :key="level" :value="'+'+ level">{{ '+'+level }}</option>
-                <option value="+0">+0</option>
-              </template>
-              
-            </select>
+            <!-- Linha 2: Valk's Cry -->
+            <div class="stat-row">
+              <div class="stat-label-group">
+                <figure class="image is-24x24 stat-icon">
+                  <img src="../assets/valkscry.png" alt="Valk's Cry Icon">
+                </figure>
+                <p class="stat-label is-hidden-mobile"><b>Valk's Cry</b></p>
+              </div>
+              <div class="stat-controls field has-addons">
+
+                <p class="control">
+                  <input class="input is-small" type="number" v-model.number="valksCry" @input="limitValks">
+                </p>
+                <p class="control">
+                  <button class="button is-small" @click="valksPlus()">+</button>
+                </p>
+                <p class="control">
+                  <button class="button is-small" @click="valksMinus()">-</button>
+                </p>              
+              </div>
+            </div>
+
+            <!-- Linha 3: Permanent Enhancement Chance -->
+            <div class="stat-row">
+              <div class="stat-label-group">
+                <figure class="image is-24x24 stat-icon">
+                  <img src="../assets/adicional-enhanment-chance.png" alt="Permanent Chance Icon">
+                </figure>
+                <p class="stat-label is-hidden-mobile"><b>Permanent Enhancement Chance</b></p>
+              </div>
+              <div class="stat-controls buttons has-addons">
+                <button v-for="i in 6" :key="i-1" @click="selectPermaEnchantButton(i-1)" class="button is-small" :class="{ 'is-success': permaEnhActive === i-1 }">
+                  +{{ i-1 }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Linha 4: Current Enhancement Chance -->
+            <div class="stat-row">
+              <div class="stat-label-group">
+                <figure class="image is-24x24 stat-icon">
+                  <img src="../assets/current-enhancement-chance.png" alt="Current Chance Icon">
+                </figure>
+                <p class="stat-label is-hidden-mobile"><b>Current Enhancement Chance</b></p>
+              </div>
+              <div class="stat-controls">
+                <h5 class="subtitle is-5 has-text-weight-bold has-text-light">+ {{ currentChanceTotal }}</h5>
+              </div>
+            </div>
+
           </div>
+
         </div>
-        <div id="enchant_diagram">
-          <img id="diagram-background-img" src="../assets/enchant_diagram.png" alt="enchant_diagram">
-          <div class="diagram-overlay diagram-icon-container" id="cron-overlay">
-            <img src="../assets/cron_icon.png" alt="Cron Stone" class="diagram-icon-img">
-            <span class="cron-amount-text"> {{ crons }}</span>
-          </div>
-          <div class="diagram-overlay diagram-icon-container" id="blackstone-overlay">
-            <img v-if="currentItem === 'Kharazad Accessories' && selectTier === 'IX'" src="../assets/dawn_blackstone.png" alt="Blackstone" class="diagram-icon-img">
-            <img v-else :src="blackstoneIcon" alt="Blackstone" class="diagram-icon-img">
-            <span v-if="essence > 0" class="essence-amount-text"> {{ essence }}</span>
-          </div>
-          <div class="diagram-overlay" id="chance-overlay">
-              <span> {{ successRate }}% </span>
-          </div>      
-          <div class="weapon-container" id="result-item-overlay">
-              <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
-              <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
-            </div>              
-        </div>
-
-        <!-- BLOCO DE STATS CORRIGIDO -->
-        <div id="enchant-stats">
-
-          <!-- Linha 1: Additional Enhancement Chance -->
-          <div class="stat-row">
-            <div class="stat-label-group">
-              <figure class="image is-24x24 stat-icon">
-                <img src="../assets/adicional-enhanment-chance.png" alt="Additional Chance Icon">
-              </figure>
-              <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
-            </div>
-            <div class="stat-controls field has-addons">
-
-              <p class="control">
-                <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
-              </p>
-              <p class="control">
-                <button class="button is-small" @click="currentChancePlus">+</button>
-              </p>
-              <p class="control">
-                <button class="button is-small" @click="currentChanceMinus">-</button>
-              </p>              
-            </div>
-          </div>
-
-          <!-- Linha 2: Valk's Cry -->
-          <div class="stat-row">
-            <div class="stat-label-group">
-              <figure class="image is-24x24 stat-icon">
-                <img src="../assets/valkscry.png" alt="Valk's Cry Icon">
-              </figure>
-              <p class="stat-label is-hidden-mobile"><b>Valk's Cry</b></p>
-            </div>
-            <div class="stat-controls field has-addons">
-
-              <p class="control">
-                <input class="input is-small" type="number" v-model.number="valksCry" @input="limitValks">
-              </p>
-              <p class="control">
-                <button class="button is-small" @click="valksPlus()">+</button>
-              </p>
-              <p class="control">
-                <button class="button is-small" @click="valksMinus()">-</button>
-              </p>              
-            </div>
-          </div>
-
-          <!-- Linha 3: Permanent Enhancement Chance -->
-          <div class="stat-row">
-            <div class="stat-label-group">
-              <figure class="image is-24x24 stat-icon">
-                <img src="../assets/adicional-enhanment-chance.png" alt="Permanent Chance Icon">
-              </figure>
-              <p class="stat-label is-hidden-mobile"><b>Permanent Enhancement Chance</b></p>
-            </div>
-            <div class="stat-controls buttons has-addons">
-              <button v-for="i in 6" :key="i-1" @click="selectPermaEnchantButton(i-1)" class="button is-small" :class="{ 'is-success': permaEnhActive === i-1 }">
-                +{{ i-1 }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Linha 4: Current Enhancement Chance -->
-          <div class="stat-row">
-            <div class="stat-label-group">
-              <figure class="image is-24x24 stat-icon">
-                <img src="../assets/current-enhancement-chance.png" alt="Current Chance Icon">
-              </figure>
-              <p class="stat-label is-hidden-mobile"><b>Current Enhancement Chance</b></p>
-            </div>
-            <div class="stat-controls">
-              <h5 class="subtitle is-5 has-text-weight-bold has-text-light">+ {{ currentChanceTotal }}</h5>
-            </div>
-          </div>
-
-        </div>
-
       </div>
     </div>
+
 
   </div>
 </template>
@@ -335,7 +344,9 @@ export default {
     },
     data(){
       return {
-        currentItem: ''|| 'Sovereign Weapons',
+        currentItem: '',
+        softcap: 0,
+        AverageAtmps: 0,
         selectTier: 'III',
         permaChance: 0,
         currentChance: 0,
@@ -365,6 +376,7 @@ export default {
         showLog: false,
         log: [''],
         modalTotalSaveCost: 0,
+        durabilityLoss: 0,
         profileKey: '',
         profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPONS', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES']
       }
@@ -463,9 +475,16 @@ export default {
           this.successRate = chance.toFixed(3);
           this.crons = response.data.result.crons;
           this.profileKey = response.data.result.profileKey;
+          this.durabilityLoss = response.data.result.durabilityLoss;
+          this.softcap = response.data.result.softcap;
+          this.AverageAtmps = (100/(chance)).toFixed(2);
+          
         }catch(error){
           console.error("Error fetching success rate:", error);
           this.successRate = 0;
+          this.AverageAtmps = 0;
+          this.durabilityLoss = 0;
+          this.softcap = 0;
         }
       },
       selectCurrentIcon(icon, color, itemId, blackstoneIcon, item){
@@ -633,14 +652,28 @@ export default {
   .title.is-4 {
     color: #fff
   }
-  .card {
-    width: 45%;
-    max-width: 960px;
+  .main-content {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    width: 60%;
+    max-width: 1600px;
     margin: 2rem auto 0;
+  }
+  .card {
+    flex: 5;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     border-radius: 12px;
     box-shadow: none;
     min-height: 600px;
     color: #e2e8f0;
+  }
+  .main-content > *:first-child {
+    flex: 1.5;
   }
   .card .card-content {
     padding: 2rem;
