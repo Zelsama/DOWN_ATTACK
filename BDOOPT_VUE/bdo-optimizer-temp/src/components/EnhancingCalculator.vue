@@ -95,4 +95,13 @@ export default {
     font-weight: bold;
     color: #fff;
 }
+.attempts-input::-webkit-outer-spin-button,  
+.attempts-input::-webkit-inner-spin-button {  
+  -webkit-appearance: none;  
+  margin: 0;  
+}  
+  
+.attempts-input[type=number] {  
+  -moz-appearance: textfield;  
+}
 </style>

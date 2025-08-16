@@ -1,5 +1,8 @@
 <template>
   <div class="optimizer-page">
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+    </div>
     <div class="container page-header">
       <h4 class="title is-4">Enhancing Simulator</h4>
       <button class="button" id="modal-button" @click="showModalBestStack(), stackOptimizer()">Best Failtacks</button>
@@ -189,7 +192,7 @@
               </div>
               <div class="dropdown-menu">
                 <div class="dropdown-content">
-                  <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id, item.blackstoneIcon, item.text), getSuccessRateAndData()">
+                  <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id,item.text), getSuccessRateAndData()">
                     <img :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
                     <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
                   </a>
@@ -199,12 +202,12 @@
 
             </div>          
             <div class="select" id="select-content">
-              <select id="tier-select" v-model="selectTier" @change="tierChange($event)">
-                <option value="IX">ENE (IX)</option>  
-                <option value="VIII">OCT (VIII)</option>  
-                <option value="VII">SEP (VII)</option>  
-                <option value="VI">HEX (VI)</option>  
-                <option value="V">PEN (V)</option>  
+              <select id="tier-select" v-model="selectTier" @change="tierChange($event)" ref="tierSelect">
+                <option v-if="profileKeyPEN.includes(profileKey)" value="IX">ENE (IX)</option>  
+                <option v-if="profileKeyPEN.includes(profileKey)" value="VIII">OCT (VIII)</option>  
+                <option v-if="profileKeyPEN.includes(profileKey)" value="VII">SEP (VII)</option>  
+                <option v-if="profileKeyPEN.includes(profileKey)" value="VI">HEX (VI)</option>  
+                <option v-if="profileKeyPEN.includes(profileKey)" value="V">PEN (V)</option>  
                 <option value="IV">TET (IV)</option>  
                 <option value="III">TRI (III)</option>  
                 <option value="II">DUO (II)</option>  
@@ -232,8 +235,8 @@
             <div class="diagram-overlay" id="chance-overlay">
                 <span> {{ successRate }}% </span>
             </div>      
-            <div class="weapon-container" id="result-item-overlay">
-                <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
+            <div class="weapon-container" id="result-item-overlay" ref="resultItemOverlay">
+                <img :src="currentIconUrl" alt="" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
                 <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
               </div>              
           </div>
@@ -346,6 +349,8 @@ export default {
     },
     data(){
       return {
+        isLoading: false,
+        optimizerDebounce: null,
         currentItem: '',
         softcap: 0,
         leftPanelChance: 0,
@@ -381,7 +386,8 @@ export default {
         modalTotalSaveCost: 0,
         durabilityLoss: 0,
         profileKey: '',
-        profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPONS', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES']
+        profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES'],
+        profileKeyPEN: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON']
       }
     },
     methods: {
@@ -436,40 +442,44 @@ export default {
         }
       },
       async stackOptimizer(){
-        try{          
-          this.modalError = false;
-          if(this.optimizeStackbase < 100){
+        clearTimeout(this.optimizerDebounce);
+        this.optimizerDebounce = setTimeout(async () =>{
+          try{          
+            this.modalError = false;
+            if(this.optimizeStackbase < 100){
+              this.modalError = true;
+              this.errorMessage = "Starting failstack must be at least 100.";
+              return
+            }else if(this.optimizeStackbase > 300){
+              this.modalError = true;
+              this.errorMessage = "Starting failstack cannot exceed 300.";
+              this.showLog = false;
+              return;
+            }       
+            if (this.modalCurrentItem === 'Armors' && this.modalTier > 4){
+              this.modalError = true;
+              this.errorMessage = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
+              return;
+            }
+            const response = await axios.get(`http://localhost:8585/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
+            if(response.data.result.overstackWarning){
+              this.modalError = true;
+              this.showLog = false;
+              this.errorMessage = response.data.result.overstackWarning;
+              return;
+            }
+            this.modalOptimizeStackbase = response.data.result.optimalBaseFailstack;
+            this.modalOptimizeStackTotal = response.data.result.optimalTotalFailstack;
+            this.log = response.data.result.log || [];
+            this.modalTotalSaveCost = response.data.result.totalSaveCost;
+          }catch(error){
             this.modalError = true;
-            this.errorMessage = "Starting failstack must be at least 100.";
-            return
-          }else if(this.optimizeStackbase > 300){
-            this.modalError = true;
-            this.errorMessage = "Starting failstack cannot exceed 300.";
-            this.showLog = false;
-            return;
-          }       
-          if (this.modalCurrentItem === 'Armors' && this.modalTier > 4){
-            this.modalError = true;
-            this.errorMessage = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
-            return;
-          }
-          const response = await axios.get(`http://localhost:8585/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
-          if(response.data.result.overstackWarning){
-            this.modalError = true;
-            this.showLog = false;
-            this.errorMessage = response.data.result.overstackWarning;
-            return;
-          }
-          this.modalOptimizeStackbase = response.data.result.optimalBaseFailstack;
-          this.modalOptimizeStackTotal = response.data.result.optimalTotalFailstack;
-          this.log = response.data.result.log || [];
-          this.modalTotalSaveCost = response.data.result.totalSaveCost;
-        }catch(error){
-          this.modalError = true;
-          this.errorMessage = "An error occurred while calculating the stack. Please try again.";          
-        }
+            this.errorMessage = "An error occurred while calculating the stack. Please try again.";          
+          }          
+        }, 500);
       },
       async getSuccessRateAndData(){
+        this.isLoading = true;
         try{
           const encondedTierNumber = encodeURIComponent(this.selectTierNumber);
           const response = await axios.get(`http://localhost:8585/get-success-rate-and-data?tier=${encondedTierNumber}&stack=${this.currentChanceTotal}&itemId=${this.currentItemId}`);
@@ -481,6 +491,7 @@ export default {
           this.softcap = response.data.result.softcap;
           this.AverageAtmps = (100/(chance)).toFixed(2);
           this.leftPanelChance = chance;
+          this.blackstoneIcon = response.data.result.blackstoneIcon || this.currentIconUrl;
           
         }catch(error){
           console.error("Error fetching success rate:", error);
@@ -488,14 +499,16 @@ export default {
           this.AverageAtmps = 0;
           this.durabilityLoss = 0;
           this.softcap = 0;
+        } finally {
+          this.isLoading = false;
         }
       },
-      selectCurrentIcon(icon, color, itemId, blackstoneIcon, item){
+      selectCurrentIcon(icon, color, itemId,item){
         this.currentIconUrl = icon;
         this.currentColor = color || '#8a63d2';
         this.currentItemId = itemId;
-        this.blackstoneIcon = blackstoneIcon || '../assets/primordial_blackstone.png';
         this.currentItem = item;
+        localStorage.setItem('lastSelectedItem', itemId);
       },
       hideModal(){
         this.showModal = false;
@@ -558,6 +571,25 @@ export default {
         }
         return value.toString();
       },
+      handleTierScroll(event){
+        event.preventDefault();
+        
+        const selectEl = this.$refs.tierSelect;
+        if(!selectEl) return;
+        const options = Array.from(selectEl.options);
+        const currentIndex = selectEl.selectedIndex;
+        const direction = event.deltaY > 0 ? 1 : -1;
+
+        let newIndex = currentIndex + direction;
+
+        if (newIndex < 0){
+          newIndex = 0;
+        }
+        if (newIndex >= options.length){
+          newIndex = options.length - 1;
+        }
+        this.selectTier = options[newIndex].value;
+      }
     },
     computed:{
       currentChanceTotal(){
@@ -575,11 +607,54 @@ export default {
       }
     },
     mounted() {
-      const firstItem = allItemsData[0];
-      this.selectCurrentIcon(firstItem.icon, firstItem.colorClass, firstItem.id, firstItem.blackstoneIcon, firstItem.text);
-    this.getSuccessRateAndData();
+      const savedItemId = localStorage.getItem('lastSelectedItem');
+      let itemToLoad = allItemsData[0];
+
+      if(savedItemId){
+        const savedItem = allItemsData.find(item => item.id === savedItemId);
+        if(savedItem){
+          itemToLoad = savedItem;
+        }
+      }
+
+      this.selectCurrentIcon(itemToLoad.icon, itemToLoad.colorClass, itemToLoad.id, itemToLoad.text);
+      this.getSuccessRateAndData();
+
+      this.$refs.resultItemOverlay.addEventListener('wheel', this.handleTierScroll);
     },
     watch: {
+      selectedItem: {
+        handler(newItem){
+          if(newItem && newItem.id){
+            this.selectCurrentIcon(newItem.icon, newItem.colorClass, newItem.id, newItem.text);
+            this.getSuccessRateAndData()
+          }
+        },
+        immediate: true
+      },
+      selectTier(){
+        this.tierChange();
+      },
+      profileKey(){
+        const penToIxTiers = ['IX', 'VIII', 'VII', 'VI', 'V', 'IV', 'III', 'II', 'I'];
+        const normalTiers = ['IV', 'III', 'II', 'I', '0'];
+        const plusTiers = this.reversedLevels.map(l => `+${l}`).concat(['+0']);
+
+        let validTiers = [];
+
+        if (this.profileKeyPEN.includes(this.profileKey)) {
+          validTiers = penToIxTiers;
+        } else if (this.profileKeys.includes(this.profileKey)) {
+          validTiers = normalTiers;
+          this.getSuccessRateAndData();
+        } else {
+          validTiers = normalTiers;
+          validTiers.push(...plusTiers);
+        }
+      if(!validTiers.includes(this.selectTier)){
+          this.selectTier = validTiers[0];
+        }
+      },
       selectTierNumber(){
         this.getSuccessRateAndData();
   
@@ -589,53 +664,70 @@ export default {
   
       },
     },
-    setup(){
-      const regionStore = useRegionStore();
-      const isEditing = ref(false);
-      const dropdownRef = ref(null);
-      const allItems = ref(allItemsData);
-      const closeDropdown = () => {
-        isEditing.value = false;
-      };
-      
-      const selectItem = (item) =>{
-        selectedItem.value = item;
-        closeDropdown();
+    setup(){  
+        const regionStore = useRegionStore();  
+        const isEditing = ref(false);  
+        const dropdownRef = ref(null);  
+        const allItems = ref(allItemsData);  
+        const searchTerm = ref('');  
+        
+        // --- LÓGICA DE CARREGAMENTO CORRIGIDA ---  
+        // 1. Determina qual item deve ser o inicial  
+        const savedItemId = localStorage.getItem('lastSelectedItem');  
+        let initialItem = allItems.value[0]; // Define o item padrão  
+        
+        if (savedItemId) {  
+          const savedItem = allItems.value.find(item => item.id === savedItemId);  
+          if (savedItem) {  
+            initialItem = savedItem; // Se encontrou um salvo, usa ele  
+          }  
+        }  
+          
+        // 2. Declara 'selectedItem' UMA ÚNICA VEZ, já com o valor correto  
+        const selectedItem = ref(initialItem);  
+        // --- FIM DA LÓGICA ---  
+        
+        const closeDropdown = () => {  
+          isEditing.value = false;  
+        };  
+          
+        const selectItem = (item) =>{  
+          selectedItem.value = item;  
+          closeDropdown();  
+        };  
+        
+        const handleClickOutside = (event) => {  
+          if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {  
+            closeDropdown();  
+          }  
+        };  
+        
+        onMounted(() => {  
+          document.addEventListener('click', handleClickOutside);  
+        });  
+        
+        onUnmounted(() => {  
+          document.removeEventListener('click', handleClickOutside);  
+        });  
+        
+        const filteredItems = computed(()=>{  
+          if(!searchTerm.value) return allItems.value;  
+          return allItems.value.filter(item =>   
+            item.text.toLowerCase().includes(searchTerm.value.toLowerCase())  
+          );  
+        });  
+        
+        return {  
+          isEditing,  
+          allItems,  
+          selectedItem, // Retorna a variável que foi criada lá em cima  
+          searchTerm,  
+          dropdownRef,  
+          selectItem,  
+          filteredItems,  
+          regionStore  
+        }  
       }
-
-      const handleClickOutside = (event) => {
-        if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-          closeDropdown();
-        }
-      };
-      const selectedItem = ref(allItems.value[0]);
-
-      onMounted(() => {
-        document.addEventListener('click', handleClickOutside);
-      });
-
-      onUnmounted(() => {
-        document.removeEventListener('click', handleClickOutside);
-      });
-      const searchTerm = ref('');
-
-      const filteredItems = computed(()=>{
-        if(!searchTerm.value) return allItems.value;
-        return allItems.value.filter(item => 
-          item.text.toLowerCase().includes(searchTerm.value.toLowerCase())
-        );
-      })
-      return{
-        isEditing,
-        allItems,
-        selectedItem,
-        searchTerm,
-        dropdownRef,
-        selectItem,
-        filteredItems,
-        regionStore
-      }
-    }    
 }
 </script>
 

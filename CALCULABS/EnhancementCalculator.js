@@ -34,7 +34,7 @@ class EnhancementCalculator{
         }else{
             return {error: 'Invalid item category.'};
         }
-        const {baseChance: chanceBase, fsMultiplier: multiplierFs, crons: genericCronCost, durabilityLoss: durabilityLoss, softcap: softcap } = enhancementProfiles[profileKey][tier] || {};
+        const {baseChance: chanceBase, fsMultiplier: multiplierFs, crons: genericCronCost, durabilityLoss: durabilityLoss, softcap: softcap, blackstoneIcon: blackstone } = enhancementProfiles[profileKey][tier] || {};
         const specificCronCost = cronCosts[this.itemId]?.[tier];
         const finalCronCost = specificCronCost ?? genericCronCost ?? 0;
         if (!chanceBase || multiplierFs === undefined) return ({error: "Invalid Tier."});
@@ -64,7 +64,8 @@ class EnhancementCalculator{
             crons: finalCronCost,
             softcap: softcap,
             durabilityLoss: durabilityLoss,
-            chance: chance
+            chance: chance,
+            blackstoneIcon: blackstone
         };        
     }
 }

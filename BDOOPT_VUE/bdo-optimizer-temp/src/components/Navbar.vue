@@ -31,7 +31,7 @@
             </a>
             <div class="navbar-dropdown">
             <a class="navbar-item">
-                <router-link to="/sovereign-failstack-optimizer" class="navbar-item custom-link">Sovereign Failstack Optimizer</router-link>
+                <router-link to="/sovereign-failstack-optimizer" class="navbar-item custom-link">Enhancing Simulator</router-link>
             </a>
             </div>
         </div>
