@@ -329,7 +329,7 @@
 
 <script>
 import LeftPanel from '@/components/EnhancingLeftPanel.vue'
-import axios from 'axios';
+import apiClient from '@/services/api';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import sovereignIcon from '../assets/Base.jpg';
 import kharazadIcon from '../assets/khazard_necklace.png';
@@ -461,7 +461,7 @@ export default {
               this.errorMessage = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
               return;
             }
-            const response = await axios.get(`http://localhost:8585/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
+            const response = await apiClient.get(`/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
             if(response.data.result.overstackWarning){
               this.modalError = true;
               this.showLog = false;
@@ -482,7 +482,7 @@ export default {
         this.isLoading = true;
         try{
           const encondedTierNumber = encodeURIComponent(this.selectTierNumber);
-          const response = await axios.get(`http://localhost:8585/get-success-rate-and-data?tier=${encondedTierNumber}&stack=${this.currentChanceTotal}&itemId=${this.currentItemId}`);
+          const response = await apiClient.get(`/get-success-rate-and-data?tier=${encondedTierNumber}&stack=${this.currentChanceTotal}&itemId=${this.currentItemId}`);
           const chance = response.data.result.chance || 0;
           this.successRate = chance.toFixed(3);
           this.crons = response.data.result.crons;
