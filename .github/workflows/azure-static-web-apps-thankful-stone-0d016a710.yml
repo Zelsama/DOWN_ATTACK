@@ -33,6 +33,7 @@ jobs:
           output_location: "dist" # Built app content directory - optional
           app_build_command: "echo \"A variável da API é: $VUE_APP_API_URL\" && npm run build"
           ###### End of Repository/Build Configurations ######
+          env:VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -45,6 +46,7 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_STONE_0D016A710 }}
           action: "close"
+
 
 
 
