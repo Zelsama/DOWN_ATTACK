@@ -9,5 +9,7 @@
     "azureFunctions.projectRuntime": "~4",
     "debug.internalConsoleOptions": "neverOpen",
     "azureFunctions.projectLanguageModel": 4,
-    "azureFunctions.preDeployTask": "npm prune (functions)"
+    "azureFunctions.preDeployTask": "npm prune (functions)",
+    "appService.defaultWebAppToDeploy": "/subscriptions/36377689-de5c-4bde-ad70-61b0d1174ce8/resourceGroups/BDO-optimizer-RG/providers/Microsoft.Web/sites/bdo-optimizer-api",
+    "appService.deploySubpath": "CALCULABS"
 }

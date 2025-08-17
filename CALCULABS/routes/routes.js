@@ -20,7 +20,7 @@ router.get('/fs-optimizer', async (req, res)=>{
         );
         res.json({ success:true, result})
     } catch (error){
-        res.status(500).json({success: false, error: error});
+        res.status(500).json({success: false, error: error, stack: error.stack, tier: error.tier, baseChance: error.baseChance, valks: error.valks, stacks: error.stacks, item: error.item, region: error.region });
     }
 })
 router.get('/get-success-rate', async (req, res)=>{
