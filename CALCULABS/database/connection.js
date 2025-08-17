@@ -4,7 +4,7 @@ import knex from 'knex';
 const db = knex({
   client: 'mysql2',
   connection: {
-    host: 'bdo-optimizer-api-awddfvh8c6fpayfc.centralus-01.azurewebsites.net',
+    host: 'bdo-optimizer-db-items.mysql.database.azure.com',
     user: 'ZelsOptimizer',
     password: 'Maconhacomsal_',
     database: 'bdooptimizer',
