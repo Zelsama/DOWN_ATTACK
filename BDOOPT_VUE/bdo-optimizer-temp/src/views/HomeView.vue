@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <h1>TESTE</h1>
   </div>
 </template>
 
@@ -14,8 +15,10 @@ export default {
 </script>
 
 <style>
-html {
-  background-color: #0e0f11;
+:root{
+  height: 100vh;
+  width: 100vw;
+  background-color: #0e0f11
 }
 .home {
   background-color: #0e0f11;
