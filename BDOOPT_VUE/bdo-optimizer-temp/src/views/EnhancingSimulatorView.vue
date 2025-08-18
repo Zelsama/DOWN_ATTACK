@@ -252,7 +252,7 @@
                 </figure>
                 <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
               </div>
-              <div class="stat-controls field has-addons">
+              <div class="stat-controls field has-addons is-vcentered">
 
                 <p class="control">
                   <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
@@ -1014,9 +1014,6 @@ export default {
   }
   .stat-controls.buttons {
     flex-wrap: nowrap;
-  }
-  #enchant-stats .stat-controls.field.has-addons {  
-    align-items: center !important;  
   }
   .cron-amount-text{
     position: absolute;
