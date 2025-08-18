@@ -341,7 +341,7 @@ import EnhancingSimulator from '@/components/EnhancingSimulator.vue';
 
 
 export default {
-    name: 'fsSovereignOptimizerView',
+    name: 'EnhacingSimulatorView',
     components:{
       LeftPanel,
       EnhancingCalculator,

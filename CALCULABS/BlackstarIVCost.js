@@ -1,5 +1,5 @@
 const blackstone = 100000;
-const memory = 5000000;
+const memory = 4200000;
 const sharp_blackstone = 5900000;
 const flawless_blackstone = 2* sharp_blackstone;
 const valksCry = 6555891;

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import FsSovereignOptimizer from '../views/FsSovereignOptimizer.vue'
+import EnhacingSimulatorView from '../views/EnhancingSimulatorView.vue'
 import ComboBuilder from '@/views/ComboBuilderView.vue'
 
 const routes = [
@@ -18,9 +18,9 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
   },
   {
-    path: '/sovereign-failstack-Optimizer',
-    name: 'fsSovereignOptimizerView',
-    component: FsSovereignOptimizer
+    path: '/enhancing-simulator',
+    name: 'EnhacingSimulatorView',
+    component: EnhacingSimulatorView
   },
   {
     path: "/combo-builder",
