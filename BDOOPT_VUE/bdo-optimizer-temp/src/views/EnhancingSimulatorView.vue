@@ -1081,5 +1081,8 @@ export default {
   .dropdown-content {  
     max-height: 400px;
     overflow-y: auto;  
-  }  
+  }
+  #enchant-stats .stat-controls .input.is-small {  
+  height: 30px;  
+}  
 </style>
