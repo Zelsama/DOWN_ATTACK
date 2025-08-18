@@ -761,6 +761,7 @@ export default {
     margin-top: 0;
   }
   .card {
+    background-color: #1a202c;
     display: flex;
     width: 100%;
     max-width: none;
@@ -1013,7 +1014,10 @@ export default {
   }
   .stat-controls.buttons {
     flex-wrap: nowrap;
-  }  
+  }
+  .stat-controls.field.has-addons {
+    align-items: center;
+  } 
   .cron-amount-text{
     position: absolute;
     top: 80%;
@@ -1050,6 +1054,7 @@ export default {
   }
   .modal-button{
     justify-content: flex-end;
+    background-color: #4a5568
   }
   .modal-form-row {  
     display: flex;

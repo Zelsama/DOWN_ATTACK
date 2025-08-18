@@ -12,3 +12,12 @@ export default {
   }
 }
 </script>
+
+<style>
+html {
+  background-color: #0e0f11;
+}
+.home {
+  background-color: #0e0f11;
+}
+</style>

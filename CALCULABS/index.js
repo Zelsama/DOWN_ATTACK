@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 
 app.use("/", router);
 
-const port = process.env.PORT || 8585;
+const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
     console.log(`SERVIDOR RODANDO NA PORTA ${port}`);
