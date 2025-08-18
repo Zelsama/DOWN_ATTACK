@@ -1016,7 +1016,7 @@ export default {
     flex-wrap: nowrap;
   }
   #enchant-stats .stat-controls.field.has-addons {  
-    align-items: center;  
+    align-items: center !important;  
   }
   .cron-amount-text{
     position: absolute;
