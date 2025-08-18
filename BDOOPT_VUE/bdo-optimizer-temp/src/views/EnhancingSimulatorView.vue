@@ -761,7 +761,7 @@ export default {
     margin-top: 0;
   }
   .card {
-    background-color: #1a202c;
+    background-color: #14161a;;
     display: flex;
     width: 100%;
     max-width: none;
