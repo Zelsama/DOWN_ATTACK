@@ -1015,9 +1015,9 @@ export default {
   .stat-controls.buttons {
     flex-wrap: nowrap;
   }
-  .stat-controls.field.has-addons {
-    align-items: center;
-  } 
+  #enchant-stats .stat-controls.field.has-addons {  
+    align-items: center;  
+  }
   .cron-amount-text{
     position: absolute;
     top: 80%;
