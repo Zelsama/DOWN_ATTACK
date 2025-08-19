@@ -434,8 +434,8 @@ export default {
         }
       },
       limitCurrentChance(){
-        if (this.currentChance >= 99981){
-          this.currentChance = 99981;
+        if (this.currentChance > 100000000000000000000){
+          this.currentChance = 0;
         }
         if (this.currentChance <= 0){
           this.currentChance = 0;
@@ -593,8 +593,8 @@ export default {
     },
     computed:{
       currentChanceTotal(){
-        if(this.currentChance + this.permaChance + this.valksCry >= 299){
-          return 299;
+        if(this.currentChance + this.permaChance + this.valksCry >= 100000000000000000000){
+          return 1+ this.valksCry + this.permaChance;
         }
         return this.currentChance + this.permaChance + this.valksCry;
       },
