@@ -7,7 +7,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
   },
   {
     path: '/about',
@@ -20,18 +20,26 @@ const routes = [
   {
     path: '/enhancing-simulator',
     name: 'EnhacingSimulatorView',
-    component: EnhacingSimulatorView
+    component: EnhacingSimulatorView,
+    meta: {title: "Enhancing Simulator | BDOptimizer.com"}
   },
   {
     path: "/combo-builder",
     name: 'comboBuilderView',
-    component: ComboBuilder
+    component: ComboBuilder,
+    meta: {title: "Combo Builder | BDOptimizer.com"}
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+const DEFAULT_TITLE = "BDO Optimizer";
+
+router.afterEach((to,_)=>{
+  document.title = to.meta.title || DEFAULT_TITLE;
 })
 
 export default router
