@@ -103,6 +103,13 @@ export default {
     const regions = ref([
       { value: 'na', label: 'NA' },
       { value: 'eu', label: 'EU' },
+      { value: 'sea', label: 'SEA' },
+      { value: 'mena', label: 'MENA' },
+      { value: 'kr', label: 'KR' },
+      { value: 'ru', label: 'RU' },
+      { value: 'jp', label: 'JP' },
+      { value: 'th', label: 'TH' },
+      { value: 'tw', label: 'TW' },
       { value: 'sa', label: 'SA' },
     ]);
 
