@@ -64,4 +64,15 @@ router.get('/get-success-rate-and-data', async (req, res)=>{
     }
 })
 
-export default router; // Exportação padrão
+router.get('/get-item-in-db', async (req, res)=>{
+    try {
+        const {id} = req.query;
+        const calculators = new CalculaStackSoberana();
+        const result = await calculators.findItemInDb((parseInt(id)));
+        res.json({ success:true, result})
+    } catch (error){
+        res.status(500).json({success: false, error: error});
+    }
+})
+
+export default router;

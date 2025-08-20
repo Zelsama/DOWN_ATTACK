@@ -1,5 +1,5 @@
 import CalculaStackSoberana from "./CalculaStackSoberana.js";
 
-const teste = await CalculaStackSoberana.create('SA', 'Sovereign')
-const result = teste.findOptimalStack(3, 100, 13, 4);
+const teste = new CalculaStackSoberana();
+const result = await teste.findItemInDb(65319);
 console.log(result);
