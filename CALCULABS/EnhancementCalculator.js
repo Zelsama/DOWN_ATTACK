@@ -72,11 +72,11 @@ class EnhancementCalculator{
     }
 }
 
-function main(){
+/*function main(){
     const test = new EnhancementCalculator(736026);
-    const result = test.getSuccessRateAndData(1, 0);
+    const result = test.getSuccessRateAndData(0, 0);
     console.log(result);
 }
 
 main()
-export default EnhancementCalculator;
+export default EnhancementCalculator;*/
