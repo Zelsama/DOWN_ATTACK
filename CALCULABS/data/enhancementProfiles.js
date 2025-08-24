@@ -1460,7 +1460,50 @@ const enhancementProfiles = {
         durabilityLoss: 30,
         blackstoneIcon: '/icons/flawless_chaotic_blackstone.png'
     },
-}
+},
+"GODR_WEAPON":{   
+    0: {   
+        baseChance: 0.9,   // Chance base (9.1%)
+        fsMultiplier: 0.09, // Incremento por failstack (0.091% por FS)
+        crons: 0,
+        softcap: 768,
+        durabilityLoss: 10,
+        blackstoneIcon: '/icons/scorching_sun_gemstone.webp'
+    },
+    1: {   
+        baseChance: 0.5,   // Chance base (9.1%)
+        fsMultiplier: 0.05, // Incremento por failstack (0.091% por FS)
+        crons: 320,           // Crons por tentativa
+        softcap: 1390,
+        durabilityLoss: 10,
+        blackstoneIcon: '/icons/scorching_sun_gemstone.webp'
+    },
+    2: {   // TRI
+        baseChance: 0.375,   // Chance base (9.1%)
+        fsMultiplier: 0.0375, // Incremento por failstack (0.091% por FS)
+        crons: 620,           // Crons por tentativa
+        softcap: 1857,
+        durabilityLoss: 10,
+        blackstoneIcon: '/icons/scorching_sun_gemstone.webp'
+    },
+    3: {   // TRI
+        baseChance: 0.25,   // Chance base (9.1%)
+        fsMultiplier: 0.025, // Incremento por failstack (0.091% por FS)
+        crons: 2790,           // Crons por tentativa
+        softcap: 2790,
+        durabilityLoss: 10,
+        blackstoneIcon: '/icons/scorching_sun_gemstone.webp'
+    },
+    4: {   // TET
+        baseChance: 0.15,   // 4.69%
+        fsMultiplier: 0.015, // 0.0469% por FS
+        crons: 1820,
+        softcap: 4657,
+        durabilityLoss: 10,
+        blackstoneIcon: '/icons/scorching_sun_gemstone.webp'
+    },
+},
+
            
 }
 export default enhancementProfiles;

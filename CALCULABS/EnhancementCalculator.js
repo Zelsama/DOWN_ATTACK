@@ -25,7 +25,9 @@ class EnhancementCalculator{
         }
         const {grade_type: itemGrade, main_category: itemCategory} = item;
         let profileKey = '';
-        if(WEAPON_IDS.has(itemCategory)){
+        if (this.itemId >= 736015 && this.itemId <= 738222){
+            profileKey = `GODR_WEAPON`;
+        }else if(WEAPON_IDS.has(itemCategory)){
             profileKey = `${GRADE_MAP[itemGrade]}_WEAPON`
         }else if(ARMORS_ID.has(itemCategory)){
             profileKey = `${GRADE_MAP[itemGrade]}_ARMORS`
