@@ -1,12 +1,11 @@
 import axios from "axios";
 import db from "./database/connection.js";
+import client from './connection/redis-client.js';
 
 const api = axios.create({
     baseURL: 'https://api.arsha.io/v2'
 }
 )
-
-
 
 class CalculaStackSoberana{
     constructor(region = 'sa', item = 'Sovereign'){
@@ -137,6 +136,14 @@ class CalculaStackSoberana{
     }
 
     async findItemInDb(id){
+        const cacheKey = `item:${this.region}:${id}`;
+        const cachedItem = await client.get(cacheKey);
+
+        console.log("CONEXÃO ESTABELECIDA");
+        if (cachedItem) {
+            console.log("ITEM ENCONTRADO NO CACHE" + cachedItem);
+            return JSON.parse(cachedItem);
+        }
         const findItem = db('item_prices').where({
             item_id: id,
             region: this.region
