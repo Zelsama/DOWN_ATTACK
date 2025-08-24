@@ -1473,7 +1473,7 @@ const enhancementProfiles = {
     1: {   
         baseChance: 0.5,   // Chance base (9.1%)
         fsMultiplier: 0.05, // Incremento por failstack (0.091% por FS)
-        crons: 320,           // Crons por tentativa
+        crons: 0,           // Crons por tentativa
         softcap: 1390,
         durabilityLoss: 10,
         blackstoneIcon: '/icons/scorching_sun_gemstone.webp'

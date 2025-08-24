@@ -72,11 +72,11 @@ class EnhancementCalculator{
     }
 }
 
-/*function main(){
-    const test = new EnhancementCalculator(736130);
-    const result = test.getSuccessRateAndData('+6', 0);
+function main(){
+    const test = new EnhancementCalculator(736026);
+    const result = test.getSuccessRateAndData(1, 0);
     console.log(result);
 }
 
-main()*/
+main()
 export default EnhancementCalculator;

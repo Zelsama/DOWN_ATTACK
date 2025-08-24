@@ -386,7 +386,7 @@ export default {
         modalTotalSaveCost: 0,
         durabilityLoss: 0,
         profileKey: '',
-        profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES'],
+        profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES', 'GODR_WEAPON'],
         profileKeyPEN: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON']
       }
     },
