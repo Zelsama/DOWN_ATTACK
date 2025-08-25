@@ -97,7 +97,10 @@
                 </div>
               </div>
              </div>
-             <progress v-show="modalLoading == true && modalError != true" class="progress is-large is-info content mt-5" max="100">60%</progress>
+             <div class="modal-loading content mt-5">
+               <progress v-show="modalLoading == true && modalError != true" class="progress is-large is-info content mt-5" max="100">60%</progress>              
+             </div>
+
             <div v-if="modalError != true && modalLoading != true" class="content mt-5">
               <blockquote>
                 <p>Optimal base Failstack: <strong>{{ modalOptimizeStackbase }}</strong></p>
