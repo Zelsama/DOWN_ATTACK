@@ -78,5 +78,5 @@ class EnhancementCalculator{
     console.log(result);
 }
 
-main()
-export default EnhancementCalculator;*/
+main()*/
+export default EnhancementCalculator;

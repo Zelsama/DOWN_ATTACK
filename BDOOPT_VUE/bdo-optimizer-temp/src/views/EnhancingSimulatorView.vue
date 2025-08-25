@@ -97,13 +97,14 @@
                 </div>
               </div>
              </div>
-            <div v-if="modalError != true" class="content mt-5">
+            <div v-if="modalError != true && modalLoading != true" class="content mt-5">
               <blockquote>
                 <p>Optimal base Failstack: <strong>{{ modalOptimizeStackbase }}</strong></p>
                 <p>Optimal Total Failstack (with valk's cry more Permanent Enhance Chance): <strong>{{ modalOptimizeStackTotal }}</strong></p>
               </blockquote>
             </div>     
-              <article v-else class="message is-danger">
+              <progress v-else class="progress is-large is-info" max="100">60%</progress>
+              <article v-if="modalError == true" class="message is-danger">
                 <div class="message-body">
                   <p>{{ errorMessage }}</p>
                 </div>
@@ -381,6 +382,7 @@ export default {
         modalOptimizeStackbase: 0,
         modalOptimizeStackTotal: 0,
         modalError: false,
+        modalLoading: false,
         showLog: false,
         log: [''],
         modalTotalSaveCost: 0,
@@ -461,20 +463,24 @@ export default {
               this.errorMessage = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
               return;
             }
+            this.modalLoading = true;
             const response = await apiClient.get(`/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
             if(response.data.result.overstackWarning){
               this.modalError = true;
               this.showLog = false;
               this.errorMessage = response.data.result.overstackWarning;
+              this.modalLoading = false;
               return;
             }
             this.modalOptimizeStackbase = response.data.result.optimalBaseFailstack;
             this.modalOptimizeStackTotal = response.data.result.optimalTotalFailstack;
             this.log = response.data.result.log || [];
             this.modalTotalSaveCost = response.data.result.totalSaveCost;
+            this.modalLoading = false;
           }catch(error){
             this.modalError = true;
-            this.errorMessage = "An error occurred while calculating the stack. Please try again.";          
+            this.errorMessage = "An error occurred while calculating the stack. Please try again."; 
+            this.modalLoading = false;
           }          
         }, 500);
       },
