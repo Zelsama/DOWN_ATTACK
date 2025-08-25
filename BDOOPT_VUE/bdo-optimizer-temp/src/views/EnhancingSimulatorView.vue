@@ -97,14 +97,14 @@
                 </div>
               </div>
              </div>
+             <progress v-show="modalLoading == true && modalError != true" class="progress is-large is-info content mt-5" max="100">60%</progress>
             <div v-if="modalError != true && modalLoading != true" class="content mt-5">
               <blockquote>
                 <p>Optimal base Failstack: <strong>{{ modalOptimizeStackbase }}</strong></p>
                 <p>Optimal Total Failstack (with valk's cry more Permanent Enhance Chance): <strong>{{ modalOptimizeStackTotal }}</strong></p>
               </blockquote>
             </div>     
-              <progress v-else class="progress is-large is-info" max="100">60%</progress>
-              <article v-if="modalError == true" class="message is-danger">
+              <article v-else class="message is-danger content mt-5">
                 <div class="message-body">
                   <p>{{ errorMessage }}</p>
                 </div>
