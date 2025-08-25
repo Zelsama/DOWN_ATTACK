@@ -112,12 +112,12 @@
                   <p>{{ errorMessage }}</p>
                 </div>
               </article>     
-            <div v-if="log.length > 0 && modalError != true" class="mt-4">  
+            <div v-if="log.length > 0 && modalError != true && modalLoading != true" class="mt-4">  
                 <a @click="showLog = !showLog">  
                   {{ showLog ? '[Hide Details]' : '[Show Details]' }}  
                 </a>  
             </div> 
-            <div v-if="showLog && modalLoading != true" class="mt-4 content">
+            <div v-if="showLog" class="mt-4 content">
               <div class="table-container">
                 <table class="table is-fullwidth is-striped">
                   <thead>
