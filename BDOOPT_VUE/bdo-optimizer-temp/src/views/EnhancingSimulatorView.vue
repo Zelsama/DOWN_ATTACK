@@ -1,333 +1,329 @@
 <template>
   <div class="optimizer-page">
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-spinner"></div>
-    </div>
-    <div class="container page-header">
-      <h4 class="title is-4">Enhancing Simulator</h4>
-      <button class="button" id="modal-button" @click="showModalBestStack(), stackOptimizer()">Best Failtacks</button>
-      <div :class="{modal: true, 'is-active': showModal}">
-        <div class="modal-background"></div>
-        <div class="modal-card is-wide-modal">
-          <header class="modal-card-head">
-            <p class="modal-card-title">Best Failstacks</p>
-            <button class="delete" aria-label="close" @click="hideModal()"></button>
-          </header>
-          <section class="modal-card-body">
-            <!-- Content ... -->
-             <div class="field is-flex is-justify-content-space-between">
-              <div class="field has-addons">
+    <div>
+      <div class="container page-header">
+        <h4 class="title is-4">Enhancing Simulator</h4>
+        <button class="button" id="modal-button" @click="showModalBestStack(), stackOptimizer()">Best Failtacks</button>
+        <div :class="{modal: true, 'is-active': showModal}">
+          <div class="modal-background"></div>
+          <div class="modal-card is-wide-modal">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Best Failstacks</p>
+              <button class="delete" aria-label="close" @click="hideModal()"></button>
+            </header>
+            <section class="modal-card-body">
+              <!-- Content ... -->
+              <div class="field is-flex is-justify-content-space-between">
+                <div class="field has-addons">
 
-                <p class="control">
-                  <a class="button is-static">
-                    <span class="icon is-medium">
-                      <img :src="modalIcon" alt="">
-                    </span>
-                  </a>
-                </p>
-                <div class="control">
-                  <div class="select">
-                    <select @change='changeModalicon($event), stackOptimizer()'>
-                      <option value="Sovereign">Sovereign Weapons</option>                      
-                      <option value="Armors">Fallen Gods Armors</option>
-                      <option value="Kharazad">Kharazad Accessories</option>
-                    </select>
-                  </div>                  
-                </div>
-              </div>
-              <div class="control">
-                <div class="select" id="modal-tier-select" @change="changeModalTier($event),stackOptimizer()">
-                  <select>
-                    <option v-if="modalCurrentItem === 'Armors'" value="2">DUO (II)</option>
-                    <option value="3">TRI (III)</option>
-                    <option value="4">TET (IV)</option>
-                    <option value="5">PEN (V)</option>
-                    <option value="6">HEX (VI)</option>
-                    <option value="7">HEP (VII)</option>
-                    <option value="8">OCT (VIII)</option>
-                    <option value="9">ENE (IX)</option>
-                  </select>
-                </div>                  
-              </div>              
-             </div>
-             <div class="field">
-              <label class="label">Starting failstack:</label>
-              <div class="control">
-                <input type="number" v-model.number="optimizeStackbase" @input="stackOptimizer()" class="input">  
-              </div>
-             </div>
-             <div class="modal-form-row">              
-              <div class="field">
-                <label class="label">Permanent Enhancement Chance:</label>
-                <div class="field has-addons">
                   <p class="control">
                     <a class="button is-static">
                       <span class="icon is-medium">
-                        <img src="../assets/adicional-enhanment-chance.png" alt="">
-                      </span>
-                    </a>  
-                  </p>
-                  <div class="control">
-                    <div class="select">
-                      <select v-model.number="modalPermaEnhanceValue" @change="stackOptimizer()">
-                        <option value="0">+0</option>
-                        <option value="1">+1</option>
-                        <option value="2">+2</option>
-                        <option value="3">+3</option>
-                        <option value="4">+4</option>
-                        <option value="5">+5</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Valk's Cry:</label>
-                <div class="field has-addons">
-                  <p class="control">
-                    <a class="button is-static">
-                      <span class="icon is-medium">
-                        <img src="../assets/valkscry.png" alt="">
+                        <img :src="modalIcon" alt="">
                       </span>
                     </a>
                   </p>
-                  <p class="control">
-                    <input type="number" v-model.number="modalVaksCry" class="input" @input="limitModalValks(), stackOptimizer()">
-                  </p>
+                  <div class="control">
+                    <div class="select">
+                      <select @change='changeModalicon($event), stackOptimizer()'>
+                        <option value="Sovereign">Sovereign Weapons</option>                      
+                        <option value="Armors">Fallen Gods Armors</option>
+                        <option value="Kharazad">Kharazad Accessories</option>
+                      </select>
+                    </div>                  
+                  </div>
+                </div>
+                <div class="control">
+                  <div class="select" id="modal-tier-select" @change="changeModalTier($event),stackOptimizer()">
+                    <select>
+                      <option v-if="modalCurrentItem === 'Armors'" value="2">DUO (II)</option>
+                      <option value="3">TRI (III)</option>
+                      <option value="4">TET (IV)</option>
+                      <option value="5">PEN (V)</option>
+                      <option value="6">HEX (VI)</option>
+                      <option value="7">HEP (VII)</option>
+                      <option value="8">OCT (VIII)</option>
+                      <option value="9">ENE (IX)</option>
+                    </select>
+                  </div>                  
+                </div>              
+              </div>
+              <div class="field">
+                <label class="label">Starting failstack:</label>
+                <div class="control">
+                  <input type="number" v-model.number="optimizeStackbase" @input="stackOptimizer()" class="input">  
                 </div>
               </div>
-             </div>
-             <div class="modal-loading content mt-5">
-               <progress v-show="modalLoading == true && modalError != true" class="progress is-large is-info content mt-5" max="100">60%</progress>              
-             </div>
-
-            <div v-show="modalError != true && modalLoading != true" class="content mt-5">
-              <blockquote>
-                <p>Optimal base Failstack: <strong>{{ modalOptimizeStackbase }}</strong></p>
-                <p>Optimal Total Failstack (with valk's cry more Permanent Enhance Chance): <strong>{{ modalOptimizeStackTotal }}</strong></p>
-              </blockquote>
-            </div>     
-              <article v-show="modalError === true && modalLoading != true" class="message is-danger content mt-5">
-                <div class="message-body">
-                  <p>{{ errorMessage }}</p>
+              <div class="modal-form-row">              
+                <div class="field">
+                  <label class="label">Permanent Enhancement Chance:</label>
+                  <div class="field has-addons">
+                    <p class="control">
+                      <a class="button is-static">
+                        <span class="icon is-medium">
+                          <img src="../assets/adicional-enhanment-chance.png" alt="">
+                        </span>
+                      </a>  
+                    </p>
+                    <div class="control">
+                      <div class="select">
+                        <select v-model.number="modalPermaEnhanceValue" @change="stackOptimizer()">
+                          <option value="0">+0</option>
+                          <option value="1">+1</option>
+                          <option value="2">+2</option>
+                          <option value="3">+3</option>
+                          <option value="4">+4</option>
+                          <option value="5">+5</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </article>     
-            <div v-if="log.length > 0 && modalError != true && modalLoading != true" class="mt-4">  
-                <a @click="showLog = !showLog">  
-                  {{ showLog ? '[Hide Details]' : '[Show Details]' }}  
-                </a>  
-            </div> 
-            <div v-if="showLog" class="mt-4 content">
-              <div class="table-container">
-                <table class="table is-fullwidth is-striped">
-                  <thead>
-                    <tr>
-                      <th>Stack</th>
-                      <th>Gain</th>
-                      <th>Type</th>
-                      <th>Average</th>
-                      <th>Gain</th>
-                      <th class="has-text-right">Save Cost</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(entry, index) in log" :key="index">
-                      <td v-if="entry.event === 'Analysis'">{{ entry.from.fs }} -> {{ entry.to.fs }}</td>
-                      <td v-if="entry.event === 'Analysis'">+{{ entry.to.fs - entry.from.fs }}</td>
-                      <td v-if="entry.event === 'Analysis'">
-                        <figure v-if="entry.type === 'Dark Hunger'" class="image is-24x24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-                          <img src="../assets/Dark_Hunger.png" alt="">
-                        </figure>
-                        <figure v-if="entry.type === 'Faint Dark Hunger'" class="image is-24x24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-                          <img src="../assets/Faint_Dark_Hunger.png" alt="">
-                        </figure>
-                      </td>
-                      <td v-if="entry.event === 'Analysis'">{{ entry.from.avgAttemps }} -> {{ entry.to.avgAttemps }}</td>
-                      <td v-if="entry.event === 'Analysis'">-{{ entry.savedAttempts }}</td>
-                      <td v-if="entry.event === 'Analysis'" class="has-text-right">{{ formatModalSaveCost(entry.saveCost) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div v-if="showLog" class="has-text-right mt-4">
-                  <p class="has-text-weight-bold">
-                    Total: {{ formatModalSaveCost(modalTotalSaveCost) }}
-                  </p>
+                <div class="field">
+                  <label class="label">Valk's Cry:</label>
+                  <div class="field has-addons">
+                    <p class="control">
+                      <a class="button is-static">
+                        <span class="icon is-medium">
+                          <img src="../assets/valkscry.png" alt="">
+                        </span>
+                      </a>
+                    </p>
+                    <p class="control">
+                      <input type="number" v-model.number="modalVaksCry" class="input" @input="limitModalValks(), stackOptimizer()">
+                    </p>
+                  </div>
                 </div>
-
               </div>
-            </div>                             
-          </section>
-        </div>
-      </div>      
-    </div>
-
-    <!-- Main Content Wrapper -->
-    <div class="main-content">
-      <LeftPanel
-      :average-attempts = "AverageAtmps"
-      :durability-loss = "durabilityLoss"
-      :softcap = "softcap"
-      ></LeftPanel>
-      <div class="card mb-0">
-        <div class="card-content">
-          <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
-          <div class="top-row">
-            <div class="weapon-container">
-              <img :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style="{ border: '2px solid ' + currentColor }">
-              <span v-if="selectTier && selectTier !== '0' && selectTier !== '+0'" class="Tier">{{ selectTier }}</span>
-            </div>
-            <div class="dropdown" :class="{'is-active': isEditing}" ref="dropdownRef">
-              <div class="dropdown-trigger">
-                <button v-if="!isEditing" class="button" @click.stop="isEditing = true">
-                  <span class="button-label-group">
-                    <span> {{ selectedItem.text }} </span>            
-                  </span>
-                  <span class="icon is-small">
-                    <i class="css-arrow" aria-hidden="true"></i>
-                  </span>
-                </button>    
-                <div v-else class="control has-icon-right">
-                  <input class="input" type="text" v-model="searchTerm" :placeholder="selectedItem.text" @click.stop>
-                  <span class="input-arrow-icon">
-                    <i class="css-arrow" aria-hidden="true"></i>
-                  </span>
-                </div>    
-                
-              </div>
-              <div class="dropdown-menu">
-                <div class="dropdown-content">
-                  <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id,item.text), getSuccessRateAndData()">
-                    <img :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
-                    <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
-                  </a>
-                </div>
-
+              <div class="modal-loading content mt-5">
+                <progress v-show="modalLoading == true && modalError != true" class="progress is-large is-info content mt-5" max="100">60%</progress>              
               </div>
 
-            </div>          
-            <div class="select" id="select-content">
-              <select id="tier-select" v-model="selectTier" @change="tierChange($event)" ref="tierSelect">
-                <option v-if="profileKeyPEN.includes(profileKey)" value="IX">ENE (IX)</option>  
-                <option v-if="profileKeyPEN.includes(profileKey)" value="VIII">OCT (VIII)</option>  
-                <option v-if="profileKeyPEN.includes(profileKey)" value="VII">SEP (VII)</option>  
-                <option v-if="profileKeyPEN.includes(profileKey)" value="VI">HEX (VI)</option>  
-                <option v-if="profileKeyPEN.includes(profileKey)" value="V">PEN (V)</option>  
-                <option value="IV">TET (IV)</option>  
-                <option value="III">TRI (III)</option>  
-                <option value="II">DUO (II)</option>  
-                <option value="I">PRI (I)</option>
-                <option v-if='profileKeys.includes(profileKey)' value="0"></option>
-                <template v-if="!profileKeys.includes(profileKey)">
-                  <option v-for="level in reversedLevels" :key="level" :value="'+'+ level">{{ '+'+level }}</option>
-                  <option value="+0">+0</option>
-                </template>
-                
-              </select>
-            </div>
+              <div v-show="modalError != true && modalLoading != true" class="content mt-5">
+                <blockquote>
+                  <p>Optimal base Failstack: <strong>{{ modalOptimizeStackbase }}</strong></p>
+                  <p>Optimal Total Failstack (with valk's cry more Permanent Enhance Chance): <strong>{{ modalOptimizeStackTotal }}</strong></p>
+                </blockquote>
+              </div>     
+                <article v-show="modalError === true && modalLoading != true" class="message is-danger content mt-5">
+                  <div class="message-body">
+                    <p>{{ errorMessage }}</p>
+                  </div>
+                </article>     
+              <div v-if="log.length > 0 && modalError != true && modalLoading != true" class="mt-4">  
+                  <a @click="showLog = !showLog">  
+                    {{ showLog ? '[Hide Details]' : '[Show Details]' }}  
+                  </a>  
+              </div> 
+              <div v-if="showLog" class="mt-4 content">
+                <div class="table-container">
+                  <table class="table is-fullwidth is-striped">
+                    <thead>
+                      <tr>
+                        <th>Stack</th>
+                        <th>Gain</th>
+                        <th>Type</th>
+                        <th>Average</th>
+                        <th>Gain</th>
+                        <th class="has-text-right">Save Cost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(entry, index) in log" :key="index">
+                        <td v-if="entry.event === 'Analysis'">{{ entry.from.fs }} -> {{ entry.to.fs }}</td>
+                        <td v-if="entry.event === 'Analysis'">+{{ entry.to.fs - entry.from.fs }}</td>
+                        <td v-if="entry.event === 'Analysis'">
+                          <figure v-if="entry.type === 'Dark Hunger'" class="image is-24x24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                            <img src="../assets/Dark_Hunger.png" alt="">
+                          </figure>
+                          <figure v-if="entry.type === 'Faint Dark Hunger'" class="image is-24x24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                            <img src="../assets/Faint_Dark_Hunger.png" alt="">
+                          </figure>
+                        </td>
+                        <td v-if="entry.event === 'Analysis'">{{ entry.from.avgAttemps }} -> {{ entry.to.avgAttemps }}</td>
+                        <td v-if="entry.event === 'Analysis'">-{{ entry.savedAttempts }}</td>
+                        <td v-if="entry.event === 'Analysis'" class="has-text-right">{{ formatModalSaveCost(entry.saveCost) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div v-if="showLog" class="has-text-right mt-4">
+                    <p class="has-text-weight-bold">
+                      Total: {{ formatModalSaveCost(modalTotalSaveCost) }}
+                    </p>
+                  </div>
+
+                </div>
+              </div>                             
+            </section>
           </div>
-          <div id="enchant_diagram">
-            <img id="diagram-background-img" src="../assets/enchant_diagram.png" alt="enchant_diagram">
-            <div class="diagram-overlay diagram-icon-container" id="cron-overlay">
-              <img src="../assets/cron_icon.png" alt="Cron Stone" class="diagram-icon-img">
-              <span class="cron-amount-text"> {{ crons }}</span>
-            </div>
-            <div class="diagram-overlay diagram-icon-container" id="blackstone-overlay">
-              <img v-if="currentItem === 'Kharazad Accessories' && selectTier === 'IX'" src="../assets/dawn_blackstone.png" alt="Blackstone" class="diagram-icon-img">
-              <img v-else :src="blackstoneIcon" alt="Blackstone" class="diagram-icon-img">
-              <span v-if="essence > 0" class="essence-amount-text"> {{ essence }}</span>
-            </div>
-            <div class="diagram-overlay" id="chance-overlay">
-                <span> {{ successRate }}% </span>
-            </div>      
-            <div class="weapon-container" id="result-item-overlay" ref="resultItemOverlay">
-                <img :src="currentIconUrl" alt="" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
-                <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
-              </div>              
-          </div>
-
-          <!-- BLOCO DE STATS CORRIGIDO -->
-          <div id="enchant-stats">
-
-            <!-- Linha 1: Additional Enhancement Chance -->
-            <div class="stat-row">
-              <div class="stat-label-group">
-                <figure class="image is-24x24 stat-icon">
-                  <img src="../assets/adicional-enhanment-chance.png" alt="Additional Chance Icon">
-                </figure>
-                <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
-              </div>
-              <div class="stat-controls field has-addons is-vcentered">
-
-                <p class="control">
-                  <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
-                </p>
-                <p class="control">
-                  <button class="button is-small" @click="currentChancePlus">+</button>
-                </p>
-                <p class="control">
-                  <button class="button is-small" @click="currentChanceMinus">-</button>
-                </p>              
-              </div>
-            </div>
-
-            <!-- Linha 2: Valk's Cry -->
-            <div class="stat-row">
-              <div class="stat-label-group">
-                <figure class="image is-24x24 stat-icon">
-                  <img src="../assets/valkscry.png" alt="Valk's Cry Icon">
-                </figure>
-                <p class="stat-label is-hidden-mobile"><b>Valk's Cry</b></p>
-              </div>
-              <div class="stat-controls field has-addons">
-
-                <p class="control">
-                  <input class="input is-small" type="number" v-model.number="valksCry" @input="limitValks">
-                </p>
-                <p class="control">
-                  <button class="button is-small" @click="valksPlus()">+</button>
-                </p>
-                <p class="control">
-                  <button class="button is-small" @click="valksMinus()">-</button>
-                </p>              
-              </div>
-            </div>
-
-            <!-- Linha 3: Permanent Enhancement Chance -->
-            <div class="stat-row">
-              <div class="stat-label-group">
-                <figure class="image is-24x24 stat-icon">
-                  <img src="../assets/adicional-enhanment-chance.png" alt="Permanent Chance Icon">
-                </figure>
-                <p class="stat-label is-hidden-mobile"><b>Permanent Enhancement Chance</b></p>
-              </div>
-              <div class="stat-controls buttons has-addons">
-                <button v-for="i in 6" :key="i-1" @click="selectPermaEnchantButton(i-1)" class="button is-small" :class="{ 'is-success': permaEnhActive === i-1 }">
-                  +{{ i-1 }}
-                </button>
-              </div>
-            </div>
-
-            <!-- Linha 4: Current Enhancement Chance -->
-            <div class="stat-row">
-              <div class="stat-label-group">
-                <figure class="image is-24x24 stat-icon">
-                  <img src="../assets/current-enhancement-chance.png" alt="Current Chance Icon">
-                </figure>
-                <p class="stat-label is-hidden-mobile"><b>Current Enhancement Chance</b></p>
-              </div>
-              <div class="stat-controls">
-                <h5 class="subtitle is-5 has-text-weight-bold has-text-light">+ {{ currentChanceTotal }}</h5>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
+        </div>      
       </div>
-      <EnhancingCalculator :base-success-rate="leftPanelChance"></EnhancingCalculator>
-      <EnhancingSimulator :base-success-rate="leftPanelChance"></EnhancingSimulator>              
-    </div>
-    
+      <div class="main-content mb-5">
+        <LeftPanel
+        :average-attempts = "AverageAtmps"
+        :durability-loss = "durabilityLoss"
+        :softcap = "softcap"
+        ></LeftPanel>
+        <div class="card mb-0">
+          <div class="card-content">
+            <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
+            <div class="top-row">
+              <div class="weapon-container">
+                <img v-if="currentIconUrl" :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style="{ border: '2px solid ' + currentColor }">
+                <span v-if="selectTier && selectTier !== '0' && selectTier !== '+0'" class="Tier">{{ selectTier }}</span>
+              </div>
+              <div class="dropdown" :class="{'is-active': isEditing}" ref="dropdownRef">
+                <div class="dropdown-trigger">
+                  <button v-if="!isEditing" class="button" @click.stop="isEditing = true">
+                    <span class="button-label-group">
+                      <span> {{ selectedItem.text }} </span>            
+                    </span>
+                    <span class="icon is-small">
+                      <i class="css-arrow" aria-hidden="true"></i>
+                    </span>
+                  </button>    
+                  <div v-else class="control has-icon-right">
+                    <input class="input" type="text" v-model="searchTerm" :placeholder="selectedItem.text" @click.stop>
+                    <span class="input-arrow-icon">
+                      <i class="css-arrow" aria-hidden="true"></i>
+                    </span>
+                  </div>    
+                  
+                </div>
+                <div class="dropdown-menu">
+                  <div class="dropdown-content">
+                    <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id,item.text), getSuccessRateAndData()">
+                      <img v-if="item.icon" :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
+                      <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
+                    </a>
+                  </div>
+
+                </div>
+
+              </div>          
+              <div class="select" id="select-content">
+                <select id="tier-select" v-model="selectTier" @change="tierChange($event)" ref="tierSelect">
+                  <option v-if="profileKeyPEN.includes(profileKey)" value="IX">ENE (IX)</option>  
+                  <option v-if="profileKeyPEN.includes(profileKey)" value="VIII">OCT (VIII)</option>  
+                  <option v-if="profileKeyPEN.includes(profileKey)" value="VII">SEP (VII)</option>  
+                  <option v-if="profileKeyPEN.includes(profileKey)" value="VI">HEX (VI)</option>  
+                  <option v-if="profileKeyPEN.includes(profileKey)" value="V">PEN (V)</option>  
+                  <option value="IV">TET (IV)</option>  
+                  <option value="III">TRI (III)</option>  
+                  <option value="II">DUO (II)</option>  
+                  <option value="I">PRI (I)</option>
+                  <option v-if='profileKeys.includes(profileKey)' value="0"></option>
+                  <template v-if="!profileKeys.includes(profileKey)">
+                    <option v-for="level in reversedLevels" :key="level" :value="'+'+ level">{{ '+'+level }}</option>
+                    <option value="+0">+0</option>
+                  </template>
+                  
+                </select>
+              </div>
+            </div>
+            <div id="enchant_diagram">
+              <img id="diagram-background-img" src="../assets/enchant_diagram.png" alt="enchant_diagram">
+              <div class="diagram-overlay diagram-icon-container" id="cron-overlay">
+                <img src="../assets/cron_icon.png" alt="Cron Stone" class="diagram-icon-img">
+                <span class="cron-amount-text"> {{ crons }}</span>
+              </div>
+              <div class="diagram-overlay diagram-icon-container" id="blackstone-overlay">
+                <img v-if="currentItem === 'Kharazad Accessories' && selectTier === 'IX'" src="../assets/dawn_blackstone.png" alt="Blackstone" class="diagram-icon-img">
+                <img v-else :src="blackstoneIcon" alt="Blackstone" class="diagram-icon-img">
+                <span v-if="essence > 0" class="essence-amount-text"> {{ essence }}</span>
+              </div>
+              <div class="diagram-overlay" id="chance-overlay">
+                  <span> {{ successRate }}% </span>
+              </div>      
+              <div class="weapon-container" id="result-item-overlay" ref="resultItemOverlay">
+                  <img v-if="currentIconUrl" :src="currentIconUrl" alt="" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
+                  <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
+                </div>              
+            </div>
+
+            <!-- BLOCO DE STATS CORRIGIDO -->
+            <div id="enchant-stats">
+
+              <!-- Linha 1: Additional Enhancement Chance -->
+              <div class="stat-row">
+                <div class="stat-label-group">
+                  <figure class="image is-24x24 stat-icon">
+                    <img src="../assets/adicional-enhanment-chance.png" alt="Additional Chance Icon">
+                  </figure>
+                  <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
+                </div>
+                <div class="stat-controls field has-addons is-vcentered">
+
+                  <p class="control">
+                    <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
+                  </p>
+                  <p class="control">
+                    <button class="button is-small" @click="currentChancePlus">+</button>
+                  </p>
+                  <p class="control">
+                    <button class="button is-small" @click="currentChanceMinus">-</button>
+                  </p>              
+                </div>
+              </div>
+
+              <!-- Linha 2: Valk's Cry -->
+              <div class="stat-row">
+                <div class="stat-label-group">
+                  <figure class="image is-24x24 stat-icon">
+                    <img src="../assets/valkscry.png" alt="Valk's Cry Icon">
+                  </figure>
+                  <p class="stat-label is-hidden-mobile"><b>Valk's Cry</b></p>
+                </div>
+                <div class="stat-controls field has-addons">
+
+                  <p class="control">
+                    <input class="input is-small" type="number" v-model.number="valksCry" @input="limitValks">
+                  </p>
+                  <p class="control">
+                    <button class="button is-small" @click="valksPlus()">+</button>
+                  </p>
+                  <p class="control">
+                    <button class="button is-small" @click="valksMinus()">-</button>
+                  </p>              
+                </div>
+              </div>
+
+              <!-- Linha 3: Permanent Enhancement Chance -->
+              <div class="stat-row">
+                <div class="stat-label-group">
+                  <figure class="image is-24x24 stat-icon">
+                    <img src="../assets/adicional-enhanment-chance.png" alt="Permanent Chance Icon">
+                  </figure>
+                  <p class="stat-label is-hidden-mobile"><b>Permanent Enhancement Chance</b></p>
+                </div>
+                <div class="stat-controls buttons has-addons">
+                  <button v-for="i in 6" :key="i-1" @click="selectPermaEnchantButton(i-1)" class="button is-small" :class="{ 'is-success': permaEnhActive === i-1 }">
+                    +{{ i-1 }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Linha 4: Current Enhancement Chance -->
+              <div class="stat-row">
+                <div class="stat-label-group">
+                  <figure class="image is-24x24 stat-icon">
+                    <img src="../assets/current-enhancement-chance.png" alt="Current Chance Icon">
+                  </figure>
+                  <p class="stat-label is-hidden-mobile"><b>Current Enhancement Chance</b></p>
+                </div>
+                <div class="stat-controls">
+                  <h5 class="subtitle is-5 has-text-weight-bold has-text-light">+ {{ currentChanceTotal }}</h5>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+        <EnhancingCalculator :base-success-rate="leftPanelChance"></EnhancingCalculator>
+        <EnhancingSimulator :base-success-rate="leftPanelChance"></EnhancingSimulator>              
+      </div>            
+    </div>    
   </div>
 </template>
 
@@ -342,6 +338,9 @@ import { useRegionStore } from '@/stores/regionStore';
 import allItemsData from '../data/enhancingItems'
 import EnhancingCalculator from '@/components/EnhancingCalculator.vue';
 import EnhancingSimulator from '@/components/EnhancingSimulator.vue';
+import { useLoading } from '../composables/useLoading';
+import defaultIcon from '../assets/default_icon.png';
+import { nextTick } from 'vue';
 
 
 export default {
@@ -369,11 +368,11 @@ export default {
         showResult: false,
         isError: false,
         errorMessage: null,
-        currentIconUrl: null,
+        currentIconUrl: defaultIcon,
         currentColor: '#8a63d2',
         currentItemId: null,
         successRate: 0,
-        blackstoneIcon: null,
+        blackstoneIcon: defaultIcon,
         crons: 0,
         essence: 0,
         showModal: false,
@@ -385,7 +384,7 @@ export default {
         modalOptimizeStackbase: 0,
         modalOptimizeStackTotal: 0,
         modalError: false,
-        modalLoading: false,
+        modalLoading: true,
         showLog: false,
         log: [''],
         modalTotalSaveCost: 0,
@@ -500,7 +499,9 @@ export default {
           this.softcap = response.data.result.softcap;
           this.AverageAtmps = (100/(chance)).toFixed(2);
           this.leftPanelChance = chance;
-          this.blackstoneIcon = response.data.result.blackstoneIcon || this.currentIconUrl;
+          this.blackstoneIcon = (response.data.result.blackstoneIcon && response.data.result.blackstoneIcon.length > 0)   
+          ? response.data.result.blackstoneIcon   
+          : defaultIcon;
           
         }catch(error){
           console.error("Error fetching success rate:", error);
@@ -509,7 +510,9 @@ export default {
           this.durabilityLoss = 0;
           this.softcap = 0;
         } finally {
-          this.isLoading = false;
+          nextTick(()=>{
+            this.isLoading = false;
+          })
         }
       },
       selectCurrentIcon(icon, color, itemId,item){
@@ -627,7 +630,7 @@ export default {
       }
 
       this.selectCurrentIcon(itemToLoad.icon, itemToLoad.colorClass, itemToLoad.id, itemToLoad.text);
-      this.getSuccessRateAndData();
+      this.wrapRequest(this.getSuccessRateAndData());
 
       this.$refs.resultItemOverlay.addEventListener('wheel', this.handleTierScroll);
     },
@@ -679,6 +682,7 @@ export default {
         const dropdownRef = ref(null);  
         const allItems = ref(allItemsData);  
         const searchTerm = ref('');  
+        const { wrapRequest } = useLoading()
         
         // --- LÓGICA DE CARREGAMENTO CORRIGIDA ---  
         // 1. Determina qual item deve ser o inicial  
@@ -688,13 +692,11 @@ export default {
         if (savedItemId) {  
           const savedItem = allItems.value.find(item => item.id === savedItemId);  
           if (savedItem) {  
-            initialItem = savedItem; // Se encontrou um salvo, usa ele  
+            initialItem = savedItem;
           }  
         }  
-          
-        // 2. Declara 'selectedItem' UMA ÚNICA VEZ, já com o valor correto  
+
         const selectedItem = ref(initialItem);  
-        // --- FIM DA LÓGICA ---  
         
         const closeDropdown = () => {  
           isEditing.value = false;  
@@ -711,8 +713,8 @@ export default {
           }  
         };  
         
-        onMounted(() => {  
-          document.addEventListener('click', handleClickOutside);  
+        onMounted(async () => {  
+          document.addEventListener('click', handleClickOutside); 
         });  
         
         onUnmounted(() => {  
@@ -729,12 +731,13 @@ export default {
         return {  
           isEditing,  
           allItems,  
-          selectedItem, // Retorna a variável que foi criada lá em cima  
+          selectedItem,
           searchTerm,  
           dropdownRef,  
           selectItem,  
           filteredItems,  
-          regionStore  
+          regionStore,
+          wrapRequest
         }  
       }
 }
