@@ -1,3 +1,6 @@
+import { all } from 'axios';
+import db from '../database/connection.js';
+
 const allItems = [ 
     {
         id: 10003,
@@ -6353,12 +6356,27 @@ const allItems = [
         icon: "/items/00011697_1.webp",
         colorClass: "#8a63d2",
     },           
-   {
+    {
         id: 12294,
         text: "Kharazad Belt",
         icon: "/items/00012294_1.webp",
         colorClass: "#8a63d2",
-    },
+    },           
 ]
 
-export default allItems;
+for (let item in allItems){
+    let itemId = allItems[item].id;
+    let itemName = allItems[item].text;
+    let ItemIcon = allItems[item].icon;
+    let ItemColor = allItems[item].colorClass;
+
+    await db('enhanceable_items').insert({
+        id: itemId,
+        name: itemName,
+        icon_path: ItemIcon,
+        color_hex: ItemColor
+    });
+    console.log(`Inserted ${itemName} (${itemId}) into enhanceable_items table.`);
+}
+
+console.log("All items have been inserted.");

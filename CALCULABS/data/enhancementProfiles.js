@@ -1102,7 +1102,7 @@ const enhancementProfiles = {
         crons: 0,
         softcap: 44,
         durabilityLoss: 20,
-        blackstoneIcon: "/icon/flawless_blackstone.png"
+        blackstoneIcon: "/icons/flawless_blackstone.png"
     },
     1: {   // PRI
         baseChance: 10.625,  
@@ -1110,7 +1110,7 @@ const enhancementProfiles = {
         crons: 0,   
         softcap: 56,
         durabilityLoss: 20,
-        blackstoneIcon: "/icon/flawless_blackstone.png"     
+        blackstoneIcon: "/icons/flawless_blackstone.png"     
     },
     2: {   //DUO
         baseChance: 3.4,   // 4.69%
@@ -1118,7 +1118,7 @@ const enhancementProfiles = {
         crons: 100,
         softcap: 196,
         durabilityLoss: 20,
-        blackstoneIcon: "/icon/flawless_blackstone.png"
+        blackstoneIcon: "/icons/flawless_blackstone.png"
     },
     3: {   // TRI
         baseChance: 0.51,   // 2.73%
@@ -1126,7 +1126,7 @@ const enhancementProfiles = {
         crons: 591,
         softcap: 1363,
         durabilityLoss: 10,
-        blackstoneIcon: "/icon/flawless_blackstone.png"
+        blackstoneIcon: "/icons/flawless_blackstone.png"
     },
     4: {   // TET
         baseChance: 0.2,   // 1.60%
@@ -1134,7 +1134,7 @@ const enhancementProfiles = {
         crons: 3670,
         softcap: 3490,
         durabilityLoss: 20,
-        blackstoneIcon: "/icon/flawless_blackstone.png"
+        blackstoneIcon: "/icons/flawless_blackstone.png"
     },            
 },
 "PURPLE_WEAPON":{   

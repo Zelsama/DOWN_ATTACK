@@ -192,7 +192,7 @@
                 </div>
                 <div class="dropdown-menu">
                   <div class="dropdown-content">
-                    <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id,item.text), getSuccessRateAndData()">
+                    <a v-for="item in filteredItems" :key="item.id" href="#" class="dropdown-item" @click="selectItem(item), selectCurrentIcon(item.icon, item.colorClass, item.id,item.text), getSuccessRateAndData(), debouncedSaveState()">
                       <img v-if="item.icon" :src="item.icon" class="dropdown-item-icon" :style="{ border: '2px solid' + item.colorClass }" alt="Item Icon">
                       <span :style="{ color: item.colorClass}"> {{ item.text }} </span>
                     </a>
@@ -330,7 +330,7 @@
 <script>
 import LeftPanel from '@/components/EnhancingLeftPanel.vue'
 import apiClient from '@/services/api';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, onBeforeUnmount, watch } from 'vue';
 import sovereignIcon from '../assets/Base.jpg';
 import kharazadIcon from '../assets/khazard_necklace.png';
 import labreskaIcon from '../assets/labreska_helmet.png';
@@ -350,351 +350,67 @@ export default {
       EnhancingCalculator,
       EnhancingSimulator
     },
-    data(){
-      return {
-        isLoading: false,
-        optimizerDebounce: null,
-        currentItem: '',
-        softcap: 0,
-        leftPanelChance: 0,
-        AverageAtmps: 0,
-        selectTier: 'I',
-        permaChance: 0,
-        currentChance: 0,
-        permaEnhActive: null,
-        valksCry: 0,
-        selectTierNumber: 1,
-        optimizeStackbase: 100,
-        showResult: false,
-        isError: false,
-        errorMessage: null,
-        currentIconUrl: defaultIcon,
-        currentColor: '#8a63d2',
-        currentItemId: null,
-        successRate: 0,
-        blackstoneIcon: defaultIcon,
-        crons: 0,
-        essence: 0,
-        showModal: false,
-        modalPermaEnhanceValue: 0,
-        modalIcon: sovereignIcon,
-        modalVaksCry: 0,
-        modalCurrentItem: 'Sovereign',
-        modalTier: 3,
-        modalOptimizeStackbase: 0,
-        modalOptimizeStackTotal: 0,
-        modalError: false,
-        modalLoading: true,
-        showLog: false,
-        log: [''],
-        modalTotalSaveCost: 0,
-        durabilityLoss: 0,
-        profileKey: '',
-        profileKeys: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES', 'GODR_WEAPON'],
-        profileKeyPEN: ['PURPLE_ACCESSORIES', 'PURPLE_WEAPON']
-      }
-    },
-    methods: {
-      tierChange(){
-        this.showResult = false;
-        const tierMap = {'I':1,'II': 2,"III":3, "IV":4, "V":5, "VI":6, "VII":7, "VIII":8, "IX":9};
-        this.selectTierNumber = tierMap[this.selectTier] || this.selectTier;
-      },
-      selectPermaEnchantButton(number){
-        this.permaEnhActive = this.permaEnhActive === number ? null : number;
-        this.permaChance = number;
-      },
-      valksPlus(){
-        if (this.valksCry === 13){
-          this.valksCry = 13;
-        }else{
-          this.valksCry += 1;
-        }
-      },
-      valksMinus(){
-        if (this.valksCry != 0){
-          this.valksCry -= 1;
-        }else{
-          this.valksCry += 0;
-        }
-        
-      },
-      limitValks(){
-        if (this.valksCry >= 13){
-          this.valksCry = 13;
-        }
-        if (this.valksCry <= 0){
-          this.valksCry = 0;
-        }
-      },
-      currentChancePlus(){
-        if (this.currentChance <= 99981){
-          this.currentChance += 1
-        }
-      },
-      currentChanceMinus(){
-        if (this.currentChance >= 1){
-          this.currentChance -= 1;
-        }
-      },
-      limitCurrentChance(){
-        if (this.currentChance > 100000000000000000000){
-          this.currentChance = 0;
-        }
-        if (this.currentChance <= 0){
-          this.currentChance = 0;
-        }
-      },
-      async stackOptimizer(){
-        clearTimeout(this.optimizerDebounce);
-        this.optimizerDebounce = setTimeout(async () =>{
-          try{          
-            this.modalError = false;
-            if(this.optimizeStackbase < 100){
-              this.modalError = true;
-              this.errorMessage = "Starting failstack must be at least 100.";
-              return
-            }else if(this.optimizeStackbase > 300){
-              this.modalError = true;
-              this.errorMessage = "Starting failstack cannot exceed 300.";
-              this.showLog = false;
-              return;
-            }       
-            if (this.modalCurrentItem === 'Armors' && this.modalTier > 4){
-              this.modalError = true;
-              this.errorMessage = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
-              return;
-            }
-            this.modalLoading = true;
-            const response = await apiClient.get(`/fs-optimizer?tier=${this.modalTier}&baseChance=${this.optimizeStackbase}&valks=${this.modalVaksCry}&stacks=${this.modalPermaEnhanceValue}&item=${this.modalCurrentItem}&region=${this.regionStore.selectedRegion.label}`);
-            if(response.data.result.overstackWarning){
-              this.modalError = true;
-              this.showLog = false;
-              this.errorMessage = response.data.result.overstackWarning;
-              this.modalLoading = false;
-              return;
-            }
-            this.modalOptimizeStackbase = response.data.result.optimalBaseFailstack;
-            this.modalOptimizeStackTotal = response.data.result.optimalTotalFailstack;
-            this.log = response.data.result.log || [];
-            this.modalTotalSaveCost = response.data.result.totalSaveCost;
-            this.modalLoading = false;
-          }catch(error){
-            this.modalError = true;
-            this.errorMessage = "An error occurred while calculating the stack. Please try again."; 
-            this.modalLoading = false;
-          }          
-        }, 500);
-      },
-      async getSuccessRateAndData(){
-        this.isLoading = true;
-        try{
-          const encondedTierNumber = encodeURIComponent(this.selectTierNumber);
-          const response = await apiClient.get(`/get-success-rate-and-data?tier=${encondedTierNumber}&stack=${this.currentChanceTotal}&itemId=${this.currentItemId}`);
-          const chance = response.data.result.chance || 0;
-          this.successRate = chance.toFixed(3);
-          this.crons = response.data.result.crons;
-          this.profileKey = response.data.result.profileKey;
-          this.durabilityLoss = response.data.result.durabilityLoss;
-          this.softcap = response.data.result.softcap;
-          this.AverageAtmps = (100/(chance)).toFixed(2);
-          this.leftPanelChance = chance;
-          this.blackstoneIcon = (response.data.result.blackstoneIcon && response.data.result.blackstoneIcon.length > 0)   
-          ? response.data.result.blackstoneIcon   
-          : defaultIcon;
-          
-        }catch(error){
-          console.error("Error fetching success rate:", error);
-          this.successRate = 0;
-          this.AverageAtmps = 0;
-          this.durabilityLoss = 0;
-          this.softcap = 0;
-        } finally {
-          nextTick(()=>{
-            this.isLoading = false;
-          })
-        }
-      },
-      selectCurrentIcon(icon, color, itemId,item){
-        this.currentIconUrl = icon;
-        this.currentColor = color || '#8a63d2';
-        this.currentItemId = itemId;
-        this.currentItem = item;
-        localStorage.setItem('lastSelectedItem', itemId);
-      },
-      hideModal(){
-        this.showModal = false;
-      },
-      showModalBestStack(){
-        if(this.permaEnhActive != null){
-          this.modalPermaEnhanceValue = this.permaEnhActive;
-        }
-        this.modalVaksCry = this.valksCry;
-        this.showModal = true;
-      },
-      changeModalTier(tier){
-        this.modalTier = tier.target.value;
-        this.stackOptimizer();
-      },
-      changeModalicon(icon){
-        if(this.modalTier === '2' && icon.target.value != 'Armors'){
-          this.modalTier = 3; 
-        }
-        const selectIcon = icon.target.value;
-        const iconMap = {
-          'Sovereign': sovereignIcon,
-          'Kharazad': kharazadIcon,
-          'Armors': labreskaIcon
-        };
-        this.modalCurrentItem = selectIcon;
-        this.modalIcon = iconMap[selectIcon] || sovereignIcon;
-      },
-      limitModalValks(){
-        if (this.modalVaksCry >= 13){
-          this.modalVaksCry = 13;
-        }
-        if (this.modalVaksCry <= 0){
-          this.modalVaksCry = 0;
-        }
-      },
-      limitModalStartingStack(){
-        if (this.optimizeStackbase > 300){
-          this.optimizeStackbase = 300;
-        }
-        if (this.optimizeStackbase <= 0){
-          this.optimizeStackbase = 100;
-        }
-      },
-      formatModalSaveCost(value){
-        if (isNaN(value)|| value === null || value === undefined){
-          return null;
-        }
-        if (Math.abs(value) >= 1000000000000){
-          return (value /1000000000000).toFixed(2) + ' T';
-        }
-        if (Math.abs(value) >= 1000000000){
-          return (value / 1000000000).toFixed(2) + ' B';
-      }
-        if (Math.abs(value) >= 1000000){
-          return (value / 1000000).toFixed(1) + ' M';
-        }
-        if (Math.abs(value) >= 1000){
-          return (value / 1000).toFixed(1) + ' K';
-        }
-        return value.toString();
-      },
-      handleTierScroll(event){
-        event.preventDefault();
-        
-        const selectEl = this.$refs.tierSelect;
-        if(!selectEl) return;
-        const options = Array.from(selectEl.options);
-        const currentIndex = selectEl.selectedIndex;
-        const direction = event.deltaY > 0 ? 1 : -1;
-
-        let newIndex = currentIndex + direction;
-
-        if (newIndex < 0){
-          newIndex = 0;
-        }
-        if (newIndex >= options.length){
-          newIndex = options.length - 1;
-        }
-        this.selectTier = options[newIndex].value;
-      }
-    },
-    computed:{
-      currentChanceTotal(){
-        if(this.currentChance + this.permaChance + this.valksCry >= 100000000000000000000){
-          return 1+ this.valksCry + this.permaChance;
-        }
-        return this.currentChance + this.permaChance + this.valksCry;
-      },
-      reversedLevels() {
-        const levels = [];
-        for (let i = 15; i >= 1; i--){
-          levels.push(i);
-        }
-        return levels;
-      }
-    },
-    mounted() {
-      const savedItemId = localStorage.getItem('lastSelectedItem');
-      let itemToLoad = allItemsData[0];
-
-      if(savedItemId){
-        const savedItem = allItemsData.find(item => item.id === savedItemId);
-        if(savedItem){
-          itemToLoad = savedItem;
-        }
-      }
-
-      this.selectCurrentIcon(itemToLoad.icon, itemToLoad.colorClass, itemToLoad.id, itemToLoad.text);
-      this.wrapRequest(this.getSuccessRateAndData());
-
-      this.$refs.resultItemOverlay.addEventListener('wheel', this.handleTierScroll);
-    },
-    watch: {
-      selectedItem: {
-        handler(newItem){
-          if(newItem && newItem.id){
-            this.selectCurrentIcon(newItem.icon, newItem.colorClass, newItem.id, newItem.text);
-            this.getSuccessRateAndData()
-          }
-        },
-        immediate: true
-      },
-      selectTier(){
-        this.tierChange();
-      },
-      profileKey(){
-        const penToIxTiers = ['IX', 'VIII', 'VII', 'VI', 'V', 'IV', 'III', 'II', 'I'];
-        const normalTiers = ['IV', 'III', 'II', 'I', '0'];
-        const plusTiers = this.reversedLevels.map(l => `+${l}`).concat(['+0']);
-
-        let validTiers = [];
-
-        if (this.profileKeyPEN.includes(this.profileKey)) {
-          validTiers = penToIxTiers;
-        } else if (this.profileKeys.includes(this.profileKey)) {
-          validTiers = normalTiers;
-          this.getSuccessRateAndData();
-        } else {
-          validTiers = normalTiers;
-          validTiers.push(...plusTiers);
-        }
-      if(!validTiers.includes(this.selectTier)){
-          this.selectTier = validTiers[0];
-        }
-      },
-      selectTierNumber(){
-        this.getSuccessRateAndData();
-  
-      },
-      currentChanceTotal(){
-        this.getSuccessRateAndData();
-  
-      },
-    },
     setup(){  
+        const scrollDebounceTimer = ref(null);
+        const saveStateDebounceTimer = ref(null);
+
+        const profileKeys = ref(['PURPLE_ACCESSORIES', 'PURPLE_WEAPON', 'GREEN_ACCESSORIES', 'BLUE_ACCESSORIES', 'YELLOW_ACCESSORIES', 'GODR_WEAPON']);
+        const profileKeyPEN = ref(['PURPLE_ACCESSORIES', 'PURPLE_WEAPON']);
+        /* MODAL VARIAVEIS: */
+        const showModal = ref(false);
+        const modalCurrentItem = ref('Sovereign');
+        const modalTier = ref(3);
+        const modalVaksCry = ref(0);
+        const modalPermaEnhanceValue = ref(0);
+        const modalError = ref(false);
+        const modalLoading = ref(false);
+        const modalOptimizeStackbase = ref(0);
+        const modalOptimizeStackTotal = ref(0);
+        const modalTotalSaveCost = ref(0);
+        const modalIcon = ref(sovereignIcon);
+        const log = ref(['']);
+        const errorMessage = ref(null);
+        const optimizerDebounce = ref(null);
+        const optimizeStackbase = ref(100);
+        const showLog = ref(false);
+
+        /* OPTIMIZER VARIAVEIS: */
+        const isLoading = ref(true);
+        const successRate = ref(0);
+        const essence = ref(0);
+        const crons = ref(0);
+        const profileKey = ref('');
+        const durabilityLoss = ref(0);
+        const softcap = ref(0);
+        const AverageAtmps = ref(0);
+        const leftPanelChance = ref(0);
+        const blackstoneIcon = ref(defaultIcon);
+
+        /* Current item, icon variaveis */
+        const currentIconUrl = ref('');
+        const currentColor = ref('#8a63d2');
+        const currentItem = ref(null);
+
+        const showResult = ref(false);
+        const selectTierNumber = ref(1);  
+      
+        const currentItemId = ref(null);
+        const selectTier = ref('I');
+        const currentChance = ref(0);
+        const valksCry = ref(0);
+        const permaChance = ref(0);
+        const permaEnhActive = ref(null);
+
         const regionStore = useRegionStore();  
         const isEditing = ref(false);  
         const dropdownRef = ref(null);  
         const allItems = ref(allItemsData);  
         const searchTerm = ref('');  
         const { wrapRequest } = useLoading()
-        
-        // --- LÓGICA DE CARREGAMENTO CORRIGIDA ---  
-        // 1. Determina qual item deve ser o inicial  
-        const savedItemId = localStorage.getItem('lastSelectedItem');  
-        let initialItem = allItems.value[0]; // Define o item padrão  
-        
-        if (savedItemId) {  
-          const savedItem = allItems.value.find(item => item.id === savedItemId);  
-          if (savedItem) {  
-            initialItem = savedItem;
-          }  
-        }  
+
+        const resultItemOverlay = ref(null);
+         
+        let initialItem = allItems.value[0];
 
         const selectedItem = ref(initialItem);  
         
@@ -711,15 +427,25 @@ export default {
           if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {  
             closeDropdown();  
           }  
-        };  
+        };      
         
         onMounted(async () => {  
           document.addEventListener('click', handleClickOutside); 
+          wrapRequest(getSuccessRateAndData());
+          await wrapRequest(getEnhanceableItems());
+          await wrapRequest(loadSimulatorState());
         });  
         
         onUnmounted(() => {  
           document.removeEventListener('click', handleClickOutside);  
-        });  
+          if(resultItemOverlay.value){
+            resultItemOverlay.value.removeEventListener('wheel', handleTierScroll);
+          }
+        });
+        onBeforeUnmount(() => {
+          saveSimulatorState();
+        });
+
         
         const filteredItems = computed(()=>{  
           if(!searchTerm.value) return allItems.value;  
@@ -727,7 +453,333 @@ export default {
             item.text.toLowerCase().includes(searchTerm.value.toLowerCase())  
           );  
         });  
+
+        const currentChanceTotal = computed(() => {
+          if (currentChance.value + permaChance.value + valksCry.value >= 100000000000000000000) {
+            return 1 + valksCry.value + permaChance.value;
+          }
+          return currentChance.value + permaChance.value + valksCry.value;
+        });
+
+        const reversedLevels = computed(() => {
+          const levels = [];
+          for (let i = 15; i >= 1; i--){
+            levels.push(i);
+          }
+          return levels;
+        });
+
+        function currentChanceMinus(){
+          if (currentChance.value >= 1){
+            currentChance.value -= 1;
+          }
+        }
+        function selectCurrentIcon(icon, color, itemId,item){
+          currentIconUrl.value = icon;
+          currentColor.value = color || '#8a63d2';
+          currentItemId.value = itemId;
+          currentItem.value = item;
+        }        
+        function limitCurrentChance(){
+          if (currentChance.value > 100000000000000000000){
+            currentChance.value = 0;
+          }
+          if (currentChance.value <= 0){
+            currentChance.value = 0;
+          }
+        }
+
+        function selectPermaEnchantButton(number){
+          permaEnhActive.value = permaEnhActive.value === number ? null : number;
+          permaChance.value = number;
+        }
+        function tierChange(){
+          showResult.value = false;
+          const tierMap = {'I':1,'II': 2,"III":3, "IV":4, "V":5, "VI":6, "VII":7, "VIII":8, "IX":9};
+          selectTierNumber.value = tierMap[selectTier.value] || selectTier.value;
+        }
+        function valksPlus(){
+          if (valksCry.value === 13){
+            valksCry.value = 13;
+          }else{
+            valksCry.value += 1;
+          }
+        } 
+        function valksMinus(){
+          if (valksCry.value != 0){
+            valksCry.value -= 1;
+          }else{
+            valksCry.value += 0;
+          }
+        }  
+        function limitValks(){
+          if (valksCry.value >= 13){
+            valksCry.value = 13;
+          }
+          if (valksCry.value <= 0){
+            valksCry.value = 0;
+          }
+        }    
+        function currentChancePlus(){
+          if (currentChance.value <= 99981){
+            currentChance.value += 1
+          }
+        }
+        function limitModalValks(){
+          if (modalVaksCry.value >= 13){
+            modalVaksCry.value = 13;
+          }
+          if (modalVaksCry.value <= 0){
+            modalVaksCry.value = 0;
+          }
+        }        
+        async function stackOptimizer(){
+          clearTimeout(optimizerDebounce.value);
+          optimizerDebounce.value = setTimeout(async () =>{
+            try{          
+              modalError.value = false;
+              if(optimizeStackbase.value < 100){
+                modalError.value = true;
+                errorMessage.value = "Starting failstack must be at least 100.";
+                return
+              }else if(optimizeStackbase.value > 300){
+                modalError.value = true;
+                errorMessage.value = "Starting failstack cannot exceed 300.";
+                showLog.value = false;
+                return;
+              }       
+              if (modalCurrentItem.value === 'Armors' && modalTier.value > 4){
+                modalError.value = true;
+                errorMessage.value = "Invalid Tier for Fallen Gods Armors. Maximum Tier is TET (IV).";
+                return;
+              }
+              modalLoading.value = true;
+              const response = await apiClient.get(`/fs-optimizer?tier=${modalTier.value}&baseChance=${optimizeStackbase.value}&valks=${modalVaksCry.value}&stacks=${modalPermaEnhanceValue.value}&item=${modalCurrentItem.value}&region=${regionStore.selectedRegion.label}`);
+              if(response.data.result.overstackWarning){
+                modalError.value = true;
+                showLog.value = false;
+                errorMessage.value = response.data.result.overstackWarning;
+                modalLoading.value = false;
+                return;
+              }
+              modalOptimizeStackbase.value = response.data.result.optimalBaseFailstack;
+              modalOptimizeStackTotal.value = response.data.result.optimalTotalFailstack;
+              log.value = response.data.result.log || [];
+              modalTotalSaveCost.value = response.data.result.totalSaveCost;
+              modalLoading.value = false;
+            }catch(error){
+              modalError.value = true;
+              errorMessage.value = "An error occurred while calculating the stack. Please try again."; 
+              modalLoading.value = false;
+            }          
+          }, 500);
+        }                
+        async function getSuccessRateAndData(){
+          isLoading.value = true;
+          try{
+            const encondedTierNumber = encodeURIComponent(selectTierNumber.value);
+            const response = await apiClient.get(`/get-success-rate-and-data?tier=${encondedTierNumber}&stack=${currentChanceTotal.value}&itemId=${currentItemId.value}`);
+            const chance = response.data.result.chance || 0;
+            successRate.value = chance.toFixed(3);
+            crons.value = response.data.result.crons;
+            profileKey.value = response.data.result.profileKey;
+            durabilityLoss.value = response.data.result.durabilityLoss;
+            softcap.value = response.data.result.softcap;
+            AverageAtmps.value = (100/(chance)).toFixed(2);
+            leftPanelChance.value = chance;
+            blackstoneIcon.value = (response.data.result.blackstoneIcon && response.data.result.blackstoneIcon.length > 0)   
+            ? response.data.result.blackstoneIcon   
+            : currentIconUrl.value ? currentIconUrl.value : defaultIcon;
+
+          }catch(error){
+            console.error("Error fetching success rate:", error);
+            successRate.value = 0;
+            AverageAtmps.value = 0;
+            durabilityLoss.value = 0;
+            softcap.value = 0;
+          } finally {
+            nextTick(()=>{
+              isLoading.value = false;
+            })
+          }
+        }
+        function hideModal(){
+          showModal.value = false;
+        }
+        function showModalBestStack(){
+          if(permaEnhActive.value != null){
+            modalPermaEnhanceValue.value = permaEnhActive.value;
+          }
+          modalVaksCry.value = valksCry.value;
+          showModal.value = true;
+        } 
+        function changeModalTier(tier){
+          modalTier.value = tier.target.value;
+          stackOptimizer();
+        } 
+        function changeModalicon(icon){
+          if(modalTier.value === '2' && icon.target.value != 'Armors'){
+            modalTier.value = 3; 
+          }
+          const selectIcon = icon.target.value;
+          const iconMap = {
+            'Sovereign': sovereignIcon,
+            'Kharazad': kharazadIcon,
+            'Armors': labreskaIcon
+          };
+          modalCurrentItem.value = selectIcon;
+          modalIcon.value = iconMap[selectIcon] || sovereignIcon;
+        }  
+        function limitModalStartingStack(){
+          if (modalOptimizeStackbase.value > 300){
+            modalOptimizeStackbase.value = 300;
+          }
+          if (modalOptimizeStackbase.value <= 0){
+            modalOptimizeStackbase.value = 100;
+          }
+        }        
+
+        function formatModalSaveCost(value){
+          if (isNaN(value)|| value === null || value === undefined){
+            return null;
+          }
+          if (Math.abs(value) >= 1000000000000){
+            return (value /1000000000000).toFixed(2) + ' T';
+          }
+          if (Math.abs(value) >= 1000000000){
+            return (value / 1000000000).toFixed(2) + ' B';
+        }
+          if (Math.abs(value) >= 1000000){
+            return (value / 1000000).toFixed(1) + ' M';
+          }
+          if (Math.abs(value) >= 1000){
+            return (value / 1000).toFixed(1) + ' K';
+          }
+          return value.toString();
+        }        
         
+        function handleTierScroll(event){
+          event.preventDefault();
+          clearTimeout(scrollDebounceTimer.value)
+          
+          scrollDebounceTimer.value = setTimeout(() => {
+            const selectEl = document.getElementById('tier-select');
+            if(!selectEl) return;
+            const options = Array.from(selectEl.options);
+            const currentIndex = selectEl.selectedIndex;
+            const direction = event.deltaY > 0 ? 1 : -1;
+
+            let newIndex = currentIndex + direction;
+
+            if (newIndex < 0){
+              newIndex = 0;
+            }
+            if (newIndex >= options.length){
+              newIndex = options.length - 1;
+            }
+            selectTier.value = options[newIndex].value;            
+          }, 10);
+
+        }
+
+        async function getEnhanceableItems(){
+          try{
+            const response = await apiClient.get('/enhanceable-items');
+            allItems.value = response.data.items;
+          }catch(error){
+            console.error("Error fetching enhanceable items:", error);
+            return
+          }
+        }
+        async function saveSimulatorState(){
+          try{
+            const response = await apiClient.post('/simulator-state', {
+              enhanceable_item_id: selectedItem.value.id,
+              tier: selectTier.value,
+              base_failstack: currentChance.value,
+              valks_cry: valksCry.value,
+              perm_enh_chance: permaChance.value
+            });
+            console.log("Simulator state saved:", response.data);
+          }catch(error){
+            console.error("Error saving simulator state:", error);
+            return
+          }
+        }
+        async function loadSimulatorState(){
+          try{
+            const response = await apiClient.get('/simulator-state');
+            const state = response.data.state;
+            if(state){
+              const itemToLoad = allItems.value.find(item => item.id === state.enhanceable_item_id);
+              if(itemToLoad){
+                selectedItem.value = itemToLoad;
+              }
+              selectTier.value = state.tier;
+              currentChance.value = state.base_failstack;
+              valksCry.value = state.valks_cry;
+              permaChance.value = state.perm_enh_chance;
+              if(permaChance.value != null){
+                permaEnhActive.value = permaChance.value;
+              }
+            }
+          }catch(error){
+            console.error("Error loading simulator state:", error);
+            return
+          }
+        }
+        function debouncedSaveState() {   
+          clearTimeout(saveStateDebounceTimer.value);  
+          saveStateDebounceTimer.value = setTimeout(() => {  
+            saveSimulatorState();
+          }, 500);
+        }        
+
+        watch(isLoading, (loading) => {  
+          if (loading === false) {  
+            nextTick(() => {  
+              if (resultItemOverlay.value) {  
+                resultItemOverlay.value.addEventListener('wheel', handleTierScroll);  
+              }  
+            });  
+          }  
+        }); 
+        watch(selectedItem, (newItem) =>{
+          if(newItem && newItem.id){
+            profileKey.value = newItem.id;
+            selectCurrentIcon(newItem.icon, newItem.colorClass, newItem.id, newItem.text);
+          }
+        }, { immediate: true });  
+        watch(selectTier, () => {
+          tierChange();
+          debouncedSaveState();
+        });
+        watch(selectTierNumber, () => {
+          getSuccessRateAndData();
+        });
+        watch(profileKey, () => {
+          const penToIxTiers = ['IX', 'VIII', 'VII', 'VI', 'V', 'IV', 'III', 'II', 'I'];
+          const normalTiers = ['IV', 'III', 'II', 'I', '0'];
+          const plusTiers = reversedLevels.value.map(l => `+${l}`).concat(['+0']);
+          let validTiers = [];
+          if (profileKeyPEN.value.includes(profileKey.value)) {
+            validTiers = penToIxTiers;
+          } else if (profileKeys.value.includes(profileKey.value)) {
+            validTiers = normalTiers;
+            getSuccessRateAndData();
+          } else {
+            validTiers = normalTiers;
+            validTiers.push(...plusTiers);
+          }
+        if(!validTiers.includes(selectTier.value)){
+            selectTier.value = validTiers[0];
+          }
+        }          
+        )
+        watch(currentChanceTotal, () => {
+          debouncedSaveState();
+          getSuccessRateAndData();
+        })        
         return {  
           isEditing,  
           allItems,  
@@ -737,7 +789,38 @@ export default {
           selectItem,  
           filteredItems,  
           regionStore,
-          wrapRequest
+          wrapRequest,
+          currentItemId,
+          selectTier,
+          currentChance,
+          valksCry,
+          permaChance,
+          permaEnhActive,
+          tierChange,
+          showResult,
+          selectTierNumber,
+          selectPermaEnchantButton,
+          valksPlus,
+          valksMinus,
+          limitValks,
+          currentChancePlus,
+          currentChanceMinus,
+          limitCurrentChance,
+          stackOptimizer,
+          modalCurrentItem, modalTier, modalVaksCry, modalPermaEnhanceValue, modalError, modalLoading, modalOptimizeStackbase, modalOptimizeStackTotal,
+          modalTotalSaveCost, log, errorMessage, optimizeStackbase, showLog, showModal, modalIcon,
+          getSuccessRateAndData,
+          isLoading, successRate, essence, crons, profileKey, durabilityLoss, softcap, AverageAtmps, leftPanelChance, blackstoneIcon,
+          selectCurrentIcon,
+          currentIconUrl, currentColor, currentItem,
+          hideModal,
+          showModalBestStack,
+          changeModalTier,
+          changeModalicon,
+          limitModalValks, limitModalStartingStack, formatModalSaveCost,
+          handleTierScroll, debouncedSaveState,
+          resultItemOverlay, currentChanceTotal, reversedLevels,
+          profileKeyPEN, profileKeys
         }  
       }
 }
