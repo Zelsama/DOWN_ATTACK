@@ -9,12 +9,13 @@ const app = express();
 const allowedOrigins = [process.env.FRONTEND_URL];
 const options = {
   origin: allowedOrigins,
+  credentials: true,
 };
 
+app.set('trust proxy', 1);
 app.use(cors(options));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.set('trust proxy', 1) 
 app.use(session({
   store: new RedisStore({ 
     client: client,
@@ -27,7 +28,8 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 1000 * 60 * 60 * 24 * 7
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    partitioned: process.env.NODE_ENV === 'production'
    }
 }))
 app.use((req, res, next) => {

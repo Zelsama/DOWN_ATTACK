@@ -693,7 +693,7 @@ export default {
         }
         async function saveSimulatorState(){
           try{
-            const response = await apiClient.post('/simulator-state', {
+            const _response = await apiClient.post('/simulator-state', {
               enhanceable_item_id: selectedItem.value.id,
               tier: selectTier.value,
               base_failstack: currentChance.value,
@@ -702,7 +702,6 @@ export default {
             },{
               withCredentials: true
             });
-            console.log("Simulator state saved:", response.data);
           }catch(error){
             console.error("Error saving simulator state:", error);
             return
