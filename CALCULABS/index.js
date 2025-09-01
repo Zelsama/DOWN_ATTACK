@@ -1,10 +1,9 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import router from './routes/routes.js';
 import client from './connection/redis-client.js';
-import { RedisStore } from 'connect-redis';
+import RedisStore from 'connect-redis';
 
 const app = express();
 const allowedOrigins = [process.env.FRONTEND_URL];
@@ -13,8 +12,8 @@ const options = {
 };
 
 app.use(cors(options));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.set('trust proxy', 1) 
 app.use(session({
   store: new RedisStore({ 
@@ -26,10 +25,11 @@ app.use(session({
   saveUninitialized: true,
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    maxAge: 1000 * 60 * 60 * 24 * 7
    }
 }))
-
 app.use((req, res, next) => {
   next();
 });

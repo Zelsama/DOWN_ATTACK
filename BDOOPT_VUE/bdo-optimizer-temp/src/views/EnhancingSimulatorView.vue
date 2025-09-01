@@ -699,6 +699,8 @@ export default {
               base_failstack: currentChance.value,
               valks_cry: valksCry.value,
               perm_enh_chance: permaChance.value
+            },{
+              withCredentials: true
             });
             console.log("Simulator state saved:", response.data);
           }catch(error){
