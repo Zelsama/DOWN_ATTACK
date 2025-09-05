@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function checkAuthStatus() {
     try {
-      const response = await apiClient.get('/me');
+      const response = await apiClient.get('/auth/me');
       user.value = response.data;
     } catch (error) {
       user.value = null;
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     try{
-      await apiClient.post('/logout');
+      await apiClient.post('/auth/logout');
     } catch(error){
       console.error("Error during logout:", error);
     }finally{

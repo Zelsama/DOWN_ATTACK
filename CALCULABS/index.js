@@ -52,7 +52,7 @@ passport.deserializeUser(async (id, done) => {
   try {  
     const user = await db('users').where({ id: id }).first();  
     if (!user) {  
-      return done(new Error('User not found'));  
+      return done(null, user || false);  
     }
     done(null, user);  
   } catch (error) {  
@@ -84,7 +84,7 @@ passport.use(new DiscordStrategy({
 }));
 
 app.use("/", apiRouter);
-app.use("/", authRouter);
+app.use("/auth", authRouter);
 
 const startup = async () => {
   try{

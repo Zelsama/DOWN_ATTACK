@@ -3,9 +3,9 @@ import passport from 'passport';
 import { ensureAuthenticated } from '../middleware/auth.js';
 const authRouter = express.Router();
 
-authRouter.get('/auth/discord', passport.authenticate('discord'));
+authRouter.get('/discord', passport.authenticate('discord'));
 
-authRouter.get('/auth/discord/callback', 
+authRouter.get('/discord/callback', 
   passport.authenticate('discord', {
     failureRedirect: `${process.env.FRONTEND_URL}`
   }), 
@@ -14,12 +14,13 @@ authRouter.get('/auth/discord/callback',
   }
 );
 
-authRouter.post('/logout', (req, res) => {
+authRouter.post('/logout', (req, res, next) => {
   req.logout((error)=>{
-    if(error){
-      return res.status(500).json({ success: false, message: 'Something went wrong', error: error });
-    }
-    res.status(204).send();
+    if(error){ return next(error); }
+    req.session.destroy(()=>{
+      res.clearCookie('connect.sid');
+      res.status(204).json({ success: true , message: 'Logged out successfully' });
+    });
   })
 });
 
