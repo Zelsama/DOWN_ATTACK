@@ -1,31 +1,36 @@
 <template>
   <div class="simulator-panel">
-    <div class="simulator-controls">
-      <div class="field animation-toggle">
-        <label class="label" for="animationSwitch">Skip Animation</label>
-        <input 
-          id="animationSwitch" 
-          type="checkbox" 
-          class="switch is-rounded" 
-          v-model="useAnimation"
-          @change="repetitions = 1"
-        >
-        <label for="animationSwitch"></label>   
-      </div>
-      <div class="input-group">
-        <input 
-          type="number" 
-          v-model.number="repetitions" 
-          @input="limitRepetitions"
-          placeholder="1000" 
-          class="attempts-input"
-          :disabled="useAnimation"
-        >
-        <button class="button is-success" @click="runSimulation" :disabled="isAnimating">
-          {{ useAnimation ? (isAnimating ? 'Enhancing...' : 'Enhance') : 'Simulate' }}
-        </button>
-        <button class="button" @click="clearLog">Clear</button>
-      </div>
+    <div class="simulator-controls">  
+      <div class="field animation-toggle mt-2">  
+        <label class="label" for="animationSwitch">Skip Animation</label>  
+        <input   
+          id="animationSwitch"   
+          type="checkbox"   
+          class="switch is-rounded"   
+          v-model="skipAnimation"
+          @change="repetitions = 1"  
+        >  
+        <label for="animationSwitch"></label>     
+      </div>  
+      <div class="input-group">  
+        <input   
+          type="number"   
+          v-model.number="repetitions"   
+          @input="limitRepetitions"  
+          placeholder="1000"   
+          class="attempts-input"  
+          :disabled="!skipAnimation"
+        >  
+        <button     
+          class="button"     
+          :class="{'is-success': !isAnimating, 'is-danger': isAnimating}"    
+          @click="isAnimating ? cancelAnimation() : runSimulation()"    
+        >    
+          {{ isAnimating ? 'Cancel' : (skipAnimation ? 'Simulate' : 'Enhance') }}    
+        </button>  
+        <button class="button" @click="clearLog">Clear</button>  
+          
+      </div>  
     </div>
     <div class="log-container">
       <ul class="log-list">
@@ -55,100 +60,121 @@
   </div>
 </template>
 
-<script>
-export default {
-    name: 'EnhancingSimulatorComponent',
-    props: {
-        baseSuccessRate: {
-            type: [Number, String],
-            required: true,
-            default: 0
-        }
-    },
-    emits: ['animation-start', 'animation-result', 'animation-end'], // Declarando os eventos
-    data() {
-        return {
-            repetitions: 1,
-            successCount: 0,
-            failCount: 0,
-            log: [],
-            useAnimation: true,
-            isAnimating: false,
-        }
-    },
-    methods: {
-        sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        },
-        async animateAndEnhance() {
-            if (this.isAnimating) return;
-            this.isAnimating = true;
-            this.$emit('animation-start'); // 1. Avisa o pai para começar a animação
-
-            await this.sleep(4000 + Math.random() * 1000); // Pausa dramática
-
-            const rate = parseFloat(this.baseSuccessRate) / 100;
-            const prizeDraw = Math.random();
-            const isSuccess = prizeDraw < rate;
-
-            if (isSuccess) {
-                this.successCount++;
-                this.log.unshift({ success: true, message: `Success: ${(prizeDraw * 100).toFixed(3)}` });
-            } else {
-                this.failCount++;
-                this.log.unshift({ success: false, message: `Failure: ${(prizeDraw * 100).toFixed(3)}` });
-            }
-            
-            this.$emit('animation-result', { success: isSuccess }); // 2. Avisa o pai o resultado
-
-            this.$emit('animation-end'); // 3. Avisa o pai para limpar os estilos
-            this.isAnimating = false;
-        },
-        runSimulation(){
-            if (this.useAnimation) {
-                this.animateAndEnhance();
-                return;
-            }
-
-            if (!this.repetitions || this.repetitions <= 0) return;
-            const rate = parseFloat(this.baseSuccessRate) / 100;
-
-            for (let i = 0; i < this.repetitions; i++) {
-                const prizeDraw = Math.random();
-                const isSuccess = prizeDraw < rate;
-                if (isSuccess) {
-                    this.successCount++;
-                    this.log.unshift({ success: true, message: `Sucesso: ${(prizeDraw * 100).toFixed(3)}` });
-                } else {
-                    this.failCount++;
-                    this.log.unshift({ success: false, message: `Falha: ${(prizeDraw * 100).toFixed(3)}` });
-                }
-            }
-        },
-        clearLog() {
-            this.log = [];
-            this.successCount = 0;
-            this.failCount = 0;
-            this.isAnimating = false;
-            this.$emit('animation-end'); // Garante que a animação pare se o log for limpo
-        },
-        limitRepetitions() {
-            if (this.repetitions > 1000) {
-                this.repetitions = 1000;
-            }
-            if (this.repetitions < 1) {
-                this.repetitions = 1;
-            }
-        }
-    },
-    computed: {
-        averageAttempts() {
-            const totalAttempts = this.successCount + this.failCount;
-            if (this.successCount === 0) return '0.00';
-            return (totalAttempts / this.successCount).toFixed(2);
-        }
-    }
-}
+<script>  
+export default {  
+    name: 'EnhancingSimulatorComponent',  
+    props: {  
+        baseSuccessRate: {  
+            type: [Number, String],  
+            required: true,  
+            default: 0  
+        }  
+    },  
+    emits: ['animation-start', 'animation-result', 'animation-end'],  
+    data() {  
+        return {  
+            repetitions: 1,  
+            successCount: 0,  
+            failCount: 0,  
+            log: [],  
+            skipAnimation: false, // MUDANÇA 4: Renomeado e valor inicial trocado para 'false'  
+            isAnimating: false,  
+            animationTimers: [],  
+        }  
+    },  
+    methods: {  
+        animateAndEnhance() {  
+            if (this.isAnimating) return;  
+            this.isAnimating = true;  
+            this.$emit('animation-start');  
+  
+            const resultTimer = setTimeout(() => {  
+                const rate = parseFloat(this.baseSuccessRate) / 100;  
+                const prizeDraw = Math.random();  
+                const isSuccess = prizeDraw < rate;  
+  
+                if (isSuccess) {  
+                    this.successCount++;  
+                    this.log.unshift({ success: true, message: `Success: ${(prizeDraw * 100).toFixed(3)}` });  
+                } else {  
+                    this.failCount++;  
+                    this.log.unshift({ success: false, message: `Failed: ${(prizeDraw * 100).toFixed(3)}` });  
+                }  
+                  
+                this.$emit('animation-result', { success: isSuccess });  
+  
+                const endTimer = setTimeout(() => {  
+                    this.$emit('animation-end');  
+                    this.isAnimating = false;  
+                    this.clearTimers();  
+                }, 3000);  
+  
+                this.animationTimers.push(endTimer);  
+  
+            }, 4000 + Math.random() * 1000);  
+  
+            this.animationTimers.push(resultTimer);  
+        },  
+          
+        cancelAnimation() {  
+            if (!this.isAnimating) return;  
+              
+            this.clearTimers();  
+            this.isAnimating = false;  
+            this.$emit('animation-end');  
+        },  
+  
+        clearTimers() {  
+            this.animationTimers.forEach(timerId => clearTimeout(timerId));  
+            this.animationTimers = [];  
+        },  
+  
+        runSimulation(){  
+            // MUDANÇA 5: Lógica do IF invertida  
+            if (!this.skipAnimation) { // Se NÃO for para pular a animação...  
+                this.animateAndEnhance(); // ...então anime.  
+                return;  
+            }  
+  
+            // Se for para pular, executa a simulação em massa  
+            if (!this.repetitions || this.repetitions <= 0) return;  
+            const rate = parseFloat(this.baseSuccessRate) / 100;  
+  
+            for (let i = 0; i < this.repetitions; i++) {  
+                const prizeDraw = Math.random();  
+                const isSuccess = prizeDraw < rate;  
+                if (isSuccess) {  
+                    this.successCount++;  
+                    this.log.unshift({ success: true, message: `Success: ${(prizeDraw * 100).toFixed(3)}` });  
+                } else {  
+                    this.failCount++;  
+                    this.log.unshift({ success: false, message: `Failed: ${(prizeDraw * 100).toFixed(3)}` });  
+                }  
+            }  
+        },  
+        clearLog() {  
+            this.log = [];  
+            this.successCount = 0;  
+            this.failCount = 0;  
+            this.cancelAnimation();  
+        },  
+        limitRepetitions() {  
+            if (this.repetitions > 1000) {  
+                this.repetitions = 1000;  
+            }  
+            if (this.repetitions < 1) {  
+                this.repetitions = 1;  
+            }  
+        }  
+    },  
+    computed: {  
+        averageAttempts() {  
+            const totalAttempts = this.successCount + this.failCount;  
+            if (this.successCount === 0) return '0.00';  
+            return (totalAttempts / this.successCount).toFixed(2);  
+        }  
+    }  
+}  
 </script>
 
 <style scoped>
