@@ -47,6 +47,7 @@ async function saveSimulatorState(stateInfo) {
 async function accessSimulatorState(user_id = null, session_id = null) {
     try {
         const searchCriteria = user_id ? { user_id } : { session_id };
+        console.log(searchCriteria);
         if (!searchCriteria) {
             return {error: 'User not found'};
         }

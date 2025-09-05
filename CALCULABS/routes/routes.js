@@ -109,12 +109,12 @@ router.get('/simulator-state', async (req, res) => {
         const session_id = req.session.id;
         const user_id = req.user ? req.user.id : null;
         const state = await accessSimulatorState(user_id, session_id);
-        console.log(session_id);
         res.status(200).json({ success: true, state, session_id });
     } catch (error) {
         console.error("Erro ao acessar o estado do simulador:", error);
         res.status(500).json({ success: false, error: 'Ocorreu um erro interno ao acessar o estado do simulador.' });
     }
 });
+
 
 export default router;

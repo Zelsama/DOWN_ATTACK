@@ -166,7 +166,7 @@
         ></LeftPanel>
         <div class="card mb-0">
           <div class="card-content">
-            <!-- ... (código do top-row e enchant_diagram continua o mesmo) ... -->
+            <!-- ... (código do top-row continua o mesmo) ... -->
             <div class="top-row">
               <div class="weapon-container">
                 <img v-if="currentIconUrl" :src="currentIconUrl" alt="sovereign weapon" class="sovereign-img" :style="{ border: '2px solid ' + currentColor }">
@@ -221,8 +221,63 @@
                 </select>
               </div>
             </div>
-            <div id="enchant_diagram">
+            <!-- INÍCIO: DIAGRAMA CORRIGIDO -->
+            <div id="enchant_diagram" :class="animationClass">
               <img id="diagram-background-img" src="../assets/enchant_diagram.png" alt="enchant_diagram">
+              
+              <!-- SVG Overlay com a viewBox e coordenadas CORRETAS -->
+              <svg class="diagram-animation-overlay" viewBox="0 0 774 322" preserveAspectRatio="none">  
+                <!-- FASE 1: Linhas e Bolinhas -->  
+                <path class="animated-path" id="path1" d="M 83.675676,76.266892 L 206.13851,198.29392"></path>  
+                <path class="animated-ball" d="M 83.675676,76.266892 L 206.13851,198.29392"></path>  
+                
+                <path class="animated-path" id="path2" d="M 84.547297,198.29392 L 206.13851,197.4223"></path>  
+                <path class="animated-ball" d="M 84.547297,198.29392 L 206.13851,197.4223"></path>  
+                
+                <!-- FASE 2: Linhas e Bolinhas -->  
+                <path class="animated-path" id="path3" d="m 206.4704,197.53362 77.34936,-0.92449"></path>  
+                <path class="animated-ball" d="m 206.4704,197.53362 77.34936,-0.92449"></path>  
+                
+                <path class="animated-path" id="path3a" d="m 283.27703,196.33277 37.04392,-37.91554 5.22973,5.01182"></path>  
+                <path class="animated-ball" d="m 283.27703,196.33277 37.04392,-37.91554 5.22973,5.01182"></path>  
+                
+                <path class="animated-path" id="path3b" d="m 283.16807,196.65963 54.80321,51.64358"></path>  
+                <path class="animated-ball" d="m 283.16807,196.65963 54.80321,51.64358"></path>
+                <!-- SUPERIOR -->
+                <path class="animated-path" id="path4" d="m 295.69764,196.33277 85.81036,-87.5506 88.44329,87.51879"></path>
+                <path class="animated-path" id="path5" d="m 307.85662,197.37954 74.88404,-74.26771 74.88404,73.80546"></path>
+                <path class="animated-path" id="path6" d="m 318.14189,196.98649 64.71791,-62.97467 63.41047,63.19257"></path>
+                <!-- INFERIOR -->
+                <path class="animated-path" id="path7" d="m 295.26182,196.76858 86.29055,86.72635 88.25168,-87.38007"></path>
+                <path class="animated-path" id="path8" d="m 308.11824,197.4223 74.52365,74.30574 75.83108,-74.52365"></path>
+                <path class="animated-path" id="path9" d="m 318.5777,197.20439 64.2821,62.75676 62.97466,-62.32095"></path>
+
+                <!-- TERCEIRA PARTE INFERIOR -->
+                <path class="animated-path" id="path10" d="m 456.83868,210.16976 6.21031,5.9924 19.07481,-19.39895 108.31992,107.70359"></path>
+                <path class="animated-path" id="path11" d="M 502.92568,197.85811 624.51689,319.88514 746.99143,198.45812"></path>
+                <path class="animated-path" id="path12" d="M 518.02499,197.22546 625.5745,306.00763 733.74034,197.84179"></path>
+                <path class="animated-path" id="path13" d="m 529.42709,198.45812 c 41.60225,39.75325 41.60225,39.75325 41.60225,39.75325 l -0.30817,14.17558 10.16944,-1.23265 44.99206,43.14306 45.4543,-42.8349 7.55004,-0.15408 0.15408,-10.16944 45.30023,-43.7594"></path>
+                <path class="animated-path" id="path14" d="m 546.94257,197.4223 21.79054,21.79054"></path>
+                <path class="animated-path" id="path15" d="m 602.29054,253.64189 23.53378,23.9696 23.9696,-24.40541"></path>
+                <path class="animated-path" id="path16" d="m 680.30068,224.00676 27.02027,-27.45608 -27.02027,-29.19933"></path>
+                <path class="animated-path" id="path17" d="m 570.91216,200.47297 0.43581,50.11825 106.77365,0.43581 0.43581,-51.86149"></path>
+                <path class="animated-path" id="path18" d="m 582.67905,197.85811 -0.43581,44.01689 86.29054,-0.43581 -0.87162,-44.01689"></path>
+                <path class="animated-path" id="path19" d="m 590.52365,194.37162 v 36.60811 H 657.2027 L 656.76689,193.5"></path>
+
+                <!-- TERCEIRA PARTE SUPERIOR -->
+                <path class="animated-path" id="path20" d="M 481.13514,193.93581 624.72705,50.153818 765.59688,196.68617 644.83657,321.49219"></path>
+                <path class="animated-path" id="path21" d="M 502.05405,198.29392 625.82432,74.959459 748.28716,197.85811"></path>
+                <path class="animated-path" id="path22" d="M 519.05068,197.4223 626.69595,90.212838 733.03378,198.29392"></path>
+                <path class="animated-path" id="path23" d="m 528.63851,198.07601 43.00716,-41.83647 -0.61633,-11.71026 12.63475,0.30817 43.45124,-44.37573 44.68389,44.68389 7.08779,0.30817 0.54205,8.82325 44.75817,43.25659"></path>
+                <path class="animated-path" id="path24" d="M 568.87218,220.64598 545.1435,196.30096 569.18035,173.80494"></path>
+                <path class="animated-path" id="path25" d="m 598.456,143.29662 28.65933,-27.1185 25.26951,26.81034"></path>
+                <path class="animated-path" id="path26" d="m 571.3375,196.91729 v -53.3125 l 107.54951,0.92449 -0.61633,54.54517"></path>
+                <path class="animated-path" id="path27" d="m 582.12327,205.54591 v -50.53903 l 85.66981,1.23266 -0.61633,50.23086"></path>
+                <path class="animated-path" id="path28" d="m 591.36821,201.84793 v -36.67161 h 65.6391 l 0.30817,37.59611"></path>
+
+
+              </svg>
+
               <div class="diagram-overlay diagram-icon-container" id="cron-overlay">
                 <img src="../assets/cron_icon.png" alt="Cron Stone" class="diagram-icon-img">
                 <span class="cron-amount-text"> {{ crons }}</span>
@@ -238,13 +293,12 @@
               <div class="weapon-container" id="result-item-overlay" ref="resultItemOverlay">
                   <img v-if="currentIconUrl" :src="currentIconUrl" alt="" class="sovereign-img" :style = "{ border: '2px solid ' + currentColor }">
                   <span v-if='selectTier && selectTier !== "0" && selectTier !== "+0"' class="Tier">{{ selectTier }}</span>
-                </div>              
+              </div>              
             </div>
+            <!-- FIM: DIAGRAMA CORRIGIDO -->
 
-            <!-- BLOCO DE STATS CORRIGIDO -->
+            <!-- BLOCO DE STATS (sem alterações) -->
             <div id="enchant-stats">
-
-              <!-- Linha 1: Additional Enhancement Chance -->
               <div class="stat-row">
                 <div class="stat-label-group">
                   <figure class="image is-24x24 stat-icon">
@@ -253,7 +307,6 @@
                   <p class="stat-label is-hidden-mobile"><b>Additional Enhancement Chance</b></p>
                 </div>
                 <div class="stat-controls field has-addons is-vcentered">
-
                   <p class="control">
                     <input class="input is-small" type="number" v-model.number="currentChance" @input="limitCurrentChance">
                   </p>
@@ -265,8 +318,6 @@
                   </p>              
                 </div>
               </div>
-
-              <!-- Linha 2: Valk's Cry -->
               <div class="stat-row">
                 <div class="stat-label-group">
                   <figure class="image is-24x24 stat-icon">
@@ -275,7 +326,6 @@
                   <p class="stat-label is-hidden-mobile"><b>Valk's Cry</b></p>
                 </div>
                 <div class="stat-controls field has-addons">
-
                   <p class="control">
                     <input class="input is-small" type="number" v-model.number="valksCry" @input="limitValks">
                   </p>
@@ -287,8 +337,6 @@
                   </p>              
                 </div>
               </div>
-
-              <!-- Linha 3: Permanent Enhancement Chance -->
               <div class="stat-row">
                 <div class="stat-label-group">
                   <figure class="image is-24x24 stat-icon">
@@ -302,8 +350,6 @@
                   </button>
                 </div>
               </div>
-
-              <!-- Linha 4: Current Enhancement Chance -->
               <div class="stat-row">
                 <div class="stat-label-group">
                   <figure class="image is-24x24 stat-icon">
@@ -315,13 +361,16 @@
                   <h5 class="subtitle is-5 has-text-weight-bold has-text-light">+ {{ currentChanceTotal }}</h5>
                 </div>
               </div>
-
             </div>
-
           </div>
         </div>
         <EnhancingCalculator :base-success-rate="leftPanelChance"></EnhancingCalculator>
-        <EnhancingSimulator :base-success-rate="leftPanelChance"></EnhancingSimulator>              
+        <EnhancingSimulator 
+          :base-success-rate="leftPanelChance"
+          @animation-start="handleAnimationStart"
+          @animation-result="handleAnimationResult"
+          @animation-end="handleAnimationEnd"
+        ></EnhancingSimulator>
       </div>            
     </div>    
   </div>
@@ -414,6 +463,27 @@ export default {
 
         const selectedItem = ref(initialItem);  
         
+        // INÍCIO: LÓGICA PARA CONTROLAR A ANIMAÇÃO
+        const animationClass = ref('');
+
+        const handleAnimationStart = () => {
+          animationClass.value = 'enhancing-glow';
+        };
+
+        const handleAnimationResult = (result) => {
+          // Remove a classe de "brilho contínuo" antes de mostrar o resultado
+          animationClass.value = ''; 
+          // Usa nextTick para garantir que o DOM seja atualizado antes de adicionar a nova classe de flash
+          nextTick(() => {
+            animationClass.value = result.success ? 'success-flash' : 'fail-flash';
+          });
+        };
+
+        const handleAnimationEnd = () => {
+          animationClass.value = '';
+        };
+        // FIM: LÓGICA PARA CONTROLAR A ANIMAÇÃO
+
         const closeDropdown = () => {  
           isEditing.value = false;  
         };  
@@ -821,7 +891,12 @@ export default {
           limitModalValks, limitModalStartingStack, formatModalSaveCost,
           handleTierScroll, debouncedSaveState,
           resultItemOverlay, currentChanceTotal, reversedLevels,
-          profileKeyPEN, profileKeys
+          profileKeyPEN, profileKeys,
+          // Expondo as novas variáveis e funções para o template
+          animationClass,
+          handleAnimationStart,
+          handleAnimationResult,
+          handleAnimationEnd
         }  
       }
 }
@@ -1181,4 +1256,138 @@ export default {
   #enchant-stats .stat-controls .input.is-small {  
   height: 30px;  
 }  
+
+/* INÍCIO: NOVOS ESTILOS PARA ANIMAÇÃO DO DIAGRAMA */
+.diagram-animation-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Permite que cliques passem através do SVG */
+}
+
+.animated-path {  
+  stroke-dasharray: 1000;  
+  stroke-dashoffset: 1000;  
+  stroke: transparent;  
+  stroke-width: 4;  
+  fill: none;  
+}
+.animated-ball {  
+  fill: none;  
+  stroke: transparent;  
+  stroke-width: 8; /* Mais grossa que a linha */  
+  stroke-linecap: round; /* Deixa as pontas redondas */  
+  stroke-dasharray: 1 1000; /* "Pinta" 1px, depois um espaço de 1000px */  
+  stroke-dashoffset: 1001; /* Começa fora da tela */  
+}
+/* Animação que "desenha" a linha */
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+    stroke: #ffbb00;
+  }
+}
+
+/* Animações de brilho para o item final */
+@keyframes success-glow-effect {
+    0% { box-shadow: 0 0 30px #48bb78, 0 0 70px #48bb78; }
+    50% { box-shadow: 0 0 150px #48bb78, 0 0 210px #48bb78; }
+    100% { box-shadow: 0 0 30px #48bb78, 0 0 70px #48bb78; }
+}
+
+@keyframes fail-glow-effect {
+    0% { box-shadow: 0 0 20px #f56565, 0 0 20px #f56565; }
+    50% { box-shadow: 0 0 80px #f56565, 0 0 60px #f56565; }
+    100% { box-shadow: 0 0 20px #f56565, 0 0 20px #f56565; }
+}
+
+/* Gatilhos para as animações */
+
+/* Quando a animação começa, aplica a animação de desenhar as linhas */
+#enchant_diagram.enhancing-glow .animated-path {
+  animation: draw-line 4s ease-out forwards;
+}
+#enchant_diagram.enhancing-glow .animated-ball {  
+  animation: move-ball 2s linear forwards;  
+}
+
+/* Adiciona um atraso para cada linha, criando um efeito sequencial */
+#enchant_diagram.enhancing-glow #path1,  
+#enchant_diagram.enhancing-glow #path1 + .animated-ball, /* A bolinha do path1 */  
+#enchant_diagram.enhancing-glow #path2,  
+#enchant_diagram.enhancing-glow #path2 + .animated-ball { /* A bolinha do path2 */  
+  animation-delay: 0s;   
+}  
+  
+/* --- FASE 2: Primeira Bifurcação (0.4s - 0.5s) --- */  
+#enchant_diagram.enhancing-glow #path3,  
+#enchant_diagram.enhancing-glow #path3 + .animated-ball {  
+  animation-delay: 0.4s;  
+}  
+#enchant_diagram.enhancing-glow #path3a,  
+#enchant_diagram.enhancing-glow #path3a + .animated-ball,  
+#enchant_diagram.enhancing-glow #path3b,  
+#enchant_diagram.enhancing-glow #path3b + .animated-ball {  
+  animation-delay: 0.5s;  
+}
+  
+/* --- FASE 3: Segunda Bifurcação (0.6s) --- */  
+#enchant_diagram.enhancing-glow #path4,  
+#enchant_diagram.enhancing-glow #path5,  
+#enchant_diagram.enhancing-glow #path6,  
+#enchant_diagram.enhancing-glow #path7,  
+#enchant_diagram.enhancing-glow #path8,  
+#enchant_diagram.enhancing-glow #path9 {  
+  animation-delay: 1.2s;  
+}  
+  
+/* --- FASE 4: Preparação para o Final (1s - 1.2s) --- */  
+#enchant_diagram.enhancing-glow #path10,  
+#enchant_diagram.enhancing-glow #path20 {  
+  animation-delay: 2s;  
+}  
+  
+#enchant_diagram.enhancing-glow #path11,  
+#enchant_diagram.enhancing-glow #path12,  
+#enchant_diagram.enhancing-glow #path13,  
+#enchant_diagram.enhancing-glow #path17,  
+#enchant_diagram.enhancing-glow #path21,  
+#enchant_diagram.enhancing-glow #path22,  
+#enchant_diagram.enhancing-glow #path23 {  
+  animation-delay: 2.2s;  
+}  
+  
+#enchant_diagram.enhancing-glow #path18,  
+#enchant_diagram.enhancing-glow #path19,  
+#enchant_diagram.enhancing-glow #path27,  
+#enchant_diagram.enhancing-glow #path28 {  
+  animation-delay: 2.2s;  
+}  
+  
+/* --- FASE 5: Detalhes Finais (1.3s - 1.5s) --- */  
+#enchant_diagram.enhancing-glow #path14,  
+#enchant_diagram.enhancing-glow #path24 {  
+  animation-delay: 2.6s;  
+}  
+  
+#enchant_diagram.enhancing-glow #path15,  
+#enchant_diagram.enhancing-glow #path25,  
+#enchant_diagram.enhancing-glow #path26 {  
+  animation-delay: 2.8s;  
+}  
+  
+#enchant_diagram.enhancing-glow #path16 {  
+  animation-delay: 3s;  
+}
+
+/* Aplica o brilho de sucesso/falha no item final */
+#enchant_diagram.success-flash #result-item-overlay .sovereign-img {
+    animation: success-glow-effect 1s ease-in-out;
+}
+#enchant_diagram.fail-flash #result-item-overlay .sovereign-img {
+    animation: fail-glow-effect 1s ease-in-out;
+}
+/* FIM: NOVOS ESTILOS */
 </style>

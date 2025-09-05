@@ -5,7 +5,9 @@
         <img src="../assets/logo.jpg" alt="logoBdoOptimizer" style="margin-right: 10px;">
         BDO OPTIMIZER
       </router-link>
-
+      <a href="https://discord.gg/kNYvABEHJ3">
+        <img src="../assets/discord.png" class="image is-24x24 mt-4" alt="Discord Logo" style="margin-left: 10px;">
+      </a>
       <a
         role="button"
         class="navbar-burger"
@@ -64,6 +66,31 @@
       </div>
 
       <div class="navbar-end">
+        <!-- Botão de Login Discord -->
+        <div v-if="!authStore.isLoggedIn" class="navbar-item">
+          <a :href="`${backEndUrl}/auth/discord`" class="discord-login-button">
+            <img src="../assets/discord.png" alt="Discord Login" class="discord-icon">
+            <span>Login</span>
+          </a>
+        </div>
+        
+        <!-- Dropdown do Usuário (quando logado) -->
+        <div v-else class="navbar-item has-dropdown is-hoverable user-dropdown">  
+          <a class="navbar-link user-avatar-link">  
+            <figure class="image is-32x32 mt-1">  
+              <img :src="authStore.user?.avatarUrl" alt="User Avatar" class="is-rounded">  
+            </figure>  
+          </a>  
+          <div class="navbar-dropdown is-right">  
+            <div class="navbar-item dropdown-username">  
+              <strong>{{ authStore.user.username }}</strong>  
+            </div>  
+            <div class="buttons">
+              <a class="button is-small is-danger" style="color: white;" @click="logout">Logout</a>
+            </div>
+          </div>  
+        </div>
+        
         <!-- Region Dropdown -->
         <div 
           class="navbar-item has-dropdown" 
@@ -91,14 +118,19 @@
 
 <script>
 import { useRegionStore } from '../stores/regionStore';
+import { useAuthStore } from '../stores/authStore';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'NavbarComponent',
   setup() {
+    const router = useRouter();
     const regionStore = useRegionStore();
+    const authStore = useAuthStore();
     const isMenuOpen = ref(false);
     const activeDropdown = ref(null); // Controla qual dropdown está ativo
+    const backEndUrl = process.env.VUE_APP_API_URL;
 
     const regions = ref([
       { value: 'na', label: 'NA' },
@@ -124,16 +156,22 @@ export default {
         isMenuOpen.value = false;
       }
     }
-
+    async function logout() {
+      await authStore.logout();
+      router.go(0);
+    }
     return {
       regionStore,
       isMenuOpen,
       regions,
       toggleMenu,
       selectRegion,
-      activeDropdown, // Expõe a variável para o template
+      activeDropdown,
+      backEndUrl,
+      authStore,
+      logout
     };
-  },
+  },  
 };
 </script>
 
@@ -146,19 +184,17 @@ export default {
 }
 
 /* --- Layout e Centralização --- */
-/* Força o menu a ocupar o espaço restante */
 .navbar-menu {
   flex-grow: 1;
 }
 
-/* Centraliza o navbar-start usando margens automáticas */
 .navbar-start {
   margin: 0 auto;
 }
 
 /* --- Estilo da Seta do Dropdown --- */
 .navbar-link::after {
-  border-color: #8a93f0; /* Tom de azul/roxo da imagem */
+  border-color: #8a93f0;
   border-width: 0 1.5px 1.5px 0;
   height: 6px;
   width: 6px;
@@ -189,7 +225,31 @@ export default {
   color: #fff !important;
 }
 
-/* --- Logo e Burger --- */
+/* --- Botão de Login Discord --- */
+.discord-login-button {
+  background-color: #282b30;
+  border: 1px solid #42464d;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.discord-login-button:hover {
+  background-color: #393d42;
+  color: #ffffff;
+}
+
+.discord-login-button .discord-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
 .logo-item {
   color: #e0e2e4 !important;
 }
@@ -198,13 +258,38 @@ export default {
   color: #EAEAEA;
 }
 
+/* --- MUDANÇA PRINCIPAL AQUI --- */
+.user-avatar-link,  
+.user-avatar-link:hover {  
+  /* Remove o padding para a hitbox ficar do tamanho do ícone */
+  padding: 0 !important;
+}  
+  
+.user-avatar-link::after {  
+  display: none !important;  
+}  
+
+/* Controla o espaçamento do container do avatar */
+.navbar-end .user-dropdown.navbar-item {
+  /* Mantém o padding vertical e reduz o horizontal para aproximar os itens */
+  padding: 0.5rem 0.25rem;
+}
+ 
+.dropdown-username {  
+  font-size: 0.9rem;  
+  color: #ccc;
+}  
+  
+.dropdown-username strong {  
+  color: #fff; 
+}
+
 /* --- Responsividade Mobile --- */
 @media screen and (max-width: 1023px) {
   .navbar-menu.is-active {
     background-color: #1A1A1A;
   }
   
-  /* Remove a centralização no mobile */
   .navbar-start {
     margin: 0;
   }
