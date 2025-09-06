@@ -5,6 +5,12 @@
 
 <script>
 // @ is an alias to /src
+import { onMounted } from 'vue';
+
+onMounted(() => {
+  console.log("HomeView mounted");
+  console.log("API URL: "+process.env.VUE_APP_API_URL);
+});
 
 export default {
   name: 'HomeView',
