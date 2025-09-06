@@ -12,6 +12,9 @@ import db from './database/connection.js';
 
 dotenv.config();
 
+const a_valid_domain = process.env.NODE_ENV === 'production' ? '.bdoptimizer.com' : undefined;
+console.log(`[DEBUG] NODE_ENV: ${process.env.NODE_ENV}`);  
+console.log(`[DEBUG] Cookie Domain: ${a_valid_domain}`);
 const app = express();
 const allowedOrigins = [process.env.FRONTEND_URL];
 const options = {
@@ -21,7 +24,7 @@ const options = {
 const port = process.env.PORT || 8080;
 const scopes = ['identify'];
 
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 app.use(cors(options));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -38,6 +41,7 @@ app.use(session({
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7,
+    domain: a_valid_domain,
     partitioned: process.env.NODE_ENV === 'production'
    }
 }));
