@@ -15,6 +15,7 @@ dotenv.config();
 const a_valid_domain = process.env.NODE_ENV === 'production' ? '.bdoptimizer.com' : undefined;
 console.log(`[DEBUG] NODE_ENV: ${process.env.NODE_ENV}`);  
 console.log(`[DEBUG] Cookie Domain: ${a_valid_domain}`);
+console.log(`[DEBUG] BACKEND_URL: ${process.env.BACKEND_URL}`);
 const app = express();
 const allowedOrigins = [process.env.FRONTEND_URL];
 const options = {
