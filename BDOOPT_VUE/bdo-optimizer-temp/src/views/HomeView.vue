@@ -1,5 +1,6 @@
 <template>
   <div class="home">   
+    <h1>{{ process.env.VUE_APP_API_URL }}</h1>
   </div>
 </template>
 
