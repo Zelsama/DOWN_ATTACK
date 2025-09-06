@@ -64,11 +64,13 @@ passport.deserializeUser(async (id, done) => {
     done(error, null);
   }  
 });
+const discordCallbackURL = `${process.env.BACKEND_URL}/auth/discord/callback`;
+console.log(`[PASSPORT] Using Callback URL: "${discordCallbackURL}"`);
 
 passport.use(new DiscordStrategy({  
   clientID: process.env.DISCORD_CLIENT_ID,  
   clientSecret: process.env.DISCORD_CLIENT_SECRET,  
-  callbackURL: `${process.env.BACKEND_URL}/auth/discord/callback`,  
+  callbackURL: discordCallbackURL,  
   scope: scopes  
 }, async (accessToken, refreshToken, profile, done) => {  
   try {  
