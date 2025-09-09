@@ -500,7 +500,6 @@ export default {
         };      
         
         onMounted(async () => {  
-          console.log("api URL VUE_APP_BACK_END_URL: "+process.env.VUE_APP_BACK_END_URL);
           document.addEventListener('click', handleClickOutside); 
           wrapRequest(getSuccessRateAndData());
           await wrapRequest(getEnhanceableItems());
