@@ -1,11 +1,11 @@
 const blackstone = 100000;
-const memory = 3000000;
+const memory = 0;
 const sharp_blackstone = 5900000;
 const flawless_blackstone = 2* sharp_blackstone;
 const valksCry = 6555891;
-const costStack97 = 729000000 + (13 * valksCry);
-const costStack45 = 406 * blackstone;
-const costStack40 = 230 * blackstone;
+const costStack97 = 0//729000000 + (13 * valksCry);
+const costStack45 = 0//406 * blackstone;
+const costStack40 = 0//230 * blackstone;
 const costStack35 = 136 * blackstone;
 const costStack30 = 84 * blackstone;
 const costStack25 = 53 * blackstone;
