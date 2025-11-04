@@ -1,0 +1,1122 @@
+[
+  {
+    "id": 11601,
+    "name": "Yuria Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11602,
+    "name": "Bares Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11603,
+    "name": "Hesus Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11604,
+    "name": "Elisha Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11605,
+    "name": "Kalis Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11606,
+    "name": "Talis Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11607,
+    "name": "Ogre Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11609,
+    "name": "Necklace of Good Deeds",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11610,
+    "name": "Scarla Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11611,
+    "name": "Bensho's Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11613,
+    "name": "Ancient Guardian's Seal",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11625,
+    "name": "Sicil's Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11628,
+    "name": "Serap's Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11629,
+    "name": "Tungrad Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11630,
+    "name": "Laytenn's Power Stone",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11631,
+    "name": "Necklace of Shultz the Gladiator",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11653,
+    "name": "Deboreka Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11662,
+    "name": "Revived River Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11663,
+    "name": "Revived Lunar Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11688,
+    "name": "Asadal Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11703,
+    "name": "Blood Ruby Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11704,
+    "name": "Dark Blood Ruby Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11705,
+    "name": "Corrupt Ruby Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11708,
+    "name": "Ocean Sapphire Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11709,
+    "name": "Translucent Ocean Sapphire Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11710,
+    "name": "Sapphire Necklace of Storms",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11713,
+    "name": "Gold Topaz Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11714,
+    "name": "Shining Gold Topaz Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11715,
+    "name": "Topaz Necklace of Regeneration",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11718,
+    "name": "Forest Emerald Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11719,
+    "name": "Placid Forest Emerald Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11720,
+    "name": "Emerald Necklace of Tranquility",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11723,
+    "name": "Star Diamond Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11724,
+    "name": "Starry Night Diamond Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11725,
+    "name": "Diamond Necklace of Fortitude",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11726,
+    "name": "Manos Ruby Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11727,
+    "name": "Manos Sapphire Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11728,
+    "name": "Manos Topaz Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11729,
+    "name": "Manos Emerald Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11730,
+    "name": "Manos Diamond Necklace",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 11801,
+    "name": "Yuria Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11802,
+    "name": "Bares Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11803,
+    "name": "Hesus Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11804,
+    "name": "Elisha Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11805,
+    "name": "Kalis Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11806,
+    "name": "Talis Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11807,
+    "name": "Token of Friendship",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11808,
+    "name": "Witch's Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11810,
+    "name": "Mesto Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11811,
+    "name": "Ridell Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11815,
+    "name": "Blue Whale Molar Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11816,
+    "name": "Blue Coral Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11817,
+    "name": "Red Coral Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11827,
+    "name": "Fugitive Khalk's Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11828,
+    "name": "Tungrad Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11834,
+    "name": "Narc Ear Accessory",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11853,
+    "name": "Black Distortion Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11855,
+    "name": "Dawn Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11856,
+    "name": "Ethereal Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11875,
+    "name": "Vaha's Dawn",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11882,
+    "name": "Deboreka Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11903,
+    "name": "Blood Ruby Earrings",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11904,
+    "name": "Dark Blood Ruby Earrings",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11905,
+    "name": "Corrupt Ruby Earrings",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11908,
+    "name": "Ocean Sapphire Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11909,
+    "name": "Translucent Ocean Sapphire Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11910,
+    "name": "Sapphire Earring of Storms",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11913,
+    "name": "Gold Topaz Earrings",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11914,
+    "name": "Shining Gold Topaz Earrings",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11915,
+    "name": "Topaz Earrings of Regeneration",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11926,
+    "name": "Manos Ruby Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11927,
+    "name": "Manos Sapphire Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 11928,
+    "name": "Manos Topaz Earring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 12001,
+    "name": "Yuria Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12002,
+    "name": "Bares Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12003,
+    "name": "Hesus Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12004,
+    "name": "Elisha Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12005,
+    "name": "Kalis Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12006,
+    "name": "Talis Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12007,
+    "name": "Mark of Shadow",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12008,
+    "name": "Shrine Guardian Token",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12010,
+    "name": "Ring of Good Deeds",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12011,
+    "name": "Nert Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12012,
+    "name": "Outlaw's Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12017,
+    "name": "Blue Coral Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12018,
+    "name": "Red Coral Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12031,
+    "name": "Ring of Crescent Guardian",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12032,
+    "name": "Ring of Cadry Guardian",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12042,
+    "name": "Forest Ronaros Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12045,
+    "name": "Rainbow Coral Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12059,
+    "name": "Kagtum Submission Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12060,
+    "name": "Eye of the Ruins Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12061,
+    "name": "Tungrad Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12068,
+    "name": "Ominous Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12091,
+    "name": "Ocean Haze Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12094,
+    "name": "Deboreka Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12103,
+    "name": "Blood Ruby Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12104,
+    "name": "Dark Blood Ruby Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12105,
+    "name": "Corrupt Ruby Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12113,
+    "name": "Gold Topaz Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12114,
+    "name": "Shining Gold Topaz Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12115,
+    "name": "Topaz Ring of Regeneration",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12126,
+    "name": "Manos Ruby Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12128,
+    "name": "Manos Topaz Ring",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 12201,
+    "name": "Yuria Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12202,
+    "name": "Bares Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12203,
+    "name": "Hesus Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12204,
+    "name": "Elisha Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12205,
+    "name": "Kalis Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12206,
+    "name": "Talis Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12208,
+    "name": "Rhutum Elite Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12210,
+    "name": "Tree Spirit Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12211,
+    "name": "Belt of Shultz the Gladiator",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12212,
+    "name": "Gartner Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12220,
+    "name": "Ancient Weapon Core",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12229,
+    "name": "Centaurus Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12230,
+    "name": "Basilisk's Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12236,
+    "name": "Valtarra Eclipsed Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12237,
+    "name": "Tungrad Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12251,
+    "name": "Orkinrad's Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12257,
+    "name": "Turo's Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12276,
+    "name": "Deboreka Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12282,
+    "name": "Taebaek's Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12285,
+    "name": "Asadal Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12303,
+    "name": "Red Coral Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12304,
+    "name": "Brilliant Red Coral Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12305,
+    "name": "Twilight Red Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12308,
+    "name": "Blue Coral Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12309,
+    "name": "Brilliant Blue Coral Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12310,
+    "name": "Daybreak Blue Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12313,
+    "name": "Green Coral Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12314,
+    "name": "Brilliant Green Coral Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12315,
+    "name": "Prairie Green Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12318,
+    "name": "Golden Coral Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12319,
+    "name": "Brilliant Golden Coral Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12320,
+    "name": "Golden Sun Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12323,
+    "name": "White Coral Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12324,
+    "name": "Brilliant White Coral Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12325,
+    "name": "Breezy White Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12326,
+    "name": "Manos Red Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12327,
+    "name": "Manos Blue Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12328,
+    "name": "Manos Green Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12329,
+    "name": "Manos Golden Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 12330,
+    "name": "Manos White Coral Belt",
+    "grade_type": 3,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 705501,
+    "name": "Loggia Necklace",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 705502,
+    "name": "Loggia Earring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 705503,
+    "name": "Loggia Ring",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 705504,
+    "name": "Loggia Belt",
+    "grade_type": 1,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 705505,
+    "name": "Geranoa Necklace",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 705506,
+    "name": "Geranoa Earring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 705507,
+    "name": "Geranoa Ring",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 705508,
+    "name": "Geranoa Belt",
+    "grade_type": 2,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 705509,
+    "name": "Manos Necklace",
+    "grade_type": 4,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 705510,
+    "name": "Manos Earring",
+    "grade_type": 4,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 705511,
+    "name": "Manos Ring",
+    "grade_type": 4,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 705512,
+    "name": "Manos Belt",
+    "grade_type": 4,
+    "main_category": 20,
+    "sub_category": 4
+  },
+  {
+    "id": 705533,
+    "name": "Preonne Necklace",
+    "grade_type": 5,
+    "main_category": 20,
+    "sub_category": 2
+  },
+  {
+    "id": 705534,
+    "name": "Preonne Earring",
+    "grade_type": 5,
+    "main_category": 20,
+    "sub_category": 3
+  },
+  {
+    "id": 705535,
+    "name": "Preonne Ring",
+    "grade_type": 5,
+    "main_category": 20,
+    "sub_category": 1
+  },
+  {
+    "id": 705536,
+    "name": "Preonne Belt",
+    "grade_type": 5,
+    "main_category": 20,
+    "sub_category": 4
+  }
+]

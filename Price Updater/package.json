@@ -1,0 +1,16 @@
+{
+  "name": "price-updater",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "axios": "^1.11.0",
+    "knex": "^3.1.0",
+    "mysql2": "^3.14.3",
+    "redis": "^5.8.2"
+  }
+}
