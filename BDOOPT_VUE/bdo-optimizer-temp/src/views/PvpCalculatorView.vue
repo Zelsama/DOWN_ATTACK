@@ -7,7 +7,7 @@
         <div class="header-buttons">
           <button class="btn" :class="{ 'active': mode === 'pvp' }" @click="mode = 'pvp'">One vs One</button>
           <button class="btn" :class="{ 'active': mode === 'pve' }" @click="mode = 'pve'">PvE</button>
-        </div>
+        </div> 
       </div>
 
       <!-- Main Content -->
