@@ -1,422 +1,162 @@
 <template>
   <div class="damage-calculator-page">
-    <div class="container">
+    <div class="calculator-layout">
+      
       <!-- Header -->
       <div class="page-header">
         <h4 class="title">Black Desert Damage Calculator</h4>
         <div class="header-buttons">
-          <button class="btn" :class="{ 'active': mode === 'pvp' }" @click="mode = 'pvp'">One vs One</button>
-          <button class="btn" :class="{ 'active': mode === 'pve' }" @click="mode = 'pve'">PvE</button>
+          <button class="button is-info is-dark" :class="{ 'is-active': mode === 'pvp' }" @click="mode = 'pvp'">One vs One</button>
+          <button class="button is-warning" :class="{ 'is-active': mode === 'solare' }" @click="mode = 'solare' ">Solare</button>
         </div> 
       </div>
 
-      <!-- Main Content -->
-      <div class="main-grid">
-        <!-- Player 1 Panel -->
-        <div class="player-panel">
-          <div class="panel-header player1">Player 1</div>
-          <div class="dropdown" :class="{ 'is-active': showDropdown1 }" ref="dropdown1">
-            <div class="dropdown-trigger">
-              <input 
-                class="input is-small input-with-icon" 
-                type="text" 
-                v-model="player1Search"
-                @focus="showDropdown1 = true"
-                @input="showDropdown1 = true"
-                placeholder="Search class..."
-              >
+      <!-- NOVA SEÇÃO: TOP RESULTS (Estilo Showdown) -->
+      <div class="top-results-bar">
+        <!-- Resultado P1 -> P2 -->
+        <div class="result-card p1-attacker">
+          <div class="result-header">
+            <span class="attacker-name">Player 1</span> attacking <span class="defender-name">Player 2</span>
+          </div>
+          <div class="result-body">
+            <div class="damage-text">
+              {{ damage1to2.hp_loss }} <span class="percent">({{ damage1to2.hp_loss_percentage }}%)</span>
             </div>
-            <div class="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                <a 
-                  v-for="cls in filteredClasses1" 
-                  :key="cls"
-                  class="dropdown-item"
-                  :class="{ 'is-active': player1.class === cls }"
-                  @click="selectClass(1, cls)"
-                >
-                  {{ cls }}
-                </a>
-                <div v-if="filteredClasses1.length === 0" class="dropdown-item">
-                  No results
-                </div>
-              </div>
+            <div class="hit-chance">
+              Hit Chance: <span :class="getHitColor(hitChance1to2)">{{ hitChance1to2 }}%</span>
             </div>
           </div>
-
-          <!-- Offensive Stats -->
-          <div class="section-title">Offensive</div>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label>Sheet AP</label>
-              <input type="number" v-model.number="player1.sheet_ap">
-            </div>
-            <div class="form-group">
-              <label>Sheet AAP</label>
-              <input type="number" v-model.number="player1.sheet_aap">
-            </div>
+          <div class="result-desc">
+            {{ player1.class }} ({{ player1.state }}) vs {{ player2.class }}
           </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Total AP (PvP)</label>
-              <input type="number" v-model.number="player1.total_ap_pvp">
-            </div>
-            <div class="form-group">
-              <label>Total AAP (PvP)</label>
-              <input type="number" v-model.number="player1.total_aap_pvp">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Accuracy</label>
-              <input type="number" v-model.number="player1.accuracy">
-            </div>
-            <div class="form-group">
-              <label>Crit Hit Rate %</label>
-              <input type="number" v-model.number="player1.critical_hit_rate" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Critical %</label>
-              <input type="number" v-model.number="player1.critical" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Back Attack %</label>
-              <input type="number" v-model.number="player1.back_attack" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Down Attack %</label>
-              <input type="number" v-model.number="player1.down_attack" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Air Attack %</label>
-              <input type="number" v-model.number="player1.air_attack" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Skill Damage %</label>
-              <div class="input-with-addon">
-                <input type="number" v-model.number="player1.skill_damage_percent" class="main-input">
-                <div class="hits-input-wrapper">
-                  <input type="number" v-model.number="player1.skill_hits" class="addon-input">
-                </div>
-                
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Skill PvP Reduction %</label>
-              <input type="number" v-model.number="player1.skill_pvp_reduction_percent" step="0.01">
-            </div>           
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Skill Spec</label>
-              <select v-model="player1.skill_spec">
-                <option value="awakening">Awakening</option>
-                <option value="succession">Succession</option>
-                <option value="ascension">Ascension</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Attack State</label>
-              <select v-model="player1.state">
-                <option value="normal">Normal</option>
-                <option value="back_attack">Back Attack</option>
-                <option value="down_attack">Down Attack</option>
-                <option value="air_attack">Air Attack</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Defensive Stats -->
-          <div class="section-title">Defensive</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>DR %</label>
-              <input type="number" v-model.number="player1.dr_percent">
-            </div>
-            <div class="form-group">
-              <label>Melee DR</label>
-              <input type="number" v-model.number="player1.melee_dr" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Ranged DR</label>
-              <input type="number" v-model.number="player1.ranged_dr" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Magic DR</label>
-              <input type="number" v-model.number="player1.magic_dr" step="0.1">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Melee Evasion</label>
-              <input type="number" v-model.number="player1.melee_evasion">
-            </div>
-            <div class="form-group">
-              <label>Ranged Evasion</label>
-              <input type="number" v-model.number="player1.ranged_evasion" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Magic Evasion</label>
-              <input type="number" v-model.number="player1.magic_evasion" step="0.1">
-            </div>
-          </div>
-
         </div>
 
-        <!-- Center Field Panel -->
-        <div class="field-panel">
-          <div class="panel-header">Result</div>
+        <!-- Resultado P2 -> P1 -->
+        <div class="result-card p2-attacker">
+          <div class="result-header">
+            <span class="attacker-name">Player 2</span> attacking <span class="defender-name">Player 1</span>
+          </div>
+          <div class="result-body">
+            <div class="damage-text">
+              {{ damage2to1.hp_loss }} <span class="percent">({{ damage2to1.hp_loss_percentage }}%)</span>
+            </div>
+            <div class="hit-chance">
+              Hit Chance: <span :class="getHitColor(hitChance2to1)">{{ hitChance2to1 }}%</span>
+            </div>
+          </div>
+          <div class="result-desc">
+            {{ player2.class }} ({{ player2.state }}) vs {{ player1.class }}
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID (3 Colunas: P1 | Options | P2) -->
+      <div class="main-grid">
+        
+        <!-- Player 1 Panel -->
+        <PlayerPanel 
+          v-model="player1" 
+          label="Player 1" 
+          :playerNumber="1"
+          :availableClasses="classes"
+        />
+
+        <!-- NOVA COLUNA DO MEIO: BUFFS -->
+        <div class="options-panel">
+          <div class="panel-header">Buffs</div>
           
-          <div class="result-display">
-            <div class="result-main">
-              <div class="result-label">P1 → P2 Damage</div>
-              <div class="result-value damage">{{ damage1to2 }}</div>
-            </div>
-            <div class="result-sub">
-              <div class="result-item">
-                <span class="label">Hit Chance</span>
-                <span class="value hit">{{ hitChance1to2 }}%</span>
+          <div class="scrollable-content">
+            
+            <!-- Container Principal (Grid de 2 Colunas) -->
+            <div class="showdown-grid">
+              
+              <!-- COLUNA ESQUERDA (PLAYER 1) -->
+              <div class="showdown-column">
+                <div class="column-title p1-title">Player 1</div>
+                
+                <!-- Grupo: Skill Addons -->
+                <div class="button-group">
+                  <div class="group-label">Pre Addons</div>
+                  <!-- Botões P1 -->
+                  <button class="showdown-btn" :class="{ active: p1Buffs.dr }" @click="toggleBuff('p1', 'dr')">+20 DP</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.evasion }" @click="toggleBuff('p1', 'evasion')">+20 Evasion</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.accuracy }" @click="toggleBuff('p1', 'accuracy')">+20 Accuracy</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.critical_hit_rate }" @click="toggleBuff('p1', 'critical_hit_rate')">+30% Crit Rate</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.critical }" @click="toggleBuff('p1', 'critical')">+5% Crit Dmg</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.air_attack }" @click="toggleBuff('p1', 'air_attack')">+5% Air Attack</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.back_attack }" @click="toggleBuff('p1', 'back_attack')">+5% Back Attack</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.down_attack }" @click="toggleBuff('p1', 'down_attack')">+5% Down Attack</button>
+                </div>
+
+                <!-- Grupo: Debuffs (Aplicados NO INIMIGO) -->
+                <div class="button-group">
+                  <div class="group-label">Pre Debuffs Addons on Enemy</div>
+                  <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusDp }" @click="toggleDebuff('p1', 'minusDp')">-20 DP</button>
+                  <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusEvasion }" @click="toggleDebuff('p1', 'minusEvasion')">-20 Evasion</button>
+                  <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusAccuracy }" @click="toggleDebuff('p1', 'minusAccuracy')">-20 Accuracy</button>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class="result-display">
-            <div class="result-main">
-              <div class="result-label">P2 → P1 Damage</div>
-              <div class="result-value damage">{{ damage2to1 }}</div>
-            </div>
-            <div class="result-sub">
-              <div class="result-item">
-                <span class="label">Hit Chance</span>
-                <span class="value hit">{{ hitChance2to1 }}%</span>
+              <!-- COLUNA DIREITA (PLAYER 2) -->
+              <div class="showdown-column">
+                <div class="column-title p2-title">Player 2</div>
+                
+                <!-- Grupo: Skill Addons -->
+                <div class="button-group">
+                  <div class="group-label">Pre Addons</div>
+                  <!-- Botões P2 -->
+                  <button class="showdown-btn" :class="{ active: p2Buffs.dr }" @click="toggleBuff('p2', 'dr')">+20 DP</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.evasion }" @click="toggleBuff('p2', 'evasion')">+20 Evasion</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.accuracy }" @click="toggleBuff('p2', 'accuracy')">+20 Accuracy</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.critical_hit_rate }" @click="toggleBuff('p2', 'critical_hit_rate')">+30% Crit Rate</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.critical }" @click="toggleBuff('p2', 'critical')">+5% Crit Dmg</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.air_attack }" @click="toggleBuff('p2', 'air_attack')">+5% Air Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.back_attack }" @click="toggleBuff('p2', 'back_attack')">+5% Back Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.down_attack }" @click="toggleBuff('p2', 'down_attack')">+5% Down Attack</button>
+                </div>
+
+                <!-- Grupo: Debuffs -->
+                <div class="button-group">
+                  <div class="group-label">Pre Debuffs Addons on Enemy</div>
+                  <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusDp }" @click="toggleDebuff('p2', 'minusDp')">-20 DP</button>
+                  <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusEvasion }" @click="toggleDebuff('p2', 'minusEvasion')">-20 Evasion</button>
+                  <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusAccuracy }" @click="toggleDebuff('p2', 'minusAccuracy')">-20 Accuracy</button>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <button 
-            class="btn-calculate" 
-            @click="calculateDamage"
-            :disabled="isCalculating"
-          >
-            {{ isCalculating ? 'Calculating...' : 'Calculate' }}
-          </button>
-
-          <div v-if="calculationError" class="error-message">
-            {{ calculationError }}
-          </div>
-
-          <div class="field-info">
-            <div class="info-row">
-              <strong>{{ player1.class }}</strong> vs <strong>{{ player2.class }}</strong>
-            </div>
-            <div class="info-row">
-              P1: <span class="highlight">{{ player1.state }}</span> | P2: <span class="highlight">{{ player2.state }}</span>
-            </div>
+            </div> <!-- Fim do Grid -->
           </div>
         </div>
 
         <!-- Player 2 Panel -->
-        <div class="player-panel">
-          <div class="panel-header player2">Player 2</div>
-          
-            <div class="dropdown" :class="{ 'is-active': showDropdown2 }" ref="dropdown2">
-              <div class="dropdown-trigger">
-                <input 
-                  class="input is-small " 
-                  type="text" 
-                  v-model="player2Search"
-                  @focus="showDropdown2 = true"
-                  @input="showDropdown2 = true"
-                  placeholder="Search class..."
-                >
-              </div>
-              <div class="dropdown-menu" role="menu">
-                <div class="dropdown-content">
-                  <a 
-                    v-for="cls in filteredClasses2" 
-                    :key="cls"
-                    class="dropdown-item"
-                    :class="{ 'is-active': player2.class === cls }"
-                    @click="selectClass(2, cls)"
-                  >
-                    {{ cls }}
-                  </a>
-                  <div v-if="filteredClasses2.length === 0" class="dropdown-item">
-                    No results
-                  </div>
-                </div>
-              </div>
-            </div>
+        <PlayerPanel 
+          v-model="player2" 
+          label="Player 2" 
+          :playerNumber="2"
+          :availableClasses="classes"
+        />
 
-          <!-- Offensive Stats -->
-          <div class="section-title">Offensive</div>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label>Sheet AP</label>
-              <input type="number" v-model.number="player2.sheet_ap">
-            </div>
-            <div class="form-group">
-              <label>Sheet AAP</label>
-              <input type="number" v-model.number="player2.sheet_aap">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Total AP (PvP)</label>
-              <input type="number" v-model.number="player2.total_ap_pvp">
-            </div>
-            <div class="form-group">
-              <label>Total AAP (PvP)</label>
-              <input type="number" v-model.number="player2.total_aap_pvp">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Accuracy</label>
-              <input type="number" v-model.number="player2.accuracy">
-            </div>
-            <div class="form-group">
-              <label>Crit Hit Rate %</label>
-              <input type="number" v-model.number="player2.critical_hit_rate" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Critical %</label>
-              <input type="number" v-model.number="player2.critical" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Back Attack %</label>
-              <input type="number" v-model.number="player2.back_attack" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Down Attack %</label>
-              <input type="number" v-model.number="player2.down_attack" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Air Attack %</label>
-              <input type="number" v-model.number="player2.air_attack" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Skill Damage %</label>
-              <div class="input-with-addon">
-                <input type="number" v-model.number="player2.skill_damage_percent" class="main-input">
-                <div class="hits-input-wrapper">
-                  <input type="number" v-model.number="player2.skill_hits" class="addon-input">
-                </div>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Skill PvP Reduction %</label>
-              <input type="number" v-model.number="player2.skill_pvp_reduction_percent" step="0.01">
-            </div>           
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Skill Spec</label>
-              <select v-model="player1.skill_spec">
-                <option value="awakening">Awakening</option>
-                <option value="succession">Succession</option>
-                <option value="ascension">Ascension</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Attack State</label>
-              <select v-model="player1.state">
-                <option value="normal">Normal</option>
-                <option value="back_attack">Back Attack</option>
-                <option value="down_attack">Down Attack</option>
-                <option value="air_attack">Air Attack</option>
-              </select>
-            </div>
-          </div>
-          
-
-          <!-- Defensive Stats -->
-          <div class="section-title">Defensive</div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>DR %</label>
-              <input type="number" v-model.number="player2.dr_percent">
-            </div>
-            <div class="form-group">
-              <label>Melee DR</label>
-              <input type="number" v-model.number="player2.melee_dr" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Ranged DR</label>
-              <input type="number" v-model.number="player2.ranged_dr" step="0.1">
-            </div>
-            <div class="form-group">
-              <label>Magic DR</label>
-              <input type="number" v-model.number="player2.magic_dr" step="0.1">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Melee Evasion</label>
-              <input type="number" v-model.number="player2.melee_evasion">
-            </div>
-            <div class="form-group">
-              <label>Ranged Evasion</label>
-              <input type="number" v-model.number="player2.ranged_evasion">
-            </div>
-            <div class="form-group">
-              <label>Magic Evasion</label>
-              <input type="number" v-model.number="player2.magic_evasion">
-            </div>
-          </div>
-
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted} from 'vue';
+import { watchDebounced } from '@vueuse/core';
 import apiClient from '@/services/api';
+import PlayerPanel from '@/components/PlayerPanel.vue';
+
 
 export default {
   name: 'DamageCalculator',
+  components: {
+    PlayerPanel
+  },
   setup() {
     const mode = ref('pvp');
-    const showDropdown1 = ref(false);
-    const player1Search = ref('');
-    const dropdown1 = ref(null);    
-    const showDropdown2 = ref(false);
-    const player2Search = ref('');
-    const dropdown2 = ref(null);
-
-
-
-    const classes = ref([
+    
+    let classes = ref([
       'Warrior Succession', 'Warrior Awakening', 'Sorceress Succession', 'Sorceress Awakening',
       'Ranger Succession', 'Ranger Awakening', 'Berserker Succession', 'Berserker Awakening',
       'Tamer Succession', 'Tamer Awakening', 'Musa Succession', 'Musa Awakening',
@@ -434,7 +174,6 @@ export default {
     const player1 = ref({
       class: 'Warrior Succession',
       skill_spec: 'awakening',
-      // Offensive
       total_ap_pvp: 986,
       total_aap_pvp: 988,
       sheet_ap: 383,
@@ -448,7 +187,6 @@ export default {
       skill_hits: 1,
       critical_hit_rate: 50,
       state: 'down_attack',
-      // Defensive
       melee_dr: 661,
       ranged_dr: 661,
       magic_dr: 661,
@@ -457,14 +195,14 @@ export default {
       magic_evasion: 1152,
       dr_percent: 30,
       class_pvp_modifier: 0.8929,
-      skill_pvp_reduction_percent: 28.13
+      skill_pvp_reduction_percent: 28.13,
+      hp: 12163
     });
 
     // Player 2 - Complete stats
     const player2 = ref({
       class: 'Sorceress Awakening',
       spec: 'awakening',
-      // Offensive
       total_ap_pvp: 950,
       total_aap_pvp: 952,
       sheet_ap: 370,
@@ -478,7 +216,6 @@ export default {
       skill_hits: 1,
       critical_hit_rate: 48,
       state: 'normal',
-      // Defensive
       melee_dr: 650,
       ranged_dr: 650,
       magic_dr: 650,
@@ -487,20 +224,70 @@ export default {
       magic_evasion: 1100,
       dr_percent: 28,
       class_pvp_modifier: 0.85,
-      skill_pvp_reduction_percent: 26.0
+      skill_pvp_reduction_percent: 26.0,
+      hp: 12498
     });
+    const p1Buffs = ref({
+      dr: false,
+      evasion: false,
+      accuracy: false,
+      critical_hit_rate: false,
+      critical: false,
+      down_attack: false,
+      back_attack: false,
+      air_attack: false,
+    })
+    const p2Buffs = ref({
+      dr: false,
+      evasion: false,
+      accuracy: false,
+      critical_hit_rate: false,
+      critical: false,
+      down_attack: false,
+      back_attack: false,
+      air_attack: false,
+    })
+    const p1Debuff = ref({
+      minusDp: false,
+      minusEvasion: false,
+      minusAccuracy: false,
+    })
+    const p2Debuff = ref({
+      minusDp: false,
+      minusEvasion: false,
+      minusAccuracy: false,
+    })
+    const toggleDebuff = (player, debuffName)=>{
+      if(player === "p1"){
+        p1Debuff.value[debuffName] = !p1Debuff.value[debuffName];
+      }else{
+        p2Debuff.value[debuffName] = !p2Debuff.value[debuffName];
+      }
+      calculateDamage();
+    }
+
+    const toggleBuff = (player, buffName)=>{     
+      if(player === "p1"){
+        p1Buffs.value[buffName] = !p1Buffs.value[buffName];
+      }else{
+        p2Buffs.value[buffName] = !p2Buffs.value[buffName];
+      }
+      calculateDamage();
+    }
+
     const apiResult1to2 = ref(null);
     const apiResult2to1 = ref(null);
     const isCalculating = ref(false);
     const calculationError = ref(null);
 
-
-    // Player 1 attacks Player 2
+    // Computed properties para resultados
     const damage1to2 = computed(() => {
       if (apiResult1to2.value) {
-        return (apiResult1to2.value.hp_loss).toFixed(2);
+        const hp_loss = apiResult1to2.value.hp_loss;
+        const hp_loss_percentage = (100 * hp_loss) / player2.value.hp;
+        return {hp_loss: apiResult1to2.value.hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2)}
       }
-      return '---';
+      return { hp_loss: '---', hp_loss_percentage: '---' };
     });
 
     const hitChance1to2 = computed(() => {
@@ -512,9 +299,11 @@ export default {
 
     const damage2to1 = computed(() => {
       if (apiResult2to1.value) {
-        return (apiResult2to1.value.hp_loss).toFixed(2);
+        const hp_loss = apiResult2to1.value.hp_loss;
+        const hp_loss_percentage = (100 * hp_loss) / player1.value.hp;
+        return {hp_loss: apiResult2to1.value.hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2)};
       }
-      return '---';
+      return { hp_loss: '---', hp_loss_percentage: '---' };
     });
 
     const hitChance2to1 = computed(() => {
@@ -535,6 +324,15 @@ export default {
       const className = parts.slice(0, parts.length - 1).join(' ');
       return { className, spec };
     };
+    const getHitColor = (chance) => {
+      const value = parseFloat(chance);
+      if (!value && value !== 0) return ''; // Trata nulos/undefined
+      
+      if (value >= 100) return 'text-green';
+      if (value >= 85) return 'text-yellow';
+      if (value >= 50) return 'text-orange';
+      return 'text-red';
+    };
 
 
     const calculateDamage = async () => {
@@ -542,10 +340,32 @@ export default {
       calculationError.value = null;
       
       try {
-        // Parse das classes
         const player1Data = parseClassAndSpec(player1.value.class);
         const player2Data = parseClassAndSpec(player2.value.class);
-        
+        const p1_melee_dr = player1.value.melee_dr + (p1Buffs.value.dr ? 20 : 0) - (p2Debuff.value.minusDp ? 20 : 0);
+        const p2_melee_dr = player2.value.melee_dr + (p2Buffs.value.dr ? 20 : 0) - (p1Debuff.value.minusDp ? 20 : 0);
+        const p1_ranged_dr = player1.value.ranged_dr + (p1Buffs.value.dr ? 20 : 0) - (p2Debuff.value.minusDp ? 20 : 0);
+        const p2_ranged_dr = player2.value.ranged_dr + (p2Buffs.value.dr ? 20 : 0) - (p1Debuff.value.minusDp ? 20 : 0);
+        const p1_magic_dr = player1.value.magic_dr + (p1Buffs.value.dr ? 20 : 0) - (p2Debuff.value.minusDp ? 20 : 0);
+        const p2_magic_dr = player2.value.magic_dr + (p2Buffs.value.dr ? 20 : 0) - (p1Debuff.value.minusDp ? 20 : 0);
+        const p1_melee_evasion = player1.value.melee_evasion + (p1Buffs.value.evasion ? 20 : 0) - (p2Debuff.value.minusEvasion ? 20 : 0);
+        const p2_melee_evasion = player2.value.melee_evasion + (p2Buffs.value.evasion ? 20 : 0) - (p1Debuff.value.minusEvasion ? 20 : 0);
+        const p1_ranged_evasion = player1.value.ranged_evasion + (p1Buffs.value.evasion ? 20 : 0) - (p2Debuff.value.minusEvasion ? 20 : 0);
+        const p2_ranged_evasion = player2.value.ranged_evasion + (p2Buffs.value.evasion ? 20 : 0) - (p1Debuff.value.minusEvasion ? 20 : 0); 
+        const p1_magic_evasion = player1.value.magic_evasion + (p1Buffs.value.evasion ? 20 : 0) - (p2Debuff.value.minusEvasion ? 20 : 0);
+        const p2_magic_evasion = player2.value.magic_evasion + (p2Buffs.value.evasion ? 20 : 0) - (p1Debuff.value.minusEvasion ? 20 : 0);
+        const p1_accuracy = player1.value.accuracy + (p1Buffs.value.accuracy ? 20 : 0) - (p2Debuff.value.minusAccuracy ? 20 : 0);
+        const p2_accuracy = player2.value.accuracy + (p2Buffs.value.accuracy ? 20 : 0) - (p1Debuff.value.minusAccuracy ? 20 : 0);
+        const p1_critical_hit_rate = player1.value.critical_hit_rate + (p1Buffs.value.critical_hit_rate ? 30 : 0);
+        const p2_critical_hit_rate = player2.value.critical_hit_rate + (p2Buffs.value.critical_hit_rate ? 30 : 0);
+        const p1_critical = player1.value.critical + (p1Buffs.value.critical ? 5 : 0);
+        const p2_critical = player2.value.critical + (p2Buffs.value.critical ? 5 : 0);
+        const p1_back_attack = player1.value.back_attack + (p1Buffs.value.back_attack ? 5 : 0);
+        const p2_back_attack = player2.value.back_attack + (p2Buffs.value.back_attack ? 5 : 0);
+        const p1_down_attack = player1.value.down_attack + (p1Buffs.value.down_attack ? 5 : 0);
+        const p2_down_attack = player2.value.down_attack + (p2Buffs.value.down_attack ? 5 : 0);
+        const p1_air_attack = player1.value.air_attack + (p1Buffs.value.air_attack ? 5 : 0);
+        const p2_air_attack = player2.value.air_attack + (p2Buffs.value.air_attack ? 5 : 0);
         // Player 1 ataca Player 2
         const response1to2 = await apiClient.post('/pvp-calculator/calculate', {
           attacker_class: player1Data.className,
@@ -557,21 +377,21 @@ export default {
           total_aap_pvp: player1.value.total_aap_pvp,
           sheet_ap: player1.value.sheet_ap,
           sheet_aap: player1.value.sheet_aap,
-          melee_dr: player2.value.melee_dr,
-          ranged_dr: player2.value.ranged_dr,
-          magic_dr: player2.value.magic_dr,
-          accuracy: player1.value.accuracy,
-          melee_evasion: player2.value.melee_evasion,
-          ranged_evasion: player2.value.ranged_evasion,
-          magic_evasion: player2.value.magic_evasion,
+          melee_dr: p2_melee_dr,
+          ranged_dr: p2_ranged_dr,
+          magic_dr: p2_magic_dr,
+          accuracy: p1_accuracy,
+          melee_evasion: p2_melee_evasion,
+          ranged_evasion: p2_ranged_evasion,
+          magic_evasion: p2_magic_evasion,
           dr_percent: player2.value.dr_percent,
-          critical: player1.value.critical,
-          back_attack: player1.value.back_attack,
-          down_attack: player1.value.down_attack,
-          air_attack: player1.value.air_attack,
+          critical: p1_critical,
+          back_attack: p1_back_attack,
+          down_attack: p1_down_attack,
+          air_attack: p1_air_attack,
           skill_damage_percent: player1.value.skill_damage_percent * player1.value.skill_hits,
           skill_pvp_reduction_percent: player1.value.skill_pvp_reduction_percent,
-          critical_hit_rate: player1.value.critical_hit_rate,
+          critical_hit_rate: p1_critical_hit_rate,
           state: player1.value.state
         });
 
@@ -586,29 +406,26 @@ export default {
           total_aap_pvp: player2.value.total_aap_pvp,
           sheet_ap: player2.value.sheet_ap,
           sheet_aap: player2.value.sheet_aap,
-          melee_dr: player1.value.melee_dr,
-          ranged_dr: player1.value.ranged_dr,
-          magic_dr: player1.value.magic_dr,
-          accuracy: player2.value.accuracy,
-          melee_evasion: player1.value.melee_evasion,
-          ranged_evasion: player1.value.ranged_evasion,
-          magic_evasion: player1.value.magic_evasion,
+          melee_dr: p1_melee_dr,
+          ranged_dr: p1_ranged_dr,
+          magic_dr: p1_magic_dr,
+          accuracy: p2_accuracy,
+          melee_evasion: p1_melee_evasion,
+          ranged_evasion: p1_ranged_evasion,
+          magic_evasion: p1_magic_evasion,
           dr_percent: player1.value.dr_percent,
-          critical: player2.value.critical,
-          back_attack: player2.value.back_attack,
-          down_attack: player2.value.down_attack,
-          air_attack: player2.value.air_attack,
+          critical: p2_critical,
+          back_attack: p2_back_attack,
+          down_attack: p2_down_attack,
+          air_attack: p2_air_attack,
           skill_damage_percent: player2.value.skill_damage_percent * player2.value.skill_hits,
           skill_pvp_reduction_percent: player2.value.skill_pvp_reduction_percent,
-          critical_hit_rate: player2.value.critical_hit_rate,
+          critical_hit_rate: p2_critical_hit_rate,
           state: player2.value.state
         });
 
         apiResult1to2.value = response1to2.data.data;
         apiResult2to1.value = response2to1.data.data;
-        
-        console.log('P1 → P2:', apiResult1to2.value);
-        console.log('P2 → P1:', apiResult2to1.value);
         
       } catch (error) {
         console.error('API Error:', error);
@@ -617,48 +434,16 @@ export default {
         isCalculating.value = false;
       }
     };
-    const filteredClasses1 = computed(() => {
-      if (!player1Search.value) return classes.value;
-      return classes.value.filter(cls => 
-        cls.toLowerCase().includes(player1Search.value.toLowerCase())
-      );
-    });    
-    const filteredClasses2 = computed(() => {
-      if (!player2Search.value) return classes.value;
-      return classes.value.filter(cls => 
-        cls.toLowerCase().includes(player2Search.value.toLowerCase())
-      );
+    watchDebounced(player1, player2, ()=>{
+      calculateDamage()
+    }, { debounce: 500, maxWait: 1000, deep: true});
+
+
+    onMounted(()=>{
+      classes.value.sort()
+      calculateDamage()
     });
 
-    const selectClass = (playerNum, className) => {
-      if (playerNum === 1) {
-        player1.value.class = className;
-        player1Search.value = className;
-        showDropdown1.value = false;
-      } else if (playerNum  === 2){
-        player2.value.class = className;
-        player2Search.value = className;
-        showDropdown2.value = false;
-      }
-    };   
-    const handleClickOutside = (event) => {
-      if (dropdown1.value && !dropdown1.value.contains(event.target)) {
-        showDropdown1.value = false;
-      }
-      if (dropdown2.value && !dropdown2.value.contains(event.target)) {
-        showDropdown2.value = false;
-      }
-    };
-
-    onMounted(() => {
-      document.addEventListener('click', handleClickOutside);
-      player1Search.value = player1.value.class;
-      player2Search.value = player2.value.class;
-    });
-
-    onUnmounted(() => {
-      document.removeEventListener('click', handleClickOutside);
-    });
     return {
       mode,
       classes,
@@ -669,426 +454,236 @@ export default {
       damage2to1,
       hitChance2to1,
       calculateDamage,
-      filteredClasses1,
-      showDropdown1,
-      player1Search,
-      dropdown1,
-      filteredClasses2,
-      showDropdown2,
-      player2Search,
-      dropdown2,
-      selectClass,
       isCalculating,
-      calculationError
+      calculationError,
+      getHitColor,
+      toggleBuff,
+      toggleDebuff,
+      p1Buffs,
+      p2Buffs,
+      p1Debuff,
+      p2Debuff
     };  
   }
 };
 </script>
 
 <style scoped>
-* {
-  box-sizing: border-box;
-}
+/* ... (Mantenha os estilos base .damage-calculator-page e .calculator-layout iguais ao anterior) ... */
 
 .damage-calculator-page {
   background-color: #0e0f11;
   color: #e2e8f0;
   min-height: 100vh;
-  padding: 8px;
+  padding-top: 8px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 10pt;
 }
 
-.container {
-  max-width: 1340px;
+.calculator-layout {
+  width: 95%;
   margin: 0 auto;
-}
-
-.page-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #14161a;
-  border: 1px solid #3e4753;
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-}
-
-.title {
-  color: #fff;
-  margin: 0;
-  font-size: 14pt;
-  font-weight: bold;
-}
-
-.header-buttons {
-  display: flex;
-  gap: 4px;
-}
-
-.btn {
-  background-color: #4a5568;
-  color: #e2e8f0;
-  border: 1px solid #3e4753;
-  padding: 4px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 9pt;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.btn:hover {
-  background-color: #5a6778;
-}
-
-.btn.active {
-  background-color: #5a7ff2;
-  border-color: #4a6fd2;
-}
-
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 280px 1fr;
+  flex-direction: column;
   gap: 8px;
 }
 
-.player-panel,
-.field-panel {
+/* --- ESTILOS DA BARRA DE RESULTADOS (NOVO) --- */
+.top-results-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Divide em 2 resultados iguais */
+  gap: 8px;
   background-color: #14161a;
   border: 1px solid #3e4753;
   border-radius: 4px;
-  padding: 8px;
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  padding: 10px;
 }
 
-.player-panel::-webkit-scrollbar,
-.field-panel::-webkit-scrollbar {
-  width: 6px;
-}
 
-.player-panel::-webkit-scrollbar-track,
-.field-panel::-webkit-scrollbar-track {
-  background: #0e0f11;
+.header-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  color: #e2e8f0;
 }
-
-.player-panel::-webkit-scrollbar-thumb,
-.field-panel::-webkit-scrollbar-thumb {
-  background: #3e4753;
+.result-card {
+  background-color: #0e0f11;
+  border: 1px solid #3e4753;
   border-radius: 3px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.result-card.p1-attacker { border-left: 3px solid #5a7ff2; }
+.result-card.p2-attacker { border-left: 3px solid #f56565; }
+
+.result-header { font-size: 9pt; color: #a0aec0; margin-bottom: 4px; }
+.attacker-name { font-weight: bold; color: #e2e8f0; }
+.defender-name { font-weight: bold; color: #e2e8f0; }
+
+.result-body { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: baseline; 
+  margin-bottom: 4px;
+}
+
+.damage-text { font-size: 16pt; font-weight: bold; color: #e2e8f0; }
+.damage-text .percent { font-size: 12pt; color: #a0aec0; font-weight: normal; }
+
+.hit-chance { font-size: 9pt; color: #718096; }
+.hit-chance span { font-weight: bold; color: #ecc94b; }
+.text-green { color: #48bb78 !important; }   /* Verde Sucesso */
+.text-yellow { color: #ecc94b !important; }  /* Amarelo Alerta */
+.text-orange {color: darkorange !important; }
+.text-red { color: #f56565 !important; }     /* Vermelho Perigo */
+
+.result-desc { font-size: 8pt; color: #4a5568; font-style: italic; }
+
+
+/* --- ESTILOS DO GRID PRINCIPAL --- */
+.main-grid { 
+  display: grid; 
+  grid-template-columns: 33fr 29fr 33fr; 
+  gap: 0.5%; 
+  width: 100%;
+}
+
+/* --- ESTILOS DO PAINEL DO MEIO (B) --- */
+/* Container do Painel */
+.options-panel {
+  background-color: #14161a;
+  border: 1px solid #3e4753;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ocupa altura total disponível */
+  overflow: hidden;
 }
 
 .panel-header {
   background-color: #12161b;
-  border: 1px solid #3e4753;
-  border-radius: 3px;
-  padding: 4px 8px;
-  margin-bottom: 8px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 10pt;
-}
-
-.panel-header.player1 {
-  color: #5a7ff2;
-  border-color: #5a7ff2;
-}
-
-.panel-header.player2 {
-  color: #f56565;
-  border-color: #f56565;
-}
-
-.section-title {
-  background-color: #0e0f11;
-  color: #a0aec0;
-  padding: 4px 6px;
-  margin: 8px 0 6px 0;
-  font-size: 8pt;
-  font-weight: 600;
-  text-transform: uppercase;
-  border-left: 3px solid #5a7ff2;
-}
-
-.form-group {
-  margin-bottom: 6px;
-}
-
-.form-group label {
-  display: block;
-  color: #c1c9d4;
-  font-size: 8pt;
-  margin-bottom: 2px;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  background-color: #12161b;
   color: #e2e8f0;
-  border: 1px solid #3e4753;
-  border-radius: 2px;
-  padding: 3px 5px;
-  font-size: 9pt;
+  padding: 8px;
+  font-weight: 600;
+  border-bottom: 1px solid #3e4753;
+  text-align: center;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #5a7ff2;
-  background-color: #0e0f11;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.field-panel {
-  display: flex;
-  flex-direction: column;
-}
-
-.result-display {
-  background-color: #12161b;
-  border: 1px solid #3e4753;
-  border-radius: 3px;
+.scrollable-content {
   padding: 10px;
-  margin-bottom: 8px;
+  overflow-y: auto;
+  flex: 1;
 }
 
-.result-main {
-  text-align: center;
-  margin-bottom: 8px;
+/* --- LAYOUT SHOWDOWN --- */
+
+/* 1. O Grid que divide P1 e P2 */
+.showdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+  gap: 12px; /* Espaço entre as colunas */
 }
 
-.result-label {
-  font-size: 8pt;
-  color: #a0aec0;
-  margin-bottom: 4px;
-}
-
-.result-value {
-  font-size: 24pt;
-  font-weight: bold;
-}
-
-.result-value.damage {
-  color: #f56565;
-}
-
-.result-sub {
-  display: flex;
-  justify-content: center;
-}
-
-.result-item {
+/* 2. A Coluna Individual */
+.showdown-column {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #0e0f11;
-  border-radius: 3px;
-  padding: 6px 12px;
+  align-items: center; /* Centraliza os botões horizontalmente */
 }
 
-.result-item .label {
-  font-size: 7pt;
-  color: #718096;
-  margin-bottom: 2px;
-}
-
-.result-item .value {
-  font-size: 12pt;
+/* Títulos (Player 1 / Player 2) */
+.column-title {
+  font-size: 0.85rem;
   font-weight: bold;
-}
-
-.result-item .value.hit {
-  color: #ecc94b;
-}
-
-.btn-calculate {
-  width: 100%;
-  background-color: #5a7ff2;
-  color: white;
-  border: 1px solid #4a6fd2;
-  padding: 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 10pt;
-  font-weight: 600;
   margin-bottom: 8px;
-  transition: background-color 0.2s;
+  text-transform: uppercase;
+}
+.p1-title { color: #5a7ff2; }
+.p2-title { color: #f56565; }
+
+/* Grupo de Botões (Addons, Debuffs, etc) */
+.button-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* Empilha um botão embaixo do outro */
+  gap: 4px; /* Espaço vertical pequeno entre botões (Showdown é bem colado) */
+  margin-bottom: 12px; /* Espaço entre grupos */
 }
 
-.btn-calculate:hover {
-  background-color: #4a6fd2;
-}
-
-.field-info {
-  background-color: #12161b;
-  border: 1px solid #3e4753;
-  border-radius: 3px;
-  padding: 8px;
-  font-size: 8pt;
-  color: #a0aec0;
-}
-
-.info-row {
+.group-label {
+  font-size: 0.7rem;
+  color: #718096;
+  text-align: center;
   margin-bottom: 4px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #2d3748;
+  line-height: 0.1em;
+  margin: 10px 0 5px;
+}
+.group-label span { background:#14161a; padding:0 5px; }
+
+/* --- O BOTÃO SHOWDOWN (DO ZERO) --- */
+.showdown-btn {
+  /* Reset básico para tirar estilo padrão do navegador */
+  appearance: none;
+  border: none;
+  outline: none;
+  
+  /* Tamanho e Forma */
+  width: 100%; /* Ocupa a largura da coluna */
+  padding: 4px 0; /* Altura compacta */
+  border-radius: 12px; /* O segredo da "pílula" */
+  
+  /* Fonte */
+  font-family: inherit;
+  font-size: 0.75rem; /* Fonte pequena (aprox 12px) */
+  font-weight: 500;
   text-align: center;
+  
+  /* Cores (Estado Inativo - Azul Escuro/Cinza) */
+  background-color: #2d3748; /* Cinza azulado escuro */
+  color: #a0aec0; /* Texto cinza claro */
+  border: 1px solid #4a5568; /* Borda sutil */
+  
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.info-row:last-child {
-  margin-bottom: 0;
+.showdown-btn:hover {
+  background-color: #4a5568;
+  color: #fff;
 }
 
-.info-row strong {
-  color: #e2e8f0;
-}
-
-.info-row .highlight {
-  color: #ecc94b;
-  font-weight: 600;
-}
-
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-}
-.dropdown {
-  position: relative;
-  width: 100%;
-}
-.dropdown-menu {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.dropdown-content {
-  background-color: #12161b;
-  border: 1px solid #3e4753;
-  overflow: visible;
-}
-
-.dropdown-item {
-  color: #e2e8f0;
-  font-size: 9pt;
-}
-
-.dropdown-item:hover {
-  background-color: #1a1d23;
-  color: #e2e8f0;
-}
-
-.dropdown-item.is-active {
-  background-color: #5a7ff2;
-  color: white;
-}
-.input-with-addon {
-  display: flex;
-  gap: 2px;
-  width: 100%;
-}
-
-.input-with-addon .main-input {
-  flex: 1 !important;
-  width: 60% !important;
-  min-width: 0 !important;
-}
-
-.input-with-addon .addon-input {
-  width: 35px !important;
-  flex: 0 0 35px !important;
-  text-align: center;
-}
-.input-with-addon {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-.hits-input-wrapper {
-  position: relative;
-  width: 17%;
-  flex-shrink: 0;
-}
-
-.hits-input-wrapper::before {
-  content: 'x';
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #a0aec0;
+/* --- ESTADO ATIVO (LIGADO) --- */
+.showdown-btn.active {
+  background-color: #0e0f11; /* Dourado */
+  color: #fff; /* Texto preto/escuro */
+  border-color: #3e4147dc;
   font-weight: bold;
-  font-size: 9pt;
-  pointer-events: none;
-  z-index: 1;
+  box-shadow: 0 0 5px rgba(236, 201, 75, 0.3); /* Brilho suave */
 }
 
-.addon-input {
-  width: 100%;
-  padding-left: 18px !important;
-  text-align: center;
-  background-color: #12161b;
-  color: #e2e8f0;
-  border: 1px solid #3e4753;
-  border-radius: 2px;
-  padding: 3px 5px;
-  font-size: 9pt;
+/* --- VARIAÇÃO DEBUFF (Opcional) --- */
+.showdown-btn.debuff {
+  background-color: #2d3748; /* Mesmo fundo inativo */
+  border-color: #4a5568;
 }
 
-.main-input {
-  flex: 1;
-  background-color: #12161b;
-  color: #e2e8f0;
-  border: 1px solid #3e4753;
-  border-radius: 2px;
-  padding: 3px 5px;
-  font-size: 9pt;
-}
-.error-message {
+/* Debuff Ativo (Vermelho) */
+.showdown-btn.debuff.active {
   background-color: #f56565;
   color: white;
-  padding: 8px;
-  border-radius: 3px;
-  margin-top: 8px;
-  font-size: 8pt;
-  text-align: center;
+  border-color: #c53030;
+  box-shadow: 0 0 5px rgba(245, 101, 101, 0.3);
 }
-
-.btn-calculate:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-@media (max-width: 1366px) {
-  .main-grid {
-    grid-template-columns: 1fr 260px 1fr;
-    gap: 6px;
-  }
-  
-  .container {
-    max-width: 100%;
-  }
-}
-
+/* Responsividade */
 @media (max-width: 1024px) {
-  .main-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .field-panel {
-    order: -1;
-  }
+  .top-results-bar { grid-template-columns: 1fr; }
+  .main-grid { grid-template-columns: 1fr; }
+  .options-panel { order: -1; height: auto; } /* No mobile, opções ficam em cima dos players */
 }
-
 </style>

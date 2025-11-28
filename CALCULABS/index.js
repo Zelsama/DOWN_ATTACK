@@ -4,13 +4,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/routes.js';
 import authRouter from './routes/discordRoutes.js';
-import client from './connection/redis-client.js';
-import RedisStore from 'connect-redis';
+// import client from './connection/redis-client.js'; // <--- 1. Comentei a importação do cliente Redis
+// import RedisStore from 'connect-redis'; // <--- 2. Comentei a importação do RedisStore
 import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
 import db from './database/connection.js';
 import pvpCalculatorRouter from './routes/pvPCalculatorRoutes.js';
-
 
 dotenv.config();
 
@@ -18,6 +17,7 @@ const a_valid_domain = process.env.NODE_ENV === 'production' ? '.bdoptimizer.com
 console.log(`[DEBUG] NODE_ENV: ${process.env.NODE_ENV}`);  
 console.log(`[DEBUG] Cookie Domain: ${a_valid_domain}`);
 console.log(`[DEBUG] BACKEND_URL: ${process.env.BACKEND_URL}`);
+
 const app = express();
 const allowedOrigins = [process.env.FRONTEND_URL];
 const options = {
@@ -31,11 +31,10 @@ app.set('trust proxy', true);
 app.use(cors(options));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// 3. Reativei a sessão, mas removi a propriedade 'store' para usar a memória padrão
 app.use(session({
-  store: new RedisStore({ 
-    client: client,
-    prefix: 'myapp:'
-   }),
+  // store: new RedisStore({ client: client, prefix: 'myapp:' }), // <--- Comentado para não usar Redis
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
@@ -48,6 +47,7 @@ app.use(session({
     partitioned: process.env.NODE_ENV === 'production'
    }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -66,6 +66,7 @@ passport.deserializeUser(async (id, done) => {
     done(error, null);
   }  
 });
+
 const discordCallbackURL = `${process.env.BACKEND_URL}/auth/discord/callback`;
 console.log(`[PASSPORT] Using Callback URL: "${discordCallbackURL}"`);
 
@@ -98,8 +99,10 @@ app.use("/pvp-calculator", pvpCalculatorRouter);
 
 const startup = async () => {
   try{
-      await client.connect();
+      // await client.connect(); // <--- 4. Comentei a conexão com o Redis
 
+      // 5. Comentei o Ping do Redis
+      /*
       setInterval(async () => {
         try {
           if(client.isOpen){
@@ -110,12 +113,13 @@ const startup = async () => {
           console.error("Falha no ping do Redis:", error);
         }
       }, 300000);
+      */
 
       app.listen(port, () => {
       console.log(`SERVIDOR RODANDO NA PORTA ${port}`);
     });
   }catch(error){
-      console.error("Falha ao iniciar o servidor ou conectar com o Redis:", error);
+      console.error("Falha ao iniciar o servidor:", error);
   }
 };
 

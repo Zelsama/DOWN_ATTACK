@@ -32,8 +32,11 @@ PvpCalculatorRoutes.post('/calculate', (req, res) => {
             critical_hit_rate,
             state
         } = req.body;
-
-        // Validações básicas
+        if (skill_damage_percent <= 0){
+            return res.status(400).json({
+                error: "skill damage must be greater than 0"
+            })
+        }
         if (!attacker_class || !defender_class) {
             return res.status(400).json({ 
                 error: 'attacker_class and defender_class are required' 
