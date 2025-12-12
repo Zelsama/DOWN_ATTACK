@@ -138,7 +138,7 @@ export default {
     const authStore = useAuthStore();
     const isMenuOpen = ref(false);
     const activeDropdown = ref(null); // Controla qual dropdown está ativo
-    const backEndUrl = `https://${process.env.VUE_APP_BACK_END_URL}`;
+    const backEndUrl = `http://${process.env.VUE_APP_BACK_END_URL}`;
 
     const regions = ref([
       { value: 'na', label: 'NA' },

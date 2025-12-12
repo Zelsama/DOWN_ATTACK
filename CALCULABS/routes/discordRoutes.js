@@ -25,6 +25,8 @@ authRouter.post('/logout', (req, res, next) => {
 });
 
 authRouter.get('/me', ensureAuthenticated, (req, res) => {
-  res.json({ id: req.user.id, username: req.user.username, discordId: req.user.discord_id, avatarUrl: req.user.avatar_url });
+  res.json({ id: req.user.id, username: req.user.username, discordId: req.user.discord_id, avatarUrl: req.user.avatar_url, role: req.user.role } );
 });
+
+
 export default authRouter;

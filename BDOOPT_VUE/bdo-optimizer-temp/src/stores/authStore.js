@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLoggedIn = computed(() => !!user.value);
   const avatarUrl = computed(() => user.value?.avatarUrl);
+  const isAdmin = computed(() => user.value?.role === 'admin');
 
   async function checkAuthStatus() {
     try {
@@ -16,7 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response.data;
     } catch (error) {
       user.value = null;
-      console.error("Usuário não autenticado.", error.response?.data);
+      console.error("User not authenticated", error.response?.data);
     }
   }
 
@@ -30,5 +31,5 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, isLoggedIn, avatarUrl, checkAuthStatus, logout };
+  return { user, isLoggedIn, avatarUrl, checkAuthStatus, logout, isAdmin };
 });

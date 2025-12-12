@@ -4,6 +4,7 @@ import EnhacingSimulatorView from '../views/EnhancingSimulatorView.vue'
 import ComboBuilder from '@/views/ComboBuilderView.vue'
 import AdminView from '@/views/AdminView.vue'
 import PvpCalculatorView from '@/views/PvpCalculatorView.vue'
+import { useAuthStore } from '@/stores/authStore';
 
 const routes = [
   {
@@ -18,6 +19,12 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('../views/AdminView.vue'),
+    meta: {requiresAdmin: true, title: "Admin | BDOptimizer.com"}
   },
   {
     path: '/enhancing-simulator',
@@ -51,6 +58,25 @@ const router = createRouter({
 })
 
 const DEFAULT_TITLE = "BDO Optimizer";
+
+router.beforeEach(async (to, from, next)=>{
+  
+  const authStore = useAuthStore();
+
+  if(to.meta.requiresAdmin){
+    if(!authStore.user){
+      await authStore.checkAuthStatus();
+    }
+
+    if(!authStore.isAdmin){
+      return next('/');
+    }
+  }
+
+  next();
+
+  
+});
 
 router.afterEach((to,_)=>{
   document.title = to.meta.title || DEFAULT_TITLE;

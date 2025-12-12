@@ -4,11 +4,11 @@ import knex from 'knex';
 const db = knex({
   client: 'mysql2',
   connection: {
-    host: 'bdo-optimizer-db-items.mysql.database.azure.com',
-    user: 'ZelsOptimizer',
-    password: 'Maconhacomsal_',
-    database: 'bdooptimizer',
-    ssl: { rejectUnauthorized: true}
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'Negoney2030@',
+    database: 'bdo-opt-db',
+    ssl: false
   },
   pool: { min: 2, max: 10 }
 });

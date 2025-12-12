@@ -13,6 +13,8 @@ import pvpCalculatorRouter from './routes/pvPCalculatorRoutes.js';
 
 dotenv.config();
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const a_valid_domain = process.env.NODE_ENV === 'production' ? '.bdoptimizer.com' : undefined;
 console.log(`[DEBUG] NODE_ENV: ${process.env.NODE_ENV}`);  
 console.log(`[DEBUG] Cookie Domain: ${a_valid_domain}`);
@@ -32,7 +34,7 @@ app.use(cors(options));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// 3. Reativei a sessão, mas removi a propriedade 'store' para usar a memória padrão
+
 app.use(session({
   // store: new RedisStore({ client: client, prefix: 'myapp:' }), // <--- Comentado para não usar Redis
   secret: 'keyboard cat',
