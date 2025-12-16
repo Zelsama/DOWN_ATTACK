@@ -167,6 +167,7 @@ export default {
             melee_evasion: 0,
             ranged_evasion: 0,
             magic_evasion: 0,
+            dr_percent: 0
         });
 
         const getAllPresets = async () => {
@@ -244,6 +245,7 @@ export default {
                     melee_evasion: presetData.melee_evasion,
                     ranged_evasion: presetData.ranged_evasion,
                     magic_evasion: presetData.magic_evasion,
+                    dr_percent: presetData.dr_percent,
                     admin: true
                 });
 
@@ -300,6 +302,7 @@ export default {
                 melee_evasion: 0,
                 ranged_evasion: 0,
                 magic_evasion: 0,
+                dr_percent: 0
             };
         }
 
@@ -332,6 +335,7 @@ export default {
                 melee_evasion: newStats.melee_evasion,
                 ranged_evasion: newStats.ranged_evasion,
                 magic_evasion: newStats.magic_evasion,
+                dr_percent: newStats.dr_percent
             };
             editPresetModalVisible.value = !editPresetModalVisible.value;
         }

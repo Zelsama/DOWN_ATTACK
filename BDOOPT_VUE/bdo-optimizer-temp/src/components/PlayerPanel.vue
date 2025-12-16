@@ -6,7 +6,46 @@
     </div>
 
     <!-- Class Search Dropdown -->
-    <div class="dropdown" :class="{ 'is-active': showDropdown }" ref="dropdownRef">
+     <label> Preset: </label>
+    <div class="dropdown mt-1" :class="{ 'is-active': presetDropdown }" ref="presetDropdownRef">
+      <div class="dropdown-trigger">
+        <input 
+          class="input is-small input-with-icon" 
+          type="text" 
+          v-model="presetSearchQuery"
+          @focus="presetDropdown = true"
+          @input="presetDropdown = true"
+          placeholder="Search preset or a class"
+        >
+      </div>
+      <div class="dropdown-menu" role="menu">
+        <div class="dropdown-content">
+          
+          <div v-for="(groupPresets, className) in presetsByClass" :key="className">
+            
+            <div class="dropdown-item has-text-weight-bold" style="cursor: default;">
+              {{ className }}
+            </div>
+
+            <a 
+              v-for="preset in groupPresets" 
+              :key="preset.id" 
+              class="dropdown-item pl-5"
+              @click="applyPreset(preset.id); presetDropdown = false"
+            >
+              {{ preset.name || 'Build Sem Nome' }}
+            </a>
+
+          </div>
+
+          <div v-if="Object.keys(presetsByClass).length === 0" class="dropdown-item is-italic has-text-grey">
+            No results found
+          </div>
+        </div>
+      </div>
+    </div>
+    <label> Class: </label>
+    <div class="dropdown mt-1 mb-1" :class="{ 'is-active': showDropdown }" ref="dropdownRef">
       <div class="dropdown-trigger">
         <input 
           class="input is-small input-with-icon" 
@@ -42,55 +81,55 @@
     <div class="form-row">
       <div class="form-group">
         <label>Sheet AP</label>
-        <input type="number" v-model.number="localPlayer.sheet_ap">
+        <input type="number" v-model.number="localPlayer.sheet_ap" min="0" max="9999" @input="validateLimit('sheet_ap')">
       </div>
       <div class="form-group">
         <label>Sheet AAP</label>
-        <input type="number" v-model.number="localPlayer.sheet_aap">
+        <input type="number" v-model.number="localPlayer.sheet_aap" min="0" max="9999" @input="validateLimit('sheet_aap')">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Total AP (PvP)</label>
-        <input type="number" v-model.number="localPlayer.total_ap_pvp">
+        <input type="number" v-model.number="localPlayer.total_ap_pvp" min="0" max="9999" @input="validateLimit('total_ap_pvp')">
       </div>
       <div class="form-group">
         <label>Total AAP (PvP)</label>
-        <input type="number" v-model.number="localPlayer.total_aap_pvp">
+        <input type="number" v-model.number="localPlayer.total_aap_pvp" min="0" max="9999" @input="validateLimit('total_aap_pvp')">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Accuracy</label>
-        <input type="number" v-model.number="localPlayer.accuracy">
+        <input type="number" v-model.number="localPlayer.accuracy" min="0" max="9999" @input="validateLimit('accuracy')">
       </div>
       <div class="form-group">
         <label>Crit Hit Rate %</label>
-        <input type="number" v-model.number="localPlayer.critical_hit_rate" step="0.1">
+        <input type="number" v-model.number="localPlayer.critical_hit_rate" step="0.1" min="0" max="100" @input="validateLimit('critical_hit_rate', 100)">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Critical %</label>
-        <input type="number" v-model.number="localPlayer.critical" step="0.1">
+        <input type="number" v-model.number="localPlayer.critical" step="0.1" min="0" max="9999" @input="validateLimit('critical')">
       </div>
       <div class="form-group">
         <label>Back Attack %</label>
-        <input type="number" v-model.number="localPlayer.back_attack" step="0.1">
+        <input type="number" v-model.number="localPlayer.back_attack" step="0.1" min="0" max="9999" @input="validateLimit('back_attack')">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Down Attack %</label>
-        <input type="number" v-model.number="localPlayer.down_attack" step="0.1">
+        <input type="number" v-model.number="localPlayer.down_attack" step="0.1" min="0" max="9999" @input="validateLimit('down_attack')">
       </div>
       <div class="form-group">
         <label>Air Attack %</label>
-        <input type="number" v-model.number="localPlayer.air_attack" step="0.1">
+        <input type="number" v-model.number="localPlayer.air_attack" step="0.1" min="0" max="9999" @input="validateLimit('air_attack')">
       </div>
     </div>
 
@@ -98,15 +137,15 @@
       <div class="form-group">
         <label>Skill Damage %</label>
         <div class="input-with-addon">
-          <input type="number" v-model.number="localPlayer.skill_damage_percent" class="main-input">
+          <input type="number" v-model.number="localPlayer.skill_damage_percent" class="main-input" min="0" max="9999999" @input="validateLimit('skill_damage_percent', 9999999)">
           <div class="hits-input-wrapper">
-            <input type="number" v-model.number="localPlayer.skill_hits" class="addon-input">
+            <input type="number" v-model.number="localPlayer.skill_hits" class="addon-input" min="0" max="99" @input="validateLimit('skill_hits', 99)">
           </div>
         </div>
       </div>
       <div class="form-group">
         <label>Skill PvP Reduction %</label>
-        <input type="number" v-model.number="localPlayer.skill_pvp_reduction_percent" step="0.01">
+        <input type="number" v-model.number="localPlayer.skill_pvp_reduction_percent" step="0.01" min="0" max="100" @input="validateLimit('skill_pvp_reduction_percent', 100)">
       </div>           
     </div>
 
@@ -116,7 +155,7 @@
         <select v-model="localPlayer.skill_spec">
           <option value="awakening">Awakening</option>
           <option value="succession">Succession</option>
-          <option value="ascension">Ascension</option>
+          <option value="absolute">Absolute</option>
         </select>
       </div>
       <div class="form-group">
@@ -136,38 +175,38 @@
     <div class="form-row">
       <div class="form-group">
         <label>Damage Reduction %</label>
-        <input type="number" v-model.number="localPlayer.dr_percent">
+        <input type="number" v-model.number="localPlayer.dr_percent" min="0" max="30" @input="validateLimit('dr_percent', 30)">
       </div>
       <div class="form-group">
         <label>Melee Damage Reduction</label>
-        <input type="number" v-model.number="localPlayer.melee_dr" step="0.1">
+        <input type="number" v-model.number="localPlayer.melee_dr" step="0.1" min="0" max="9999" @input="validateLimit('melee_dr')">
       </div>
       <div class="form-group">
         <label>Ranged Damage Reduction</label>
-        <input type="number" v-model.number="localPlayer.ranged_dr" step="0.1">
+        <input type="number" v-model.number="localPlayer.ranged_dr" step="0.1" min="0" max="9999" @input="validateLimit('ranged_dr')">
       </div>
       <div class="form-group">
         <label>Magic Damage Reduction</label>
-        <input type="number" v-model.number="localPlayer.magic_dr" step="0.1">
+        <input type="number" v-model.number="localPlayer.magic_dr" step="0.1" min="0" max="9999" @input="validateLimit('magic_dr')">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Melee Evasion</label>
-        <input type="number" v-model.number="localPlayer.melee_evasion">
+        <input type="number" v-model.number="localPlayer.melee_evasion" min="0" max="9999" @input="validateLimit('melee_evasion')">
       </div>
       <div class="form-group">
         <label>Ranged Evasion</label>
-        <input type="number" v-model.number="localPlayer.ranged_evasion" step="0.1">
+        <input type="number" v-model.number="localPlayer.ranged_evasion" step="0.1" min="0" max="9999" @input="validateLimit('ranged_evasion')">
       </div>
       <div class="form-group">
         <label>Magic Evasion</label>
-        <input type="number" v-model.number="localPlayer.magic_evasion" step="0.1">
+        <input type="number" v-model.number="localPlayer.magic_evasion" step="0.1" min="0" max="9999" @input="validateLimit('magic_evasion')">
       </div>
       <div class="form-group">
         <label>Health Points</label>
-        <input type="number" v-model.number="localPlayer.hp" step="0.1">
+        <input type="number" v-model.number="localPlayer.hp" step="0.1" min="0" max="99999" @input="validateLimit('hp', 99999)">
       </div>
     </div>
   </div>
@@ -194,6 +233,10 @@ export default {
     availableClasses: {
       type: Array,
       required: true
+    },
+    calculatorPresets: {
+      type: Array,
+      required: true
     }
   },
   emits: ['update:modelValue'],
@@ -201,9 +244,54 @@ export default {
     const showDropdown = ref(false);
     const searchQuery = ref('');
     const dropdownRef = ref(null);
+    const presetDropdown = ref(false);
+    const presetDropdownRef = ref(null);
+    const presetSearchQuery = ref('');
 
-    // --- AQUI ESTÁ A MÁGICA PARA CORRIGIR O ERRO ---
-    // Criamos um computed que intercepta as mudanças
+    const presetsByClass = computed(() => {
+        return filteredPresets.value.reduce((groups, preset) => {
+          const className = preset.class_name + ` ${preset.class_spec}`;
+          if (!groups[className]) {
+            groups[className] = [];
+          }
+          groups[className].push(preset);
+          
+          return groups;
+        }, {});
+      });
+
+    const filteredPresets = computed(() => {
+      if (!presetSearchQuery.value) return props.calculatorPresets;
+      return props.calculatorPresets.filter(preset => 
+        (preset.class_name || '').toLowerCase().includes(presetSearchQuery.value.toLowerCase())
+      );
+    });
+
+    const applyPreset = (id) => {
+      const presetData = props.calculatorPresets.find(p => p.id === id)
+      
+      if(presetData){
+        const className = `${presetData.class_name} ${presetData.class_spec}`
+        console.log("Original:", presetData.skill_spec);
+        console.log("Transformado:", presetData.skill_spec.toLowerCase().trim());
+        const finalPlayer = {
+          ...localPlayer.value,
+          ...presetData,
+          class: className,
+          state: presetData.attacker_state.toLowerCase(),
+          skill_spec: presetData.skill_spec.toLowerCase()
+
+        }
+        const displayLabel = `${presetData.class_name} ${presetData.class_spec} (${presetData.name || 'Custom Preset'})`
+        presetSearchQuery.value = displayLabel
+        presetDropdown.value = false
+        localPlayer.value = finalPlayer
+        searchQuery.value = className
+        showDropdown.value = false
+      }
+    }
+
+    
     const localPlayer = computed({
       get: () => props.modelValue,
       set: (newValue) => emit('update:modelValue', newValue)
@@ -224,8 +312,6 @@ export default {
     });
 
     const selectClass = (className) => {
-      // Atualiza via o computed localPlayer, que dispara o emit automaticamente
-      // Precisamos clonar o objeto para garantir a reatividade correta
       localPlayer.value = { ...localPlayer.value, class: className };
       
       searchQuery.value = className;
@@ -235,6 +321,27 @@ export default {
     const handleClickOutside = (event) => {
       if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
         showDropdown.value = false;
+      }
+      if (presetDropdownRef.value && !presetDropdownRef.value.contains(event.target)) {
+        presetDropdown.value = false;
+      }
+    };
+
+    const validateLimit = (field, max = 9999) => {
+      let value = localPlayer.value[field];
+      
+      if (value === '' || value === null) return;
+
+      // Impede negativos
+      if (value < 0) {
+        value = 0;
+      } 
+      else if (value > max) {
+        value = max;
+      }
+
+      if (value !== localPlayer.value[field]) {
+        localPlayer.value = { ...localPlayer.value, [field]: value };
       }
     };
 
@@ -252,7 +359,14 @@ export default {
       dropdownRef,
       filteredClasses,
       selectClass,
-      localPlayer // Retornamos o computed para usar no template
+      localPlayer,
+      presetsByClass,
+      filteredPresets,
+      presetSearchQuery,
+      presetDropdown,
+      presetDropdownRef,
+      applyPreset,
+      validateLimit
     };
   }
 };
@@ -309,6 +423,7 @@ export default {
 }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+
 
 /* Dropdown Styles */
 .dropdown { position: relative; width: 100%; }

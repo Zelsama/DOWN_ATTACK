@@ -10,6 +10,7 @@ import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
 import db from './database/connection.js';
 import pvpCalculatorRouter from './routes/pvPCalculatorRoutes.js';
+import skillsRoutes from './routes/skillsRoutes.js';
 
 dotenv.config();
 
@@ -98,6 +99,7 @@ passport.use(new DiscordStrategy({
 app.use("/", apiRouter);
 app.use("/auth", authRouter);
 app.use("/pvp-calculator", pvpCalculatorRouter);
+app.use("/skills", skillsRoutes);
 
 const startup = async () => {
   try{

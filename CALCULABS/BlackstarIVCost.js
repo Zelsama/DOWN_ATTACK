@@ -1,6 +1,7 @@
 const blackstone = 100000;
-const memory = 0;
-const sharp_blackstone = 5900000;
+const memory = 4320000;
+let memory_count = 0;
+const sharp_blackstone = 2800000;
 const flawless_blackstone = 2* sharp_blackstone;
 const valksCry = 6555891;
 const costStack97 = 729000000 + (13 * valksCry);
@@ -102,6 +103,7 @@ function makeDuo() {
         } else {
             duoStack += 3; // Incrementa o stack
             totalCost += flawless_blackstone + (memory * 20);
+            memory_count = memory_count + 20
             attempts++;
             
             // Pity na 5ª falha
@@ -134,6 +136,7 @@ function makeTri(){
             let duoResult = makeDuo();
             duoAttempts.push(duoResult)
             totalCost += flawless_blackstone + (memory * 20) + duoResult.totalCost;
+            memory_count = memory_count + 20
             attempts++;
 
             if (attempts == 6){
@@ -220,3 +223,4 @@ while (x > 0){
     x --;
 }
 console.log(total/100000)
+console.log("Estilhaço", memory_count);
