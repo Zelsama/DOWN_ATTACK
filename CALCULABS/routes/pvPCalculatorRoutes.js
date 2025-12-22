@@ -114,7 +114,7 @@ PvpCalculatorRoutes.get('/presets/:id', ensureAuthenticated, async (req, res) =>
         query.where({ discord_id: req.user.discord_id });
     }
 
-    const preset = await query.first();
+    const preset = await query.limit(10).first();
 
     if (preset){
         return res.status(200).json({
@@ -134,14 +134,16 @@ PvpCalculatorRoutes.get('/presets', async (req, res) => {
     try {
         const{
             allpresets,
-            class_name
+            class_name,
         } = req.query;
         const isAdmin = req.user?.role === 'admin'
 
         let query = db('calculator_presets');
         const showAll = allpresets === 'true';
         const user = req.user
-
+        const page = parseInt(req.query.page) || 1;
+        const limit = Math.min(parseInt(req.query.limit) || 1000);
+        const offset = (page - 1) * limit;
 
         if(class_name){
             query.where({ class_name })
@@ -157,11 +159,19 @@ PvpCalculatorRoutes.get('/presets', async (req, res) => {
             query.where({ discord_id: '0'})
         }
 
-        const presets = await query.select();
+        const presets = await query.select().limit(limit).offset(offset).orderBy('class_name', 'asc').orderBy('name', 'asc');
+        if (presets.length === 0){
+            return res.status(404).json({
+                success: false,
+                error: 'No presets found.' 
+            })
+        }
 
         res.status(200).json({
             success: true,
-            presets: presets
+            presets: presets,
+            page: page,
+            limit: limit
         })
 
         } catch (error) {

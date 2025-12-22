@@ -3,17 +3,12 @@
         <aside class="menu">
             <p class="menu-label">General</p>
             <ul class="menu-list">
-                <li><a>Dashboard</a></li>
+                <li><a @click="chooseMenuItem('dashboard')" :class="{ 'is-active': showDashboard}">Dashboard</a></li>
             </ul>
             <p class="menu-label">Administration</p>
             <ul class="menu-list">
-                <li><a @click="showCalculatorPresets = !showCalculatorPresets, getAllPresets()" :class="{ 'is-active': showCalculatorPresets}">Calculator Presets</a></li>
-            </ul>
-            <p class="menu-label">Transactions</p>
-            <ul class="menu-list">
-                <li><a>Payments</a></li>
-                <li><a>Transfers</a></li>
-                <li><a>Balance</a></li>
+                <li><a @click="chooseMenuItem('Calculator Presets'), getAllPresets()" :class="{ 'is-active': showCalculatorPresets}">Calculator Presets</a></li>
+                <li><a @click="chooseMenuItem('Skills Management')" :class="{ 'is-active': showSkillsManagement}">Skills Management</a></li>
             </ul>
         </aside>
         <div class="content">
@@ -21,6 +16,23 @@
                 <h1 class="title is-3">Admin Page</h1>          
             </div>
             <div class="admin-main-content">
+                <div v-if="showSkillsManagement">
+                    <h2 class="title is-5">Skills Management</h2>
+                    <p>Manage your skills here.</p>
+                    <button @click="newSkill()" class="button is-primary">+</button>
+                    <div>
+                        <SkillFormModal
+                        v-model="newSkillData"
+                        label="New Skill"
+                        :showModalNotification="showModalModification"
+                        :modalErrorMsg="modalErrorMsg"
+                        :modalSaveMsg="modalSaveMsg"
+                        :modalSaveError="modalSaveError"
+                        @close-notification="showModalModification = !showModalModification"
+                        @close-modal="newSkillModalVisible = !newSkillModalVisible"
+                        />
+                    </div>
+                </div>
                 <div v-if="showCalculatorPresets">
                     <h2 class="title is-5">Calculator Presets</h2>
                     <p>Manage your calculator presets here.</p>
@@ -105,7 +117,7 @@
                     
                 </div>
                 
-                <div v-else>
+                <div v-if="showDashboard">
                     <h2 class="title is-5">Welcome to the Admin Dashboard</h2>
                     <p>Select an option from the menu to get started.</p>
                     
@@ -120,16 +132,22 @@
 import { ref } from 'vue';
 import apiClient from '@/services/api';
 import PresetFormModal from '@/components/PresetFormModal.vue';
+import SkillFormModal from '@/components/SkillFormModal.vue';
 
 export default {
     name: 'adminView',
     components: {
-        PresetFormModal
+        PresetFormModal,
+        SkillFormModal
     },
     setup() {
+        const showDashboard = ref(true);
         const showCalculatorPresets = ref(false);
+        const showSkillsManagement = ref(false);
         let allCalculatorPresets = ref({});
         const newPresetModalVisible = ref(false);
+        const newSkillModalVisible = ref(false);
+        const newSkillData = ref({});
         const editPresetModalVisible = ref(false);
         let modalSaveError = ref(false);
         let modalErrorMsg = ref('');
@@ -340,6 +358,24 @@ export default {
             editPresetModalVisible.value = !editPresetModalVisible.value;
         }
 
+        const chooseMenuItem = (item) => {
+            const menuMap = {
+                'Calculator Presets': 'showCalculatorPresets',
+                'Skills Management': 'showSkillsManagement',
+                'dashboard': 'showDashboard'
+            };
+            showCalculatorPresets.value = false;
+            showSkillsManagement.value = false;
+            showDashboard.value = false;
+            if (menuMap[item]) {
+                eval(menuMap[item] + ".value = true");
+            }
+        };
+
+        const newSkill = () => {
+            // Logic to open new skill modal
+        }
+
         const getPresetById = async (id) =>{
             try{
                 const response = await apiClient.get(`/pvp-calculator/presets/${id}`);
@@ -370,7 +406,13 @@ export default {
             getPresetById,
             newPreset,
             editPreset,
-            editPresetModalVisible
+            editPresetModalVisible,
+            showSkillsManagement,
+            showDashboard,
+            chooseMenuItem,
+            newSkill,
+            newSkillData,
+            newSkillModalVisible
         }
     }
 }

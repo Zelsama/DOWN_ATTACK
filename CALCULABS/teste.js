@@ -1,41 +1,4 @@
-import axios from 'axios';
-import fs from 'fs';
-import path from 'path'; // Não esqueça de importar o path!
-import { gotScraping } from 'got-scraping'; // Importação do got-scraping
-
-const download_icon = async (className, id) => {
-    const api_url = `https://apiv2.bdolytics.com/en/NA/db/skill/${id}`
-    const icon_base_url = 'https://cdn.bdolytics.com/img/'
-
-    try {
-        const final_url = await axios(api_url);
-        // Ajuste para lowerCase e extensão webp na URL
-        const img_url = icon_base_url + (final_url.data.data.icon_image).toLowerCase() + ".webp";
-        
-        const readStream = gotScraping.stream(img_url);
-
-        // Define o caminho
-        const pastaDestino = path.join('..', 'BDOOPT_VUE', 'bdo-optimizer-temp', 'public', 'skills', className);
-        
-        // AQUI ESTÁ O TRUQUE: Usamos 'await fs.promises' para o código ESPERAR a pasta ser criada
-        await fs.promises.mkdir(pastaDestino, { recursive: true });
-
-        // Só chega aqui depois que a pasta existe
-        const writer = fs.createWriteStream(path.join(pastaDestino, `icon_${id}.webp`));
-        
-        readStream.pipe(writer);
-
-        // É uma boa prática retornar uma Promise que resolve quando o download termina real
-        return new Promise((resolve, reject) => {
-            writer.on('finish', () => resolve(img_url));
-            writer.on('error', reject);
-            img_url
-        });
-
-    } catch(error) {
-        console.error(error);
-    }
-}
-
-// Teste
-console.log(await download_icon('Warrior', 5655));
+import path from 'path';
+const className = 'Warrior';
+const pastaDestino = path.join('..', 'BDOOPT_VUE', 'bdo-optimizer-temp', 'public', 'skills', className);
+console.log(pastaDestino)

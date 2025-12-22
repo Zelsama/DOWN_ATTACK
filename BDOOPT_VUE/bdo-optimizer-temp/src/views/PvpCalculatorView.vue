@@ -59,7 +59,6 @@
           label="Player 1" 
           :playerNumber="1"
           :availableClasses="classes"
-          :calculatorPresets="calculatorPresets"
         />
 
         <!-- NOVA COLUNA DO MEIO: BUFFS -->
@@ -135,7 +134,6 @@
           label="Player 2" 
           :playerNumber="2"
           :availableClasses="classes"
-          :calculatorPresets="calculatorPresets"
         />
 
       </div>
@@ -172,7 +170,6 @@ export default {
       'Hashashin Succession', 'Hashashin Awakening', 'Deadeye Awakening', 'Wukong Awakening', 'Shai Succession'
     ]);
 
-    const calculatorPresets = ref([])
 
     // Player 1 - Complete stats
     const player1 = ref({
@@ -317,15 +314,6 @@ export default {
       return '---';
     });
 
-    const getPresets = async() =>{
-      try{
-        const response = await apiClient.get('/pvp-calculator/presets');
-        calculatorPresets.value = response.data.presets
-      }catch(error){
-        console.error("Error fetching presets: "+ error)
-      }
-    }
-
     const parseClassAndSpec = (fullClassName) =>{
       const parts = fullClassName.split(' ');
       const noSpecClass = ['Archer', 'Deadeye', 'Wukong', 'Scholar'];
@@ -455,7 +443,6 @@ export default {
     onMounted(()=>{
       classes.value.sort()
       calculateDamage()
-      getPresets()
     });
 
     return {
@@ -477,7 +464,6 @@ export default {
       p2Buffs,
       p1Debuff,
       p2Debuff,
-      calculatorPresets
     };  
   }
 };

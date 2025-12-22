@@ -25,9 +25,10 @@
     "package.json": "^0.0.0",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
-    "redis": "^4.7.1"
+    "redis": "^4.7.1",
+    "got-scraping": "^4.1.2"
   },
   "devDependencies": {
-    "got-scraping": "^4.1.2"
+    "nodemon": "^2.0.22"
   }
 }

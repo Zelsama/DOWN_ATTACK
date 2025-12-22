@@ -1,5 +1,5 @@
 <template>
-  <div class="player-panel">
+  <div class="player-panel">    
     <!-- Header -->
     <div class="panel-header" :class="playerNumber === 1 ? 'player1' : 'player2'">
       {{ label }}
@@ -9,38 +9,58 @@
      <label> Preset: </label>
     <div class="dropdown mt-1" :class="{ 'is-active': presetDropdown }" ref="presetDropdownRef">
       <div class="dropdown-trigger">
-        <input 
-          class="input is-small input-with-icon" 
-          type="text" 
-          v-model="presetSearchQuery"
-          @focus="presetDropdown = true"
-          @input="presetDropdown = true"
-          placeholder="Search preset or a class"
-        >
+        <button class="button is-small is-fullwidth input-with-icon" @click="presetDropdown = !presetDropdown">
+          <span class="is-flex is-justify-content-space-between is-align-items-center" style="width: 100%;">
+            <span >{{ selectedPreset ? selectedPreset : 'Select a preset' }}</span>
+            <span class="icon is-small ml-2">
+              <font-awesome-icon :icon="['fas', presetDropdown ? 'caret-up' : 'caret-down']" />
+            </span>
+          </span>
+        </button>
       </div>
-      <div class="dropdown-menu" role="menu">
+      <div class="dropdown-menu" role="menu">             
         <div class="dropdown-content">
-          
-          <div v-for="(groupPresets, className) in presetsByClass" :key="className">
-            
-            <div class="dropdown-item has-text-weight-bold" style="cursor: default;">
-              {{ className }}
+          <div class="dropdown-item p-2">
+            <div class="control has-icons-right">
+              <input 
+                class="input is-small" 
+                type="text" 
+                v-model="presetSearchQuery"
+              >
+              <span class="icon is-small is-right">
+                <font-awesome-icon :icon="['fas', 'search']" />
+              </span>
             </div>
+          </div>
 
-            <a 
-              v-for="preset in groupPresets" 
-              :key="preset.id" 
-              class="dropdown-item pl-5"
-              @click="applyPreset(preset.id); presetDropdown = false"
-            >
-              {{ preset.name || 'Build Sem Nome' }}
-            </a>
+          <div class="dropdown-scroll-area">
+            <div v-for="(groupPresets, className) in presetsByClass" :key="className">
+              
+              <div class="dropdown-item has-text-weight-bold" style="cursor: default;">
+                {{ className }}
+              </div>
 
+              <a 
+                v-for="preset in groupPresets" 
+                :key="preset.id" 
+                class="dropdown-item pl-5"
+                @click="applyPreset(preset.id); presetDropdown = false"
+              >
+                {{ preset.name || 'Build Sem Nome' }}
+              </a>
+
+            </div>
           </div>
 
           <div v-if="Object.keys(presetsByClass).length === 0" class="dropdown-item is-italic has-text-grey">
             No results found
           </div>
+          <div ref="sentinel" class="sentinel">
+            <div v-if="isLoading" class="dropdown-item has-text-centered">
+              <progress class="progress is-small is-primary" max="100">50%</progress>
+            </div>
+          </div>
+          <div v-if="filteredPresets.length === 0 && !isLoading"></div>
         </div>
       </div>
     </div>
@@ -214,6 +234,8 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useIntersectionObserver } from '@vueuse/core';
+import apiClient from '../services/api.js';
 
 export default {
   name: 'PlayerPanel',
@@ -233,10 +255,6 @@ export default {
     availableClasses: {
       type: Array,
       required: true
-    },
-    calculatorPresets: {
-      type: Array,
-      required: true
     }
   },
   emits: ['update:modelValue'],
@@ -247,6 +265,12 @@ export default {
     const presetDropdown = ref(false);
     const presetDropdownRef = ref(null);
     const presetSearchQuery = ref('');
+    const isLoading = ref(false);
+    const sentinel = ref(null);
+    const CalculatorPresets = ref([]);
+    const presetPage = ref(1);
+    const hasMorePresets = ref(true);
+    const selectedPreset = ref(null);
 
     const presetsByClass = computed(() => {
         return filteredPresets.value.reduce((groups, preset) => {
@@ -261,19 +285,17 @@ export default {
       });
 
     const filteredPresets = computed(() => {
-      if (!presetSearchQuery.value) return props.calculatorPresets;
-      return props.calculatorPresets.filter(preset => 
+      if (!presetSearchQuery.value) return CalculatorPresets.value;
+      return CalculatorPresets.value.filter(preset => 
         (preset.class_name || '').toLowerCase().includes(presetSearchQuery.value.toLowerCase())
       );
     });
 
     const applyPreset = (id) => {
-      const presetData = props.calculatorPresets.find(p => p.id === id)
+      const presetData = CalculatorPresets.value.find(p => p.id === id)
       
       if(presetData){
         const className = `${presetData.class_name} ${presetData.class_spec}`
-        console.log("Original:", presetData.skill_spec);
-        console.log("Transformado:", presetData.skill_spec.toLowerCase().trim());
         const finalPlayer = {
           ...localPlayer.value,
           ...presetData,
@@ -282,8 +304,9 @@ export default {
           skill_spec: presetData.skill_spec.toLowerCase()
 
         }
+
         const displayLabel = `${presetData.class_name} ${presetData.class_spec} (${presetData.name || 'Custom Preset'})`
-        presetSearchQuery.value = displayLabel
+        selectedPreset.value = displayLabel
         presetDropdown.value = false
         localPlayer.value = finalPlayer
         searchQuery.value = className
@@ -331,8 +354,6 @@ export default {
       let value = localPlayer.value[field];
       
       if (value === '' || value === null) return;
-
-      // Impede negativos
       if (value < 0) {
         value = 0;
       } 
@@ -345,13 +366,48 @@ export default {
       }
     };
 
-    onMounted(() => {
+
+    const getPresets = async() =>{
+      try{
+        isLoading.value = true
+        const response = await apiClient.get(`/pvp-calculator/presets?page=${presetPage.value}`);
+        CalculatorPresets.value.push(...response.data.presets)
+        if(response.data.presets.length === 0){
+          hasMorePresets.value = false;
+        }
+        presetPage.value += 1
+      }catch(error){
+        if(error.response?.status === 404){
+          hasMorePresets.value = false;
+          return;
+        }
+        console.error("Error fetching presets: "+ error)
+      }finally{
+        isLoading.value = false
+      }
+    }
+
+    onMounted(async () => {
       document.addEventListener('click', handleClickOutside);
+      await getPresets();
+      applyPreset(CalculatorPresets.value[0]?.id || null);
     });
 
     onUnmounted(() => {
       document.removeEventListener('click', handleClickOutside);
     });
+
+
+    useIntersectionObserver(
+          sentinel,
+          ([{ isIntersecting }]) => {
+            if (isIntersecting && !isLoading.value) {
+              if(hasMorePresets.value){
+                getPresets();
+              }
+            }
+          }
+        );
 
     return {
       showDropdown,
@@ -366,7 +422,10 @@ export default {
       presetDropdown,
       presetDropdownRef,
       applyPreset,
-      validateLimit
+      validateLimit,
+      isLoading,
+      sentinel,
+      selectedPreset
     };
   }
 };
@@ -428,12 +487,30 @@ export default {
 /* Dropdown Styles */
 .dropdown { position: relative; width: 100%; }
 .dropdown-menu { position: absolute; width: 100%; z-index: 10; }
-.dropdown-content { background-color: #12161b; border: 1px solid #3e4753; max-height: 200px; overflow-y: auto; }
+.dropdown-content { background-color: #12161b; border: 1px solid #3e4753; overflow: hidden; padding-bottom: 0; }
+.dropdown-scroll-area { max-height: 250px; overflow-y: auto; }
+
 .dropdown-menu, .dropdown-content { box-sizing: border-box; width: 100%;}
 .dropdown-item { display: block; padding: 4px 8px; color: #e2e8f0; font-size: 9pt; cursor: pointer; }
 .dropdown-item:hover { background-color: #1a1d23; }
 .dropdown-item.is-active { background-color: #5a7ff2; color: white; }
 
+.dropdown-scroll-area::-webkit-scrollbar { 
+  width: 6px; 
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-track { 
+  background: #0e0f11;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-thumb { 
+  background: #5a7ff2;
+  border-radius: 3px; 
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-thumb:hover { 
+  background: #4a6fd2;
+}
 /* Input Addon Styles */
 .input-with-addon { display: flex; gap: 4px; align-items: center; }
 .hits-input-wrapper { position: relative; width: 17%; flex-shrink: 0; }
