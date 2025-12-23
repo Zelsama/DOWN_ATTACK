@@ -1,10 +1,10 @@
 import express from 'express';
 import db from '../database/connection.js';
 import axios from 'axios';
-import path from 'path';
 import fs from 'fs';
 import { gotScraping } from 'got-scraping';
 import { ensureAdmin } from '../middleware/auth.js';
+import { s3Service } from '../index.js';
 
 const SkillsRoutes = express.Router();
 
@@ -120,34 +120,22 @@ const download_icon = async (className, id) => {
     try {
         const final_url = await axios(api_url);
 
-        const web_path = `/skills/${className}/icon_${id}.webp`;
-
-        const pastaDestino = path.join('..', 'BDOOPT_VUE', 'bdo-optimizer-temp', 'public', 'skills', className);
-
-        if (await fs.promises.access(pastaDestino + `/icon_${id}.webp`).then(() => true).catch(() => false)) {
-            return web_path;
-        }
-
         const img_url = icon_base_url + (final_url.data.data.icon_image).toLowerCase() + ".webp";
         
-        const readStream = gotScraping.stream(img_url);
-
-        
-
-        await fs.promises.mkdir(pastaDestino, { recursive: true });
-
-        const writer = fs.createWriteStream(path.join(pastaDestino, `icon_${id}.webp`));
-        
-        readStream.pipe(writer);
-
-        return new Promise((resolve, reject) => {
-            writer.on('finish', () => resolve(web_path));
-            writer.on('error', reject);
+        const { body } = await gotScraping({
+            url: img_url,
+            method: 'GET',
+            responseType: 'buffer'
         });
+
+        const web_path = await new s3Service().uploadFile(`skills/${className}/icon_${id}.webp`, body, 'image/webp');
+        
+        return web_path
 
     } catch(error) {
         console.error(error);
     }
 }
+
 
 export default SkillsRoutes;

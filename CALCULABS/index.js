@@ -4,14 +4,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/routes.js';
 import authRouter from './routes/discordRoutes.js';
-// import client from './connection/redis-client.js'; // <--- 1. Comentei a importação do cliente Redis
-// import RedisStore from 'connect-redis'; // <--- 2. Comentei a importação do RedisStore
+// import client from './connection/redis-client.js'; //
+// import RedisStore from 'connect-redis'; //
 import passport from 'passport';
 import { Strategy as DiscordStrategy } from 'passport-discord';
 import db from './database/connection.js';
 import pvpCalculatorRouter from './routes/pvPCalculatorRoutes.js';
 import skillsRoutes from './routes/skillsRoutes.js';
-
+import S3Service from './services/S3Service.js';
 dotenv.config();
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -37,7 +37,7 @@ app.use(express.json());
 
 
 app.use(session({
-  // store: new RedisStore({ client: client, prefix: 'myapp:' }), // <--- Comentado para não usar Redis
+  // store: new RedisStore({ client: client, prefix: 'myapp:' }),
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
@@ -101,11 +101,13 @@ app.use("/auth", authRouter);
 app.use("/pvp-calculator", pvpCalculatorRouter);
 app.use("/skills", skillsRoutes);
 
+
+export const s3Service = new S3Service();
+
+
 const startup = async () => {
   try{
-      // await client.connect(); // <--- 4. Comentei a conexão com o Redis
-
-      // 5. Comentei o Ping do Redis
+      // await client.connect(); 
       /*
       setInterval(async () => {
         try {
@@ -118,7 +120,6 @@ const startup = async () => {
         }
       }, 300000);
       */
-
       app.listen(port, () => {
       console.log(`SERVIDOR RODANDO NA PORTA ${port}`);
     });
