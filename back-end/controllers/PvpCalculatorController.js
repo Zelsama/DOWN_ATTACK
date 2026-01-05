@@ -1,4 +1,4 @@
-import class_modifiers from "./data/class_modifiers.js";
+import class_modifiers from "../data/class_modifiers.js";
 
 class PvpCalculator {
     constructor(attacker_class = '', defender_class = '', defender_class_spec = '', attacker_class_spec = '', skill_spec = '',

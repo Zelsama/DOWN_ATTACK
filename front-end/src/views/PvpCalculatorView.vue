@@ -61,23 +61,23 @@
           :availableClasses="classes"
         />
 
-        <!-- NOVA COLUNA DO MEIO: BUFFS -->
+        <!-- NEW MIDDLE COLUMN: BUFFS -->
         <div class="options-panel">
           <div class="panel-header">Buffs</div>
           
           <div class="scrollable-content">
             
-            <!-- Container Principal (Grid de 2 Colunas) -->
+            <!-- Main Container (2-Column Grid) -->
             <div class="showdown-grid">
               
-              <!-- COLUNA ESQUERDA (PLAYER 1) -->
+              <!-- LEFT COLUMN (PLAYER 1) -->
               <div class="showdown-column">
                 <div class="column-title p1-title">Player 1</div>
+                <div class="column-title p1-sub-title"> Pre Addons</div>
                 
-                <!-- Grupo: Skill Addons -->
+                <!-- Group: Skill Addons -->
                 <div class="button-group">
-                  <div class="group-label">Pre Addons</div>
-                  <!-- Botões P1 -->
+                <!-- Buttons P1 -->
                   <button class="showdown-btn" :class="{ active: p1Buffs.dr }" @click="toggleBuff('p1', 'dr')">+20 DP</button>
                   <button class="showdown-btn" :class="{ active: p1Buffs.evasion }" @click="toggleBuff('p1', 'evasion')">+20 Evasion</button>
                   <button class="showdown-btn" :class="{ active: p1Buffs.accuracy }" @click="toggleBuff('p1', 'accuracy')">+20 Accuracy</button>
@@ -88,23 +88,23 @@
                   <button class="showdown-btn" :class="{ active: p1Buffs.down_attack }" @click="toggleBuff('p1', 'down_attack')">+5% Down Attack</button>
                 </div>
 
-                <!-- Grupo: Debuffs (Aplicados NO INIMIGO) -->
+                <!-- Group: Debuffs (Applied TO ENEMY) -->
+                <div class="column-title p1-sub-title">Pre Debuffs Addons on Enemy</div>
                 <div class="button-group">
-                  <div class="group-label">Pre Debuffs Addons on Enemy</div>
                   <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusDp }" @click="toggleDebuff('p1', 'minusDp')">-20 DP</button>
                   <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusEvasion }" @click="toggleDebuff('p1', 'minusEvasion')">-20 Evasion</button>
                   <button class="showdown-btn debuff" :class="{ active: p1Debuff.minusAccuracy }" @click="toggleDebuff('p1', 'minusAccuracy')">-20 Accuracy</button>
                 </div>
               </div>
 
-              <!-- COLUNA DIREITA (PLAYER 2) -->
+              <!-- RIGHT COLUMN (PLAYER 2) -->
               <div class="showdown-column">
                 <div class="column-title p2-title">Player 2</div>
+                <div class="column-title p2-sub-title"> Pre Addons</div>
                 
-                <!-- Grupo: Skill Addons -->
+                <!-- Group: Skill Addons -->
                 <div class="button-group">
-                  <div class="group-label">Pre Addons</div>
-                  <!-- Botões P2 -->
+                  <!-- Buttons P2 -->
                   <button class="showdown-btn" :class="{ active: p2Buffs.dr }" @click="toggleBuff('p2', 'dr')">+20 DP</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.evasion }" @click="toggleBuff('p2', 'evasion')">+20 Evasion</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.accuracy }" @click="toggleBuff('p2', 'accuracy')">+20 Accuracy</button>
@@ -112,19 +112,18 @@
                   <button class="showdown-btn" :class="{ active: p2Buffs.critical }" @click="toggleBuff('p2', 'critical')">+5% Crit Dmg</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.air_attack }" @click="toggleBuff('p2', 'air_attack')">+5% Air Attack</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.back_attack }" @click="toggleBuff('p2', 'back_attack')">+5% Back Attack</button>
-                  <button class="showdown-btn" :class="{ active: p2Buffs.down_attack }" @click="toggleBuff('p2', 'down_attack')">+5% Down Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.down_attack } " @click="toggleBuff('p2', 'down_attack')">+5% Down Attack</button>
                 </div>
-
-                <!-- Grupo: Debuffs -->
+                <div class="column-title p2-sub-title">Pre Debuffs Addons on Enemy</div>
+                <!-- Group: Debuffs -->
                 <div class="button-group">
-                  <div class="group-label">Pre Debuffs Addons on Enemy</div>
                   <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusDp }" @click="toggleDebuff('p2', 'minusDp')">-20 DP</button>
                   <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusEvasion }" @click="toggleDebuff('p2', 'minusEvasion')">-20 Evasion</button>
                   <button class="showdown-btn debuff" :class="{ active: p2Debuff.minusAccuracy }" @click="toggleDebuff('p2', 'minusAccuracy')">-20 Accuracy</button>
                 </div>
               </div>
 
-            </div> <!-- Fim do Grid -->
+            </div> <!-- End of Grid -->
           </div>
         </div>
 
@@ -135,6 +134,15 @@
           :playerNumber="2"
           :availableClasses="classes"
         />
+        <div class="import-preset">
+          <div class="options-panel">
+            <div class="panel-header">Import / Export</div>
+            <div class="scrollable-content">
+              <input class="input is-small mb-2" type="text" placeholder="Preset Name"/>
+              <textarea class="textarea is-large"></textarea>
+            </div>
+          </div>
+        </div>        
 
       </div>
     </div>
@@ -470,7 +478,7 @@ export default {
 </script>
 
 <style scoped>
-/* ... (Mantenha os estilos base .damage-calculator-page e .calculator-layout iguais ao anterior) ... */
+/* ... (Keep the base styles .damage-calculator-page and .calculator-layout the same as before) ... */
 
 .damage-calculator-page {
   background-color: #0e0f11;
@@ -489,10 +497,10 @@ export default {
   gap: 8px;
 }
 
-/* --- ESTILOS DA BARRA DE RESULTADOS (NOVO) --- */
+/* --- STYLES OF THE RESULTS BAR (NEW) --- */
 .top-results-bar {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Divide em 2 resultados iguais */
+  grid-template-columns: 1fr 1fr; /* Divide into 2 equal results */
   gap: 8px;
   background-color: #14161a;
   border: 1px solid #3e4753;
@@ -537,15 +545,15 @@ export default {
 
 .hit-chance { font-size: 9pt; color: #718096; }
 .hit-chance span { font-weight: bold; color: #ecc94b; }
-.text-green { color: #48bb78 !important; }   /* Verde Sucesso */
-.text-yellow { color: #ecc94b !important; }  /* Amarelo Alerta */
+.text-green { color: #48bb78 !important; }   /* Green Success */
+.text-yellow { color: #ecc94b !important; }  /* Yellow Alert */
 .text-orange {color: darkorange !important; }
-.text-red { color: #f56565 !important; }     /* Vermelho Perigo */
+.text-red { color: #f56565 !important; }     /* Red Danger */
 
 .result-desc { font-size: 8pt; color: #4a5568; font-style: italic; }
 
 
-/* --- ESTILOS DO GRID PRINCIPAL --- */
+/* --- STYLES OF THE MAIN GRID --- */
 .main-grid { 
   display: grid; 
   grid-template-columns: 33fr 29fr 33fr; 
@@ -553,15 +561,15 @@ export default {
   width: 100%;
 }
 
-/* --- ESTILOS DO PAINEL DO MEIO (B) --- */
-/* Container do Painel */
+/* --- STYLES OF THE MIDDLE PANEL (B) --- */
+/* Panel Container */
 .options-panel {
   background-color: #14161a;
   border: 1px solid #3e4753;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ocupa altura total disponível */
+  height: 100%; /* Occupies total available height */
   overflow: hidden;
 }
 
@@ -582,21 +590,21 @@ export default {
 
 /* --- LAYOUT SHOWDOWN --- */
 
-/* 1. O Grid que divide P1 e P2 */
+/* 1. The Grid that divides P1 and P2 */
 .showdown-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
-  gap: 12px; /* Espaço entre as colunas */
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 12px; /* Space between columns */
 }
 
-/* 2. A Coluna Individual */
+/* 2. The Individual Column */
 .showdown-column {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centraliza os botões horizontalmente */
+  align-items: center; /* Centers buttons horizontally */
 }
 
-/* Títulos (Player 1 / Player 2) */
+/* Titles (Player 1 / Player 2) */
 .column-title {
   font-size: 0.85rem;
   font-weight: bold;
@@ -606,13 +614,13 @@ export default {
 .p1-title { color: #5a7ff2; }
 .p2-title { color: #f56565; }
 
-/* Grupo de Botões (Addons, Debuffs, etc) */
+/* Group of Buttons (Addons, Debuffs, etc) */
 .button-group {
   width: 100%;
-  display: flex;
-  flex-direction: column; /* Empilha um botão embaixo do outro */
-  gap: 4px; /* Espaço vertical pequeno entre botões (Showdown é bem colado) */
-  margin-bottom: 12px; /* Espaço entre grupos */
+  display: grid;
+  grid-template-columns: 1fr 1fr !important; /* Stacks buttons vertically */
+  gap: 4px; /* Small vertical space between buttons (Showdown is quite tight) */
+  margin-bottom: 12px; /* Space between groups */
 }
 
 .group-label {
@@ -627,64 +635,68 @@ export default {
 }
 .group-label span { background:#14161a; padding:0 5px; }
 
-/* --- O BOTÃO SHOWDOWN (DO ZERO) --- */
+/* --- THE SHOWDOWN BUTTON (FROM SCRATCH) --- */
 .showdown-btn {
-  /* Reset básico para tirar estilo padrão do navegador */
+  /* Basic reset to remove default browser styles */
   appearance: none;
   border: none;
   outline: none;
   
-  /* Tamanho e Forma */
-  width: 100%; /* Ocupa a largura da coluna */
-  padding: 4px 0; /* Altura compacta */
-  border-radius: 12px; /* O segredo da "pílula" */
+  /* Size and Shape */
+  width: 100%; /* Occupies the column width */
+  padding: 4px 0; /* Compact height */
+  border-radius: 12px; /* The secret of the "pill" */
   
-  /* Fonte */
+  /* Font */
   font-family: inherit;
-  font-size: 0.75rem; /* Fonte pequena (aprox 12px) */
+  font-size: 0.75rem; /* Small font (approx 12px) */
   font-weight: 500;
   text-align: center;
+  background-color: #F9F9F9;
   
-  /* Cores (Estado Inativo - Azul Escuro/Cinza) */
-  background-color: #2d3748; /* Cinza azulado escuro */
-  color: #a0aec0; /* Texto cinza claro */
-  border: 1px solid #4a5568; /* Borda sutil */
+  /* Colors (Inactive State - Dark Blue/Gray) */
+  color: #F9F9F9; /* Light text */
+  background-color: #353535; /* Dark background */
+  border: 1px solid #cbcbcc; /* Subtle border */
   
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .showdown-btn:hover {
-  background-color: #4a5568;
   color: #fff;
 }
 
-/* --- ESTADO ATIVO (LIGADO) --- */
+/* --- ACTIVE STATE (ON) --- */
 .showdown-btn.active {
-  background-color: #0e0f11; /* Dourado */
-  color: #fff; /* Texto preto/escuro */
+  color: #fff; /* Dark/black text */
   border-color: #3e4147dc;
   font-weight: bold;
-  box-shadow: 0 0 5px rgba(236, 201, 75, 0.3); /* Brilho suave */
+  box-shadow: 0 0 5px rgba(236, 201, 75, 0.3); /* Soft glow */
 }
 
-/* --- VARIAÇÃO DEBUFF (Opcional) --- */
+/* --- DEBUFF VARIATION (Optional) --- */
 .showdown-btn.debuff {
-  background-color: #2d3748; /* Mesmo fundo inativo */
-  border-color: #4a5568;
+  background-color: #353535; /* Same inactive background */
+  border-color: #cbcbcc; /* Same inactive border */
 }
 
-/* Debuff Ativo (Vermelho) */
+/* Active Debuff (Red) */
 .showdown-btn.debuff.active {
   background-color: #f56565;
   color: white;
   border-color: #c53030;
   box-shadow: 0 0 5px rgba(245, 101, 101, 0.3);
 }
+.import-preset {
+  margin-top: 1%;
+  grid-column: 2 / 3;
+  margin-bottom: 5%;
+}
 /* Responsividade */
 @media (max-width: 1024px) {
   .top-results-bar { grid-template-columns: 1fr; }
   .main-grid { grid-template-columns: 1fr; }
-  .options-panel { order: -1; height: auto; } /* No mobile, opções ficam em cima dos players */
+  .options-panel { order: -1; height: auto; } /* On mobile, options are above the players */
 }
 </style>

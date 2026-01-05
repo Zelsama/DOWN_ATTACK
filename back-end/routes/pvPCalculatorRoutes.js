@@ -1,8 +1,10 @@
 import express from 'express';
-import PvpCalculator from '../PvpCalculator.js';
+import PvpCalculator from '../controllers/PvpCalculatorController.js';
 import db from '../database/connection.js';
 import { ensureAuthenticated } from '../middleware/auth.js';
+import { garmothRateLimit } from '../middleware/rateLimiters.js';
 import {validateAttackStateMiddleware, validateClassSpecMiddleware, validateSkillSpecMiddleware, validateStatusMiddleware} from '../middleware/pvpCalculatorValidation.js';
+import GarmothService from '../services/garmothService.js';
 
 const PvpCalculatorRoutes = express.Router();
 
@@ -418,7 +420,30 @@ PvpCalculatorRoutes.post('/presets', [ensureAuthenticated, validateClassSpecMidd
     }
 });
 
-
+PvpCalculatorRoutes.get('/import/:garmothId', garmothRateLimit, async (req, res) => {
+    try {
+        const { garmothId } = req.params;
+        const garmothService = new GarmothService();
+        const buildData = await garmothService.getCharacterBuilds(garmothId);
+        const convertedData = garmothService.convertBuildToSuperArmorFormat(buildData.data[0]);
+        if (!convertedData) {
+            return res.status(404).json({
+                success: false,
+                error: 'No builds found for this character on Garmoth API.'
+            });
+        }
+        res.status(200).json({
+            success: true,
+            data: convertedData
+        });
+    } catch (error) {
+        console.error('Error importing build from Garmoth:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to import build from Garmoth API: ' + error.message
+        });
+    }
+});
 
 
 export default PvpCalculatorRoutes;

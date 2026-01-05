@@ -1,8 +1,8 @@
 import express from 'express';
-import CalculaStackSoberana from '../CalculaStackSoberana.js';
-import EnhancementCalculator from '../EnhancementCalculator.js';
-import { getEnhanceableItems, getEnhanceableItemById } from '../services/enhanceableItemService.js';
-import { saveSimulatorState, accessSimulatorState } from '../services/saveSimulatorStateService.js';
+//import CalculaStackSoberana from '../CalculaStackSoberana.js';
+//import EnhancementCalculator from '../EnhancementCalculator.js';
+//import { getEnhanceableItems, getEnhanceableItemById } from '../services/enhanceableItemService.js';
+//import { saveSimulatorState, accessSimulatorState } from '../services/saveSimulatorStateService.js';
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.get('/', (req, res) => {
     }
 });
 
-router.get('/fs-optimizer', async (req, res)=>{
+/*router.get('/fs-optimizer', async (req, res)=>{
     try {
         const {tier, baseChance, valks, stacks, item, region} = req.query;
         const calculators = await CalculaStackSoberana.create(region, item);
@@ -114,7 +114,7 @@ router.get('/simulator-state', async (req, res) => {
         console.error("Erro ao acessar o estado do simulador:", error);
         res.status(500).json({ success: false, error: 'Ocorreu um erro interno ao acessar o estado do simulador.' });
     }
-});
+});*/
 
 
 export default router;

@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/routes.js';
 import authRouter from './routes/discordRoutes.js';
+import { rateLimit } from 'express-rate-limit';
 // import client from './connection/redis-client.js'; //
 // import RedisStore from 'connect-redis'; //
 import passport from 'passport';
@@ -30,7 +31,16 @@ const options = {
 const port = process.env.PORT || 8080;
 const scopes = ['identify'];
 
-app.set('trust proxy', true);
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 300, // Limit each IP to 300 requests per `window` (here, per 15 minutes).
+	standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+	ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
+	// store: ... , // Redis, Memcached, etc. See below.
+})
+app.use(limiter);
+//app.set('trust proxy', true);
 app.use(cors(options));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
