@@ -59,6 +59,8 @@
           label="Player 1" 
           :playerNumber="1"
           :availableClasses="classes"
+          :damage_type="getClassData(player2.class).damage_type"
+          @attackerState="(p1state) => player1.state = p1state"
         />
 
         <!-- NEW MIDDLE COLUMN: BUFFS -->
@@ -83,9 +85,9 @@
                   <button class="showdown-btn" :class="{ active: p1Buffs.accuracy }" @click="toggleBuff('p1', 'accuracy')">+20 Accuracy</button>
                   <button class="showdown-btn" :class="{ active: p1Buffs.critical_hit_rate }" @click="toggleBuff('p1', 'critical_hit_rate')">+30% Crit Rate</button>
                   <button class="showdown-btn" :class="{ active: p1Buffs.critical }" @click="toggleBuff('p1', 'critical')">+5% Crit Dmg</button>
-                  <button class="showdown-btn" :class="{ active: p1Buffs.air_attack }" @click="toggleBuff('p1', 'air_attack')">+5% Air Attack</button>
-                  <button class="showdown-btn" :class="{ active: p1Buffs.back_attack }" @click="toggleBuff('p1', 'back_attack')">+5% Back Attack</button>
-                  <button class="showdown-btn" :class="{ active: p1Buffs.down_attack }" @click="toggleBuff('p1', 'down_attack')">+5% Down Attack</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.air_attack }" v-show="player1.state === 'air_attack'" @click="toggleBuff('p1', 'air_attack')">+5% Air Attack</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.back_attack }" v-show="player1.state === 'back_attack'" @click="toggleBuff('p1', 'back_attack')">+5% Back Attack</button>
+                  <button class="showdown-btn" :class="{ active: p1Buffs.down_attack }" v-show="player1.state === 'down_attack'" @click="toggleBuff('p1', 'down_attack')">+5% Down Attack</button>
                 </div>
 
                 <!-- Group: Debuffs (Applied TO ENEMY) -->
@@ -110,9 +112,9 @@
                   <button class="showdown-btn" :class="{ active: p2Buffs.accuracy }" @click="toggleBuff('p2', 'accuracy')">+20 Accuracy</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.critical_hit_rate }" @click="toggleBuff('p2', 'critical_hit_rate')">+30% Crit Rate</button>
                   <button class="showdown-btn" :class="{ active: p2Buffs.critical }" @click="toggleBuff('p2', 'critical')">+5% Crit Dmg</button>
-                  <button class="showdown-btn" :class="{ active: p2Buffs.air_attack }" @click="toggleBuff('p2', 'air_attack')">+5% Air Attack</button>
-                  <button class="showdown-btn" :class="{ active: p2Buffs.back_attack }" @click="toggleBuff('p2', 'back_attack')">+5% Back Attack</button>
-                  <button class="showdown-btn" :class="{ active: p2Buffs.down_attack } " @click="toggleBuff('p2', 'down_attack')">+5% Down Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.air_attack }" v-show="player2.state === 'air_attack'" @click="toggleBuff('p2', 'air_attack')">+5% Air Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.back_attack }" v-show="player2.state === 'back_attack'" @click="toggleBuff('p2', 'back_attack')">+5% Back Attack</button>
+                  <button class="showdown-btn" :class="{ active: p2Buffs.down_attack } " v-show="player2.state === 'down_attack'" @click="toggleBuff('p2', 'down_attack')">+5% Down Attack</button>
                 </div>
                 <div class="column-title p2-sub-title">Pre Debuffs Addons on Enemy</div>
                 <!-- Group: Debuffs -->
@@ -133,6 +135,8 @@
           label="Player 2" 
           :playerNumber="2"
           :availableClasses="classes"
+          :damage_type="getClassData(player1.class).damage_type"
+          @attackerState="(p2state) => player2.state = p2state"
         />
         <div class="import-preset">
           <div class="options-panel">
@@ -152,8 +156,10 @@
 <script>
 import { ref, computed, onMounted} from 'vue';
 import { watchDebounced } from '@vueuse/core';
-import apiClient from '@/services/api';
 import PlayerPanel from '@/components/PlayerPanel.vue';
+import { useDamageCalculator } from '@/composables/useDamageCalculator.js';
+import classModifiers from '@/data/classModifiers.js';
+
 
 
 export default {
@@ -266,6 +272,8 @@ export default {
       minusEvasion: false,
       minusAccuracy: false,
     })
+
+
     const toggleDebuff = (player, debuffName)=>{
       if(player === "p1"){
         p1Debuff.value[debuffName] = !p1Debuff.value[debuffName];
@@ -292,32 +300,35 @@ export default {
     // Computed properties para resultados
     const damage1to2 = computed(() => {
       if (apiResult1to2.value) {
-        const hp_loss = apiResult1to2.value.hp_loss;
+        const hp_loss = apiResult1to2.value.result.hp_loss;
         const hp_loss_percentage = (100 * hp_loss) / player2.value.hp;
-        return {hp_loss: apiResult1to2.value.hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2)}
+        const damage_type = apiResult1to2.value.result.damage_type;
+        return {hp_loss: hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2), damage_type: damage_type};
       }
       return { hp_loss: '---', hp_loss_percentage: '---' };
     });
 
     const hitChance1to2 = computed(() => {
       if (apiResult1to2.value) {
-        return (apiResult1to2.value.hitrate * 100).toFixed(1);
+        return (apiResult1to2.value.result.hitrate * 100).toFixed(1);
       }
       return '---';
     });
+    
 
     const damage2to1 = computed(() => {
       if (apiResult2to1.value) {
-        const hp_loss = apiResult2to1.value.hp_loss;
+        const hp_loss = apiResult2to1.value.result.hp_loss;
         const hp_loss_percentage = (100 * hp_loss) / player1.value.hp;
-        return {hp_loss: apiResult2to1.value.hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2)};
+        const damage_type = apiResult2to1.value.result.damage_type;
+        return {hp_loss: hp_loss.toFixed(2), hp_loss_percentage: hp_loss_percentage.toFixed(2), damage_type: damage_type} ;
       }
       return { hp_loss: '---', hp_loss_percentage: '---' };
     });
 
     const hitChance2to1 = computed(() => {
       if (apiResult2to1.value) {
-        return (apiResult2to1.value.hitrate * 100).toFixed(1);
+        return (apiResult2to1.value.result.hitrate * 100).toFixed(1);
       }
       return '---';
     });
@@ -343,8 +354,27 @@ export default {
       return 'text-red';
     };
 
+    const getClassData = (fullClassName) => {
+      if (!fullClassName) return { damage_type: null, class_group: null };
 
-    const calculateDamage = async () => {
+      const { className, spec } = parseClassAndSpec(fullClassName);
+
+      const classKey = className.toLowerCase();
+      const specKey = spec.toLowerCase();
+
+      if (classModifiers[classKey] && classModifiers[classKey].specs[specKey]) {
+        return {
+          damage_type: classModifiers[classKey].specs[specKey].damage_type,
+          class_group: classModifiers[classKey].specs[specKey].group
+        };
+      }
+
+      return { damage_type: 'Melee', class_group: null };
+    };
+
+
+
+    const calculateDamage = () => {
       isCalculating.value = true;
       calculationError.value = null;
       
@@ -376,7 +406,7 @@ export default {
         const p1_air_attack = player1.value.air_attack + (p1Buffs.value.air_attack ? 5 : 0);
         const p2_air_attack = player2.value.air_attack + (p2Buffs.value.air_attack ? 5 : 0);
         // Player 1 ataca Player 2
-        const response1to2 = await apiClient.post('/pvp-calculator/calculate', {
+        const player1To2 = {
           attacker_class: player1Data.className,
           defender_class: player2Data.className,
           attacker_class_spec: player1Data.spec,
@@ -393,7 +423,7 @@ export default {
           melee_evasion: p2_melee_evasion,
           ranged_evasion: p2_ranged_evasion,
           magic_evasion: p2_magic_evasion,
-          dr_percent: player2.value.dr_percent,
+          dr_percent: player2.value.dr_percent || 0,
           critical: p1_critical,
           back_attack: p1_back_attack,
           down_attack: p1_down_attack,
@@ -402,10 +432,10 @@ export default {
           skill_pvp_reduction_percent: player1.value.skill_pvp_reduction_percent,
           critical_hit_rate: p1_critical_hit_rate,
           state: player1.value.state
-        });
+        };
 
         // Player 2 ataca Player 1
-        const response2to1 = await apiClient.post('/pvp-calculator/calculate', {
+        const player2To1 = {
           attacker_class: player2Data.className,
           defender_class: player1Data.className,
           attacker_class_spec: player2Data.spec,
@@ -422,7 +452,7 @@ export default {
           melee_evasion: p1_melee_evasion,
           ranged_evasion: p1_ranged_evasion,
           magic_evasion: p1_magic_evasion,
-          dr_percent: player1.value.dr_percent,
+          dr_percent: player1.value.dr_percent || 0,
           critical: p2_critical,
           back_attack: p2_back_attack,
           down_attack: p2_down_attack,
@@ -431,14 +461,15 @@ export default {
           skill_pvp_reduction_percent: player2.value.skill_pvp_reduction_percent,
           critical_hit_rate: p2_critical_hit_rate,
           state: player2.value.state
-        });
+        };
 
-        apiResult1to2.value = response1to2.data.data;
-        apiResult2to1.value = response2to1.data.data;
+         
+        apiResult1to2.value = useDamageCalculator(player1To2);
+        apiResult2to1.value = useDamageCalculator(player2To1);
         
       } catch (error) {
-        console.error('API Error:', error);
-        calculationError.value = error.response?.data?.error || 'Failed to calculate damage';
+        calculationError.value = error || 'Failed to calculate damage';
+        console.error('Error during damage calculation:', error);
       } finally {
         isCalculating.value = false;
       }
@@ -472,6 +503,7 @@ export default {
       p2Buffs,
       p1Debuff,
       p2Debuff,
+      getClassData,
     };  
   }
 };
@@ -606,7 +638,7 @@ export default {
 
 /* Titles (Player 1 / Player 2) */
 .column-title {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: bold;
   margin-bottom: 8px;
   text-transform: uppercase;
@@ -637,56 +669,51 @@ export default {
 
 /* --- THE SHOWDOWN BUTTON (FROM SCRATCH) --- */
 .showdown-btn {
-  /* Basic reset to remove default browser styles */
+  /* Reset básico */
   appearance: none;
-  border: none;
   outline: none;
   
-  /* Size and Shape */
-  width: 100%; /* Occupies the column width */
-  padding: 4px 0; /* Compact height */
-  border-radius: 12px; /* The secret of the "pill" */
+  /* Dimensões e Forma */
+  width: 100%;
+  padding: 6px 0; /* Um pouco mais de altura para clique */
+  border-radius: 4px; /* Cantos levemente arredondados (quase quadrados) */
   
-  /* Font */
+  /* Fonte */
   font-family: inherit;
-  font-size: 0.75rem; /* Small font (approx 12px) */
+  font-size: 0.6rem;
   font-weight: 500;
   text-align: center;
-  background-color: #F9F9F9;
   
-  /* Colors (Inactive State - Dark Blue/Gray) */
-  color: #F9F9F9; /* Light text */
-  background-color: #353535; /* Dark background */
-  border: 1px solid #cbcbcc; /* Subtle border */
+  /* Cores Inativas (Flat Dark) */
+  background-color: #1a1d23; /* Fundo escuro e fosco */
+  color: #718096; /* Texto cinza suave */
+  border: 1px solid #3e4753; /* Borda sutil para definição */
   
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .showdown-btn:hover {
-  color: #fff;
+  background-color: #252a33;
+  color: #e2e8f0;
+  border-color: #5a6b85;
 }
 
 /* --- ACTIVE STATE (ON) --- */
 .showdown-btn.active {
-  color: #fff; /* Dark/black text */
-  border-color: #3e4147dc;
-  font-weight: bold;
-  box-shadow: 0 0 5px rgba(236, 201, 75, 0.3); /* Soft glow */
-}
-
-/* --- DEBUFF VARIATION (Optional) --- */
-.showdown-btn.debuff {
-  background-color: #353535; /* Same inactive background */
-  border-color: #cbcbcc; /* Same inactive border */
+  background-color: #5a7ff2; /* Azul sólido (Cor do Player 1) */
+  color: #ffffff; /* Texto branco puro */
+  border-color: #5a7ff2;
+  font-weight: 600;
+  box-shadow: none; /* Sem brilho neon */
 }
 
 /* Active Debuff (Red) */
 .showdown-btn.debuff.active {
-  background-color: #f56565;
+  background-color: #f56565; /* Vermelho sólido (Cor do Player 2/Perigo) */
+  border-color: #f56565;
   color: white;
-  border-color: #c53030;
-  box-shadow: 0 0 5px rgba(245, 101, 101, 0.3);
+  box-shadow: none;
 }
 .import-preset {
   margin-top: 1%;

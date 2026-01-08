@@ -136,21 +136,18 @@
         <label>Critical %</label>
         <input type="number" v-model.number="localPlayer.critical" step="0.1" min="0" max="9999" @input="validateLimit('critical')">
       </div>
-      <div class="form-group">
-        <label>Back Attack %</label>
-        <input type="number" v-model.number="localPlayer.back_attack" step="0.1" min="0" max="9999" @input="validateLimit('back_attack')">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
+      <div class="form-group" v-show="localPlayer.state === 'down_attack'">
         <label>Down Attack %</label>
         <input type="number" v-model.number="localPlayer.down_attack" step="0.1" min="0" max="9999" @input="validateLimit('down_attack')">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-show="localPlayer.state === 'air_attack'">
         <label>Air Attack %</label>
         <input type="number" v-model.number="localPlayer.air_attack" step="0.1" min="0" max="9999" @input="validateLimit('air_attack')">
       </div>
+      <div class="form-group" v-show="localPlayer.state === 'back_attack'">
+        <label>Back Attack %</label>
+        <input type="number" v-model.number="localPlayer.back_attack" step="0.1" min="0" max="9999" @input="validateLimit('back_attack')">
+      </div>       
     </div>
 
     <div class="form-row">
@@ -197,30 +194,30 @@
         <label>Damage Reduction %</label>
         <input type="number" v-model.number="localPlayer.dr_percent" min="0" max="30" @input="validateLimit('dr_percent', 30)">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.melee">
         <label>Melee Damage Reduction</label>
         <input type="number" v-model.number="localPlayer.melee_dr" step="0.1" min="0" max="9999" @input="validateLimit('melee_dr')">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.ranged">
         <label>Ranged Damage Reduction</label>
         <input type="number" v-model.number="localPlayer.ranged_dr" step="0.1" min="0" max="9999" @input="validateLimit('ranged_dr')">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.magic">
         <label>Magic Damage Reduction</label>
         <input type="number" v-model.number="localPlayer.magic_dr" step="0.1" min="0" max="9999" @input="validateLimit('magic_dr')">
       </div>
     </div>
 
     <div class="form-row">
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.melee">
         <label>Melee Evasion</label>
         <input type="number" v-model.number="localPlayer.melee_evasion" min="0" max="9999" @input="validateLimit('melee_evasion')">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.ranged">
         <label>Ranged Evasion</label>
         <input type="number" v-model.number="localPlayer.ranged_evasion" step="0.1" min="0" max="9999" @input="validateLimit('ranged_evasion')">
       </div>
-      <div class="form-group">
+      <div class="form-group" v-if="damageTypeObject.magic">
         <label>Magic Evasion</label>
         <input type="number" v-model.number="localPlayer.magic_evasion" step="0.1" min="0" max="9999" @input="validateLimit('magic_evasion')">
       </div>
@@ -234,7 +231,6 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { useIntersectionObserver } from '@vueuse/core';
 import apiClient from '../services/api.js';
 
 export default {
@@ -255,6 +251,10 @@ export default {
     availableClasses: {
       type: Array,
       required: true
+    },
+    damage_type : {
+      type: String,
+      required: true
     }
   },
   emits: ['update:modelValue'],
@@ -271,6 +271,22 @@ export default {
     const presetPage = ref(1);
     const hasMorePresets = ref(true);
     const selectedPreset = ref(null);
+    const damageTypeObject = ref({
+      'melee': false,
+      'ranged': false,
+      'magic': false
+    })
+    
+    const updateDamageTypeObject = () => {
+      const configs = {
+        melee: { melee: true, ranged: false, magic: false },
+        ranged: { melee: false, ranged: true, magic: false },
+        magic: { melee: false, ranged: false, magic: true },
+        both: { melee: true, ranged: true, magic: true },
+      }
+      damageTypeObject.value = configs[props.damage_type] || configs['both'];
+    };
+
 
     const presetsByClass = computed(() => {
         return filteredPresets.value.reduce((groups, preset) => {
@@ -316,11 +332,22 @@ export default {
 
     
     const localPlayer = computed({
-      get: () => props.modelValue,
-      set: (newValue) => emit('update:modelValue', newValue)
+      get: () => {
+        return new Proxy(props.modelValue, {
+          get(target, key) {
+            return target[key];
+          },
+          set(target, key, value) {
+            emit('update:modelValue', { ...target, [key]: value });
+            return true;
+          }
+        });
+      },
+      set: (newValue) => {
+        emit('update:modelValue', newValue);
+      }
     });
 
-    // Inicializa a busca com a classe atual
     watch(() => props.modelValue.class, (newVal) => {
       if (newVal && !searchQuery.value) {
         searchQuery.value = newVal;
@@ -387,6 +414,10 @@ export default {
       }
     }
 
+    watch(() => props.damage_type, () => {
+      updateDamageTypeObject();
+    }, { immediate: true });
+
     onMounted(async () => {
       document.addEventListener('click', handleClickOutside);
       await getPresets();
@@ -396,18 +427,6 @@ export default {
     onUnmounted(() => {
       document.removeEventListener('click', handleClickOutside);
     });
-
-
-    useIntersectionObserver(
-          sentinel,
-          ([{ isIntersecting }]) => {
-            if (isIntersecting && !isLoading.value) {
-              if(hasMorePresets.value){
-                getPresets();
-              }
-            }
-          }
-        );
 
     return {
       showDropdown,
@@ -425,7 +444,8 @@ export default {
       validateLimit,
       isLoading,
       sentinel,
-      selectedPreset
+      selectedPreset,
+      damageTypeObject
     };
   }
 };
